@@ -41,11 +41,17 @@ const LockScreen = () => {
   return (
     <div className="lock-screen">
       {/* EL FONDO SILK VIVE AQUÍ Y MUERE CUANDO ESTE COMPONENTE SE DESMONTA */}
-      <Silk />
+      <Silk
+        speed={4}
+        scale={1}
+        color="#9726fa"
+        noiseIntensity={1.5}
+        rotation={0}
+      />
 
       <div className="lock-content">
         <h1>
-          <ShinyText text="¿Qué día empezó todo?" speed={3} />
+          <ShinyText text="¿Qué día empezó todo?" />
         </h1>
 
         <form onSubmit={handleSubmit}>

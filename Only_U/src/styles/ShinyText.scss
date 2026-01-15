@@ -1,29 +1,59 @@
 .shiny-text {
-  color: #b5b5b5a4; /* Color base apagado */
+  display: inline-block;
+  font-weight: bold;
+
+  /* Usamos las variables que vienen del componente React */
   background: linear-gradient(
     120deg,
-    rgba(255, 255, 255, 0) 40%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 60%
+    var(--base-color) 40%,
+    var(--shine-color) 50%,
+    var(--base-color) 60%
   );
+
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  display: inline-block;
-  animation: shine 3s linear infinite;
-  background-repeat: no-repeat;
-  font-weight: bold;
+
+  /* IMPORTANTE: El texto DEBE ser transparente para ver el fondo */
+  color: transparent;
+
+  /* Velocidad de animación variable */
+  animation-duration: var(--shiny-speed);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+
+  /* Direcciones */
+  &.left {
+    animation-name: shine-left;
+  }
+
+  &.right {
+    animation-name: shine-right;
+  }
 
   &.disabled {
     animation: none;
+    color: var(
+      --base-color
+    ); /* Si se desactiva, muestra el color base sólido */
+    background: none;
   }
 }
 
-@keyframes shine {
+@keyframes shine-left {
   0% {
     background-position: 100% 0;
   }
   100% {
     background-position: -100% 0;
+  }
+}
+
+@keyframes shine-right {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
   }
 }

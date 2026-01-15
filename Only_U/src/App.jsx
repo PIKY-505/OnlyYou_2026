@@ -18,7 +18,7 @@ function App() {
             exit={{
               opacity: 0,
               filter: "blur(20px)",
-              transition: { duration: 3 },
+              transition: { duration: 7 },
             }}
             style={{ position: "fixed", zIndex: 9999, inset: 0 }}>
             <LockScreen />
