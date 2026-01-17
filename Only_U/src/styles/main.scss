@@ -41,3 +41,12 @@ body {
     pointer-events: auto;
   }
 }
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #050505; /* Fondo oscuro de seguridad */
+  overflow: hidden; /* Evita scrolls indeseados durante la transición */
+  color: white;
+  font-family: var(--font-main);
+}
