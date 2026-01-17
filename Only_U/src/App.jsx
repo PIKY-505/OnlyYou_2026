@@ -6,13 +6,15 @@ import GradientBackground from "./components/Backgrounds/GradientBackground";
 import StaggeredMenu from "./components/UI/StaggeredMenu";
 import { AnimatePresence, motion } from "framer-motion";
 import "./styles/main.scss";
+// Importamos el contenedor de la tienda
+import ShopContainer from "./components/Shop/ShopContainer";
 
 // CONFIGURACIÓN DEL MENÚ
-// (Ya sin la opción Premium como pediste)
 const shopItems = [
-  { label: "Fondos", link: "#", ariaLabel: "Galería de fondos" },
-  { label: "Cursores", link: "#", ariaLabel: "Personalizar cursor" },
-  { label: "Rastros", link: "#", ariaLabel: "Efectos de rastro" },
+  // AÑADIMOS IDs: Importante para saber qué tienda abrir
+  { id: "backgrounds", label: "Fondos", ariaLabel: "Galería de fondos" },
+  { id: "cursors", label: "Cursores", ariaLabel: "Personalizar cursor" },
+  { id: "trails", label: "Rastros", ariaLabel: "Efectos de rastro" },
 ];
 
 const socialItems = [
@@ -21,7 +23,15 @@ const socialItems = [
 ];
 
 function App() {
-  const { isUnlocked } = useGameStore();
+  // 1. Traemos la función openShop del store
+  const { isUnlocked, openShop } = useGameStore();
+
+  // 2. Función para manejar los clics del menú
+  const handleMenuClick = (itemId) => {
+    if (itemId) {
+      openShop(itemId); // Abre la tienda correspondiente ('backgrounds', etc.)
+    }
+  };
 
   return (
     <main
@@ -60,26 +70,24 @@ function App() {
             <GradientBackground />
           </div>
 
-          {/* MENÚ STAGGERED CORREGIDO */}
-          {/* Al usar isFixed, se pega a la pantalla completa y respeta el 'right' */}
+          {/* MENÚ STAGGERED */}
           <StaggeredMenu
             items={shopItems}
             socialItems={socialItems}
             isFixed={true}
             position="right"
-            // PALETA ORIGINAL (La que mejor queda con tu fondo)
-            // 1. Rosa Neón (Frente)
-            // 2. Lavanda (Medio)
-            // 3. Morado Oscuro (Fondo)
+            // CONECTAMOS EL CLIC: Pasamos la función manejadora
+            onItemClick={handleMenuClick}
             colors={["#f700ff", "#bd71ff", "#8629b1"]}
-            // Acento al pasar el ratón (Rosa Neón)
             accentColor="#f700ff"
             menuButtonColor="#fff"
-            // Detalle fino: Al abrir, el botón "Close" se pone Rosa
             openMenuButtonColor="#ffffff"
             displayItemNumbering={true}
             logoUrl={null}
           />
+
+          {/* 3. EL CONTENEDOR DE LA TIENDA (Aparecerá cuando activeShop no sea null) */}
+          <ShopContainer />
 
           <MainContent />
         </motion.div>

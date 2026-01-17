@@ -4,19 +4,22 @@ import { gsap } from "gsap";
 import "../../styles/StaggeredMenu.scss";
 
 const StaggeredMenu = ({
-  position = "left", // Cambiado a left por defecto como querías
+  // --- AÑADIMOS ESTA PROP PARA PODER ABRIR LA TIENDA ---
+  onItemClick,
+  // -----------------------------------------------------
+  position = "left",
   colors = ["#B19EEF", "#5227FF"],
   items = [],
   socialItems = [],
   displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = null, // Dejamos esto null por defecto
+  logoUrl = null,
   menuButtonColor = "#fff",
-  openMenuButtonColor = "#000", // El texto debe verse negro sobre fondo blanco al abrir
+  openMenuButtonColor = "#000",
   accentColor = "#5227FF",
   changeMenuColorOnOpen = true,
-  isFixed = false, // Lo haremos fixed desde fuera
+  isFixed = false,
   closeOnClickAway = true,
   onMenuOpen,
   onMenuClose,
@@ -84,7 +87,7 @@ const StaggeredMenu = ({
 
     const itemEls = Array.from(panel.querySelectorAll(".sm-panel-itemLabel"));
     const numberEls = Array.from(
-      panel.querySelectorAll(".sm-panel-list[data-numbering] .sm-panel-item")
+      panel.querySelectorAll(".sm-panel-list[data-numbering] .sm-panel-item"),
     );
     const socialTitle = panel.querySelector(".sm-socials-title");
     const socialLinks = Array.from(panel.querySelectorAll(".sm-socials-link"));
@@ -114,18 +117,18 @@ const StaggeredMenu = ({
       tl.fromTo(
         ls.el,
         { xPercent: ls.start },
-        { xPercent: 0, duration: 0.5, ease: "power4.out" },
-        i * 0.07
+        { xPercent: 0, duration: 0.8, ease: "power4.out" },
+        i * 0.07,
       );
     });
     const lastTime = layerStates.length ? (layerStates.length - 1) * 0.07 : 0;
     const panelInsertTime = lastTime + (layerStates.length ? 0.08 : 0);
-    const panelDuration = 0.65;
+    const panelDuration = 1;
     tl.fromTo(
       panel,
       { xPercent: panelStart },
       { xPercent: 0, duration: panelDuration, ease: "power4.out" },
-      panelInsertTime
+      panelInsertTime,
     );
 
     if (itemEls.length) {
@@ -140,7 +143,7 @@ const StaggeredMenu = ({
           ease: "power4.out",
           stagger: { each: 0.1, from: "start" },
         },
-        itemsStart
+        itemsStart,
       );
       if (numberEls.length) {
         tl.to(
@@ -151,7 +154,7 @@ const StaggeredMenu = ({
             "--sm-num-opacity": 1,
             stagger: { each: 0.08, from: "start" },
           },
-          itemsStart + 0.1
+          itemsStart + 0.1,
         );
       }
     }
@@ -166,7 +169,7 @@ const StaggeredMenu = ({
             duration: 0.5,
             ease: "power2.out",
           },
-          socialsStart
+          socialsStart,
         );
       }
       if (socialLinks.length) {
@@ -182,7 +185,7 @@ const StaggeredMenu = ({
               gsap.set(socialLinks, { clearProps: "opacity" });
             },
           },
-          socialsStart + 0.04
+          socialsStart + 0.04,
         );
       }
     }
@@ -224,22 +227,22 @@ const StaggeredMenu = ({
       overwrite: "auto",
       onComplete: () => {
         const itemEls = Array.from(
-          panel.querySelectorAll(".sm-panel-itemLabel")
+          panel.querySelectorAll(".sm-panel-itemLabel"),
         );
         if (itemEls.length) {
           gsap.set(itemEls, { yPercent: 140, rotate: 10 });
         }
         const numberEls = Array.from(
           panel.querySelectorAll(
-            ".sm-panel-list[data-numbering] .sm-panel-item"
-          )
+            ".sm-panel-list[data-numbering] .sm-panel-item",
+          ),
         );
         if (numberEls.length) {
           gsap.set(numberEls, { "--sm-num-opacity": 0 });
         }
         const socialTitle = panel.querySelector(".sm-socials-title");
         const socialLinks = Array.from(
-          panel.querySelectorAll(".sm-socials-link")
+          panel.querySelectorAll(".sm-socials-link"),
         );
         if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
         if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
@@ -286,7 +289,7 @@ const StaggeredMenu = ({
         gsap.set(btn, { color: menuButtonColor });
       }
     },
-    [openMenuButtonColor, menuButtonColor, changeMenuColorOnOpen]
+    [openMenuButtonColor, menuButtonColor, changeMenuColorOnOpen],
   );
 
   React.useEffect(() => {
@@ -370,12 +373,18 @@ const StaggeredMenu = ({
     if (!closeOnClickAway || !open) return;
 
     const handleClickOutside = (event) => {
-      if (
-        panelRef.current &&
-        !panelRef.current.contains(event.target) &&
-        toggleBtnRef.current &&
-        !toggleBtnRef.current.contains(event.target)
-      ) {
+      // 1. Verificamos si el clic fue dentro del propio menú o su botón
+      const isInsideMenu =
+        panelRef.current && panelRef.current.contains(event.target);
+      const isInsideButton =
+        toggleBtnRef.current && toggleBtnRef.current.contains(event.target);
+
+      // 2. NUEVO: Verificamos si el clic fue dentro de la TIENDA (.shop-overlay)
+      // Usamos .closest() para ver si el elemento clicado o alguno de sus padres es la tienda
+      const isInsideShop = event.target.closest(".shop-overlay");
+
+      // Si NO es menú, NO es botón y NO es tienda -> Cerramos
+      if (!isInsideMenu && !isInsideButton && !isInsideShop) {
         closeMenu();
       }
     };
@@ -425,9 +434,7 @@ const StaggeredMenu = ({
               width={110}
               height={24}
             />
-          ) : // ANTES PONÍA: <span>CONFIG</span>
-          // AHORA LO DEJAMOS VACÍO PARA QUE NO SALGA NADA
-          null}
+          ) : null}
         </div>
         <button
           ref={toggleBtnRef}
@@ -469,13 +476,20 @@ const StaggeredMenu = ({
             {items && items.length ? (
               items.map((it, idx) => (
                 <li className="sm-panel-itemWrap" key={it.label + idx}>
+                  {/* --- AQUÍ ESTÁ EL CAMBIO CLAVE --- */}
                   <a
                     className="sm-panel-item"
-                    href={it.link}
+                    href="#" // Ponemos # porque manejaremos el clic manual
+                    onClick={(e) => {
+                      e.preventDefault(); // Evitamos que recargue la página
+                      // Si nos pasaron la función onItemClick, la ejecutamos con el ID del item
+                      if (onItemClick) onItemClick(it.id);
+                    }}
                     aria-label={it.ariaLabel}
                     data-index={idx + 1}>
                     <span className="sm-panel-itemLabel">{it.label}</span>
                   </a>
+                  {/* --------------------------------- */}
                 </li>
               ))
             ) : (

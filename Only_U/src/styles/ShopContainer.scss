@@ -1,0 +1,166 @@
+.shop-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* IMPORTANTE: z-index menor que el menú (50) para que el menú siga operativo */
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* Dejamos pasar clics fuera de la ventana */
+}
+
+.shop-window {
+  pointer-events: auto; /* Reactivamos clics dentro de la ventana */
+  width: 800px;
+  max-width: 90%;
+  height: 600px;
+  max-height: 80%;
+
+  /* GLASSMORPHISM OSCURO */
+  background: rgba(15, 10, 25, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+
+  /* Animación de entrada */
+  animation: floatShop 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.shop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 15px;
+
+  h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: white;
+    text-transform: uppercase;
+
+    .highlight {
+      color: #f700ff; /* Tu color de acento */
+    }
+  }
+
+  .close-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+    &:hover {
+      color: #f700ff;
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  overflow-y: auto;
+  padding-right: 10px;
+
+  /* Scrollbar bonita */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+}
+
+.shop-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-5px);
+    border-color: #f700ff;
+    box-shadow: 0 10px 20px rgba(247, 0, 255, 0.1);
+  }
+
+  &.equipped {
+    border-color: #00e676; /* Verde para indicar equipado */
+    background: rgba(0, 230, 118, 0.05);
+  }
+
+  .item-preview {
+    height: 120px;
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .check-badge {
+      background: #00e676;
+      color: black;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .item-info {
+    padding: 15px;
+
+    h3 {
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      color: white;
+    }
+    p {
+      margin: 0 0 10px 0;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .price-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #f700ff;
+    }
+  }
+}
+
+@keyframes floatShop {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
