@@ -31,7 +31,7 @@ const GradientBackground = () => {
           // Lo ponemos vertical (to bottom) porque al girar la caja, la dirección cambiará sola.
           background: "linear-gradient(to bottom, #b117f8, #390f3b)",
           // Animación de rotación suave e infinita
-          animation: "spinGradient 7s linear infinite",
+          animation: "spinGradient 20s linear infinite",
         }}
       />
 
