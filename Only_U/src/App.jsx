@@ -76,7 +76,7 @@ function App() {
             accentColor="#f700ff"
             menuButtonColor="#fff"
             // Detalle fino: Al abrir, el botón "Close" se pone Rosa
-            openMenuButtonColor="#f700ff"
+            openMenuButtonColor="#ffffff"
             displayItemNumbering={true}
             logoUrl={null}
           />
