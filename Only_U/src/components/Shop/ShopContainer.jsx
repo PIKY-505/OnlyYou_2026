@@ -4,6 +4,14 @@ import { FiX, FiCheck, FiImage, FiMousePointer, FiWind } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/ShopContainer.scss";
 
+// --- ASSETS PARA PREVIEW ---
+import appleCat from "../../assets/trails/apple-cat.gif";
+import jumpCat from "../../assets/trails/jump-cat.gif";
+import rollingCat from "../../assets/trails/rolling-cat.gif";
+import duck from "../../assets/trails/duck.png";
+import pompom from "../../assets/trails/pompom.png";
+import skeletonRun from "../../assets/trails/skeleton-run.gif";
+
 // --- BASE DE DATOS DE LA TIENDA ---
 const SHOP_DATA = {
   backgrounds: [
@@ -112,12 +120,54 @@ const SHOP_DATA = {
       icon: <FiWind />,
     },
     {
-      id: "ghost",
-      name: "Fantasma",
-      description: "Un compañero del más allá.",
+      id: "apple-cat",
+      name: "Gato Manzana",
+      description: "Un gatito adorable en una manzana.",
       price: "Gratis",
-      previewColor: "#333333",
-      icon: <span style={{ fontSize: "1.5rem" }}>👻</span>,
+      previewColor: "#ffadad",
+      icon: <img src={appleCat} alt="Apple Cat" style={{ width: "40px" }} />,
+    },
+    {
+      id: "jump-cat",
+      name: "Gato Saltarín",
+      description: "Siempre lleno de energía.",
+      price: "Gratis",
+      previewColor: "#ffd6a5",
+      icon: <img src={jumpCat} alt="Jump Cat" style={{ width: "40px" }} />,
+    },
+    {
+      id: "rolling-cat",
+      name: "Gato Rodante",
+      description: "Rodando hacia tu corazón.",
+      price: "Gratis",
+      previewColor: "#fdffb6",
+      icon: (
+        <img src={rollingCat} alt="Rolling Cat" style={{ width: "40px" }} />
+      ),
+    },
+    {
+      id: "duck",
+      name: "Pato",
+      description: "Cuack cuack.",
+      price: "Gratis",
+      previewColor: "#caffbf",
+      icon: <img src={duck} alt="Duck" style={{ width: "40px" }} />,
+    },
+    {
+      id: "pompom",
+      name: "Pompom",
+      description: "Suave y esponjoso.",
+      price: "Gratis",
+      previewColor: "#9bf6ff",
+      icon: <img src={pompom} alt="Pompom" style={{ width: "40px" }} />,
+    },
+    {
+      id: "skeleton-run",
+      name: "Esqueleto",
+      description: "Spooky scary skeletons.",
+      price: "Gratis",
+      previewColor: "#a0c4ff",
+      icon: <img src={skeletonRun} alt="Skeleton" style={{ width: "40px" }} />,
     },
   ],
 };
