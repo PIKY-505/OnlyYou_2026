@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useGameStore } from "./store/useStore";
 import LockScreen from "./components/Layout/LockScreen";
 import MainContent from "./components/Layout/MainContent";
@@ -9,6 +9,7 @@ import "./styles/main.scss";
 // Importamos el contenedor de la tienda
 import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
+import LoadingScreen from "./components/UI/LoadingScreen";
 
 // CONFIGURACIÓN DEL MENÚ
 const shopItems = [
@@ -34,6 +35,27 @@ function App() {
     }
   };
 
+  // --- LÓGICA DE CARGA ---
+  const [isLoading, setIsLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    // Simulamos una carga de recursos (puedes ajustarlo a tus necesidades)
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        // Incremento más pequeño (1-3%) para que sea más lento y fluido
+        const next = prev + Math.floor(Math.random() * 15) + 5;
+        if (next >= 100) {
+          clearInterval(timer);
+          setTimeout(() => setIsLoading(false), 800); // Pequeña pausa al 100% para suavidad
+          return 100;
+        }
+        return next;
+      });
+    }, 200); // Actualizamos más a menudo para mayor fluidez visual
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <main
       style={{
@@ -42,6 +64,12 @@ function App() {
         height: "100vh",
         overflow: "hidden",
       }}>
+      {/* 0. PANTALLA DE CARGA */}
+      <AnimatePresence mode="wait">
+        {isLoading && <LoadingScreen key="loader" progress={progress} />}
+      </AnimatePresence>
+
+      {/* EL RESTO DE LA APP (Se muestra siempre, pero el loader lo tapa al inicio) */}
       <TrailSystem />
       {/* 1. EL CANDADO */}
       <AnimatePresence>
