@@ -47,7 +47,7 @@ function App() {
         const next = prev + Math.floor(Math.random() * 15) + 5;
         if (next >= 100) {
           clearInterval(timer);
-          setTimeout(() => setIsLoading(false), 800); // Pequeña pausa al 100% para suavidad
+          setTimeout(() => setIsLoading(false), 200); // Pausa reducida para acceso rápido
           return 100;
         }
         return next;

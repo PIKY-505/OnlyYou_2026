@@ -229,7 +229,9 @@
   position: relative;
   padding: 2px 0;
   display: inline-block;
-  transition: color 0.3s ease, opacity 0.3s ease;
+  transition:
+    color 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .sm-socials-link:hover {
@@ -257,7 +259,9 @@
   line-height: 1;
   letter-spacing: -2px;
   text-transform: uppercase;
-  transition: background 0.25s, color 0.25s;
+  transition:
+    background 0.25s,
+    color 0.25s;
   display: inline-block;
   text-decoration: none;
   padding-right: 1.4em;
@@ -304,5 +308,14 @@
   }
   .sm-prelayers {
     width: 100%;
+  }
+
+  /* Ajustes adicionales para móvil */
+  .staggered-menu-panel {
+    padding-top: 5em; /* Menos padding superior */
+  }
+
+  .sm-panel-item {
+    font-size: 2.5rem; /* Fuente más manejable */
   }
 }

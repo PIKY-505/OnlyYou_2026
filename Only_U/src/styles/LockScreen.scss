@@ -96,3 +96,26 @@
     transform: translateX(10px);
   }
 }
+
+/* --- RESPONSIVE MÓVIL --- */
+@media (max-width: 768px) {
+  .lock-screen .lock-content {
+    h1 {
+      font-size: 2rem; /* Título más pequeño */
+      margin-bottom: 1.5rem;
+    }
+
+    form {
+      flex-direction: column; /* Apilar verticalmente */
+      gap: 15px;
+    }
+
+    input {
+      width: 220px; /* Un poco más ancho para dedos */
+    }
+
+    button {
+      width: 220px; /* Botón ancho a juego con el input */
+    }
+  }
+}

@@ -231,3 +231,53 @@
     }
   }
 }
+
+/* --- RESPONSIVE MÓVIL --- */
+@media (max-width: 768px) {
+  .shop-window {
+    width: 95%;
+    height: 90vh; /* Más altura en móvil */
+    border-radius: 16px;
+  }
+
+  .shop-header-row {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .shop-tabs {
+    flex: 1;
+    overflow-x: auto; /* Scroll horizontal si no caben */
+    padding-bottom: 5px; /* Espacio para scrollbar invisible */
+
+    /* Ocultar scrollbar visualmente pero mantener funcionalidad */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    scrollbar-width: none;
+  }
+
+  .tab-btn {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+    white-space: nowrap; /* Que no se rompa el texto */
+
+    span {
+      /* En pantallas MUY pequeñas, ocultamos el texto */
+      @media (max-width: 380px) {
+        display: none;
+      }
+    }
+  }
+
+  .shop-grid {
+    padding: 15px;
+    /* Ajustamos columnas para que quepan 2 en vertical (min 135px) */
+    grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 15px;
+  }
+
+  .shop-item .item-preview {
+    height: 90px; /* Preview un poco más bajita */
+  }
+}

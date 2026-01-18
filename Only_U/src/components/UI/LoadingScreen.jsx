@@ -22,7 +22,11 @@ const LoadingScreen = ({ progress }) => {
   return (
     <motion.div
       className="loading-screen"
-      exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}>
+      exit={{
+        opacity: 0,
+        pointerEvents: "none", // ¡CLAVE! Permite hacer click mientras se desvanece
+        transition: { duration: 0.8, ease: "easeInOut" },
+      }}>
       <div className="loading-background-effect" />
 
       <div className="loading-content">
