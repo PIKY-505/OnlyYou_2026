@@ -111,6 +111,14 @@ const SHOP_DATA = {
       previewColor: "transparent",
       icon: <FiWind />,
     },
+    {
+      id: "ghost",
+      name: "Fantasma",
+      description: "Un compañero del más allá.",
+      price: "Gratis",
+      previewColor: "#333333",
+      icon: <span style={{ fontSize: "1.5rem" }}>👻</span>,
+    },
   ],
 };
 

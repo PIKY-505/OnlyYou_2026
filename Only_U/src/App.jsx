@@ -8,6 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import "./styles/main.scss";
 // Importamos el contenedor de la tienda
 import ShopContainer from "./components/Shop/ShopContainer";
+import TrailSystem from "./components/Effects/TrailSystem";
 
 // CONFIGURACIÓN DEL MENÚ
 const shopItems = [
@@ -41,6 +42,7 @@ function App() {
         height: "100vh",
         overflow: "hidden",
       }}>
+      <TrailSystem />
       {/* 1. EL CANDADO */}
       <AnimatePresence>
         {!isUnlocked && (
