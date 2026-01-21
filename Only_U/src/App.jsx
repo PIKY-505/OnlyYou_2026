@@ -14,6 +14,7 @@ import { FiStar, FiMusic, FiPlayCircle, FiEdit } from "react-icons/fi";
 import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
 import LoadingScreen from "./components/UI/LoadingScreen";
+import MusicPlayer from "./components/UI/MusicPlayer";
 
 // CONFIGURACIÓN DEL MENÚ LATERAL
 const shopItems = [
@@ -30,6 +31,7 @@ const socialItems = [
 function App() {
   const { isUnlocked, openShop } = useGameStore();
   const [showInfo, setShowInfo] = useState(true);
+  const [showMusicPlayer, setShowMusicPlayer] = useState(false);
 
   const handleMenuClick = (itemId) => {
     if (itemId) {
@@ -47,7 +49,7 @@ function App() {
     {
       icon: <FiMusic size={22} />,
       label: "Música",
-      onClick: () => console.log("Audio Player"),
+      onClick: () => setShowMusicPlayer(!showMusicPlayer),
     },
     {
       icon: <FiPlayCircle size={22} />,
@@ -156,6 +158,12 @@ function App() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* 4. REPRODUCTOR DE MÚSICA (Siempre montado para persistencia) */}
+          <MusicPlayer
+            visible={showMusicPlayer}
+            onClose={() => setShowMusicPlayer(false)}
+          />
 
           {/* 3. DOCK (Barra inferior) */}
           <Dock
