@@ -9,7 +9,7 @@ import "./styles/main.scss";
 
 // 1. IMPORTAMOS EL DOCK Y LOS ICONOS
 import Dock from "./components/UI/Dock";
-import { FiHome, FiGrid, FiSettings, FiUser } from "react-icons/fi";
+import { FiStar, FiMusic, FiPlayCircle, FiEdit } from "react-icons/fi";
 
 import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
@@ -29,6 +29,7 @@ const socialItems = [
 
 function App() {
   const { isUnlocked, openShop } = useGameStore();
+  const [showInfo, setShowInfo] = useState(true);
 
   const handleMenuClick = (itemId) => {
     if (itemId) {
@@ -39,24 +40,24 @@ function App() {
   // --- 2. DEFINICIÓN DE LOS ÍTEMS DEL DOCK (ESTO FALTABA) ---
   const dockItems = [
     {
-      icon: <FiHome size={22} />,
-      label: "Inicio",
-      onClick: () => console.log("Click en Inicio"),
+      icon: <FiStar size={22} />,
+      label: "Texto",
+      onClick: () => setShowInfo(!showInfo),
     },
     {
-      icon: <FiGrid size={22} />,
-      label: "Apps",
-      onClick: () => console.log("Click en Apps"),
+      icon: <FiMusic size={22} />,
+      label: "Música",
+      onClick: () => console.log("Audio Player"),
     },
     {
-      icon: <FiUser size={22} />,
-      label: "Perfil",
-      onClick: () => console.log("Click en Perfil"),
+      icon: <FiPlayCircle size={22} />,
+      label: "Juego",
+      onClick: () => console.log("Toggle Game"),
     },
     {
-      icon: <FiSettings size={22} />,
-      label: "Ajustes",
-      onClick: () => console.log("Click en Ajustes"),
+      icon: <FiEdit size={22} />,
+      label: "Fondo",
+      onClick: () => console.log("Personalize Background"),
     },
   ];
 
@@ -138,7 +139,23 @@ function App() {
           {/* RESTO DE COMPONENTES */}
           <ShopContainer />
           <TrailSystem />
-          <MainContent />
+          <AnimatePresence>
+            {showInfo && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  zIndex: 10,
+                }}>
+                <MainContent />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* 3. DOCK (Barra inferior) */}
           <Dock

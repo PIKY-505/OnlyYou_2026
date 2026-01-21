@@ -68,8 +68,6 @@ function DockItem({
       }}
       onHoverStart={() => isHovered.set(1)}
       onHoverEnd={() => isHovered.set(0)}
-      onFocus={() => isHovered.set(1)}
-      onBlur={() => isHovered.set(0)}
       onClick={onClick}
       className={`dock-item ${className}`}
       tabIndex={0}

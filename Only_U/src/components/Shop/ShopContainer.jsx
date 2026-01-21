@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useGameStore } from "../../store/useStore";
-import { FiX, FiCheck, FiImage, FiMousePointer, FiWind } from "react-icons/fi";
+import {
+  FiX,
+  FiCheck,
+  FiImage,
+  FiMousePointer,
+  FiSlash,
+  FiHeart,
+} from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/ShopContainer.scss";
 
@@ -47,7 +54,7 @@ const SHOP_DATA = {
       description: "Sin rastro, limpio y rápido.",
       price: "Gratis",
       previewColor: "transparent",
-      icon: <FiWind />,
+      icon: <FiSlash />,
     },
     {
       id: "apple-cat",
@@ -105,7 +112,7 @@ const SHOP_DATA = {
 const TABS = [
   { id: "backgrounds", label: "Fondos", icon: <FiImage /> },
   { id: "cursors", label: "Cursores", icon: <FiMousePointer /> },
-  { id: "trails", label: "Mascotas", icon: <FiWind /> },
+  { id: "trails", label: "Mascotas", icon: <FiHeart /> },
 ];
 
 const ShopContainer = () => {
