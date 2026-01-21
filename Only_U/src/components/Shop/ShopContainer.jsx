@@ -36,6 +36,13 @@ const SHOP_DATA = {
       price: "Gratis",
       previewColor: "#000", // Placeholder negro
     },
+    {
+      id: "silk",
+      name: "Silk",
+      description: "Suavidad y elegancia.",
+      price: "Gratis",
+      previewColor: "#ff99cc",
+    },
   ],
   cursors: [
     {

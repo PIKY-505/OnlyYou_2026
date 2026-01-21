@@ -70,8 +70,6 @@ function DockItem({
       onHoverEnd={() => isHovered.set(0)}
       onClick={onClick}
       className={`dock-item ${className}`}
-      tabIndex={0}
-      role="button"
       aria-haspopup="true">
       {Children.map(children, (child) => cloneElement(child, { isHovered }))}
     </motion.div>

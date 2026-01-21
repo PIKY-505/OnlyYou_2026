@@ -9,7 +9,7 @@ import "./styles/main.scss";
 
 // 1. IMPORTAMOS EL DOCK Y LOS ICONOS
 import Dock from "./components/UI/Dock";
-import { FiStar, FiMusic, FiPlayCircle, FiEdit } from "react-icons/fi";
+import { FiStar, FiMusic, FiPlayCircle, FiEdit, FiLock } from "react-icons/fi";
 
 import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
@@ -29,7 +29,7 @@ const socialItems = [
 ];
 
 function App() {
-  const { isUnlocked, openShop } = useGameStore();
+  const { isUnlocked, openShop, closeShop, lockGame } = useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
 
@@ -60,6 +60,17 @@ function App() {
       icon: <FiEdit size={22} />,
       label: "Fondo",
       onClick: () => console.log("Personalize Background"),
+    },
+    {
+      icon: <FiLock size={22} />,
+      label: "Bloquear",
+      onClick: () => {
+        if (lockGame) {
+          closeShop(); // Cerramos la tienda si estaba abierta
+          setShowMusicPlayer(false); // Cerramos el reproductor visualmente
+          lockGame(); // Bloqueamos la app
+        }
+      },
     },
   ];
 
@@ -100,80 +111,99 @@ function App() {
         {!isUnlocked && (
           <motion.div
             key="lock-screen"
-            initial={{ opacity: 1 }}
+            // ESTILO COPIADO DEL DESBLOQUEO (Invertido para la entrada)
+            initial={{ opacity: 0, filter: "blur(20px)", scale: 1.1 }}
+            animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
             exit={{
               opacity: 0,
               filter: "blur(20px)",
+              scale: 1.1,
               transition: { duration: 2 },
             }}
-            style={{ position: "fixed", zIndex: 9999, inset: 0 }}>
+            transition={{ duration: 2, ease: "easeInOut" }}
+            style={{
+              position: "fixed",
+              zIndex: 9999,
+              inset: 0,
+              background: "#000", // Fondo sólido para tapar la app limpiamente
+            }}>
             <LockScreen />
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* 2. EL CONTENIDO PRINCIPAL */}
-      {isUnlocked && (
-        <motion.div
-          className="app-content"
-          initial={{ opacity: 0, scale: 1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1 }}
-          style={{ width: "100%", height: "100%", position: "relative" }}>
-          {/* FONDO CONTROLADO */}
-          <BackgroundController />
+      <AnimatePresence>
+        {isUnlocked && (
+          <motion.div
+            key="main-content"
+            className="app-content"
+            initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{
+              opacity: 0,
+              // ESTILO COPIADO DE LA ENTRADA (Simétrico)
+              scale: 1.1,
+              filter: "blur(10px)",
+              transition: { duration: 1 },
+            }}
+            transition={{ duration: 1 }}
+            style={{ width: "100%", height: "100%", position: "relative" }}>
+            {/* FONDO CONTROLADO */}
+            <BackgroundController />
 
-          {/* MENÚ STAGGERED (Lateral) */}
-          <StaggeredMenu
-            items={shopItems}
-            socialItems={socialItems}
-            isFixed={true}
-            position="right"
-            onItemClick={handleMenuClick}
-            colors={["#f700ff", "#bd71ff", "#8629b1"]}
-            accentColor="#f700ff"
-            menuButtonColor="#fff"
-            openMenuButtonColor="#ffffff"
-            displayItemNumbering={true}
-            logoUrl={null}
-          />
+            {/* MENÚ STAGGERED (Lateral) */}
+            <StaggeredMenu
+              items={shopItems}
+              socialItems={socialItems}
+              isFixed={true}
+              position="right"
+              onItemClick={handleMenuClick}
+              colors={["#f700ff", "#bd71ff", "#8629b1"]}
+              accentColor="#f700ff"
+              menuButtonColor="#fff"
+              openMenuButtonColor="#ffffff"
+              displayItemNumbering={true}
+              logoUrl={null}
+            />
 
-          {/* RESTO DE COMPONENTES */}
-          <ShopContainer />
-          <TrailSystem />
-          <AnimatePresence>
-            {showInfo && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                style={{
-                  position: "absolute",
-                  width: "100%",
-                  height: "100%",
-                  zIndex: 10,
-                }}>
-                <MainContent />
-              </motion.div>
-            )}
-          </AnimatePresence>
+            {/* RESTO DE COMPONENTES */}
+            <ShopContainer />
+            <TrailSystem />
+            <AnimatePresence>
+              {showInfo && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: 10,
+                  }}>
+                  <MainContent />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          {/* 4. REPRODUCTOR DE MÚSICA (Siempre montado para persistencia) */}
-          <MusicPlayer
-            visible={showMusicPlayer}
-            onClose={() => setShowMusicPlayer(false)}
-          />
+            {/* 4. REPRODUCTOR DE MÚSICA (Siempre montado para persistencia) */}
+            <MusicPlayer
+              visible={showMusicPlayer}
+              onClose={() => setShowMusicPlayer(false)}
+            />
 
-          {/* 3. DOCK (Barra inferior) */}
-          <Dock
-            items={dockItems}
-            panelHeight={60}
-            baseItemSize={45}
-            magnification={60}
-          />
-        </motion.div>
-      )}
+            {/* 3. DOCK (Barra inferior) */}
+            <Dock
+              items={dockItems}
+              panelHeight={60}
+              baseItemSize={45}
+              magnification={60}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }

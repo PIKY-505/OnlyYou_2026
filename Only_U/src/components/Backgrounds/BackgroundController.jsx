@@ -2,6 +2,7 @@ import React from "react";
 import { useGameStore } from "../../store/useStore";
 import GradientBackground from "./GradientBackground";
 import Galaxy from "./Galaxy";
+import Silk from "./Silk";
 import { AnimatePresence, motion } from "framer-motion";
 
 const BackgroundController = () => {
@@ -43,6 +44,25 @@ const BackgroundController = () => {
               rotationSpeed={0.1}
               starSpeed={0.5}
               speed={0.5}
+            />
+          </motion.div>
+        )}
+
+        {/* CASO 3: SILK */}
+        {activeBackground === "silk" && (
+          <motion.div
+            key="silk"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            style={{ position: "absolute", inset: 0 }}>
+            <Silk
+              speed={4}
+              scale={1}
+              color="#9726fa"
+              noiseIntensity={1.5}
+              rotation={0}
             />
           </motion.div>
         )}
