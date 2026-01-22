@@ -1,6 +1,6 @@
-# 🌌 Only U
+# 🌌 Only You
 
-> Una experiencia interactiva personalizada construida con tecnologías web modernas, enfocada en la estética, animaciones fluidas y renderizado gráfico avanzado.
+> A personalized interactive experience built with modern web technologies, focused on aesthetics, fluid animations, and advanced graphic rendering.
 
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
@@ -8,76 +8,76 @@
 ![Sass](https://img.shields.io/badge/Sass-CC6699?style=for-the-badge&logo=sass&logoColor=white)
 ![WebGL](https://img.shields.io/badge/WebGL-990000?style=for-the-badge&logo=webgl&logoColor=white)
 
-## 🚀 Visión General Técnica
+## 🚀 Technical Overview
 
-Este proyecto es una **Single Page Application (SPA)** altamente interactiva que combina lógica de estado global compleja con efectos visuales de alto rendimiento. No es solo una interfaz, es un sistema operativo simulado en el navegador.
+This project is a highly interactive **Single Page Application (SPA)** that combines complex global state logic with high-performance visual effects. It is not just an interface; it is a simulated operating system within the browser.
 
-### 🧠 Core & Arquitectura
+### 🧠 Core & Architecture
 
-- **Framework:** React 18+ sobre Vite para un HMR (Hot Module Replacement) instantáneo y builds optimizados.
-- **Gestión de Estado (Zustand):**
-  - Se utiliza un store centralizado (`useGameStore`) para manejar el estado de la aplicación de manera atómica.
-  - **Persistencia:** Controla el desbloqueo de la app, el inventario de la tienda y los items equipados (fondos, cursores, mascotas) sin prop-drilling.
+- **Framework:** React 18+ on Vite for instant HMR (Hot Module Replacement) and optimized builds.
+- **State Management (Zustand):**
+  - A centralized store (`useGameStore`) is used to handle application state atomically.
+  - **Persistence:** Controls app unlocking, shop inventory, and equipped items (backgrounds, cursors, pets) without prop-drilling.
 
-### 🎨 UI/UX & Animaciones (Framer Motion)
+### 🎨 UI/UX & Animations (Framer Motion)
 
-La interfaz cobra vida gracias a **Framer Motion**, utilizando físicas de resortes para una sensación natural.
+The interface comes to life thanks to **Framer Motion**, utilizing spring physics for a natural feel.
 
-- **Dock Dinámico:**
-  - Replica el efecto de magnificación de macOS.
-  - Utiliza `useMotionValue` y `useTransform` para mapear la posición del ratón a la escala de los iconos en tiempo real (60fps), evitando re-renderizados costosos de React.
-- **Transiciones de Pantalla:**
-  - Uso de `AnimatePresence` para gestionar el ciclo de vida de componentes al montarse y desmontarse (ej. abrir/cerrar la tienda, desbloquear pantalla).
-  - Efectos de desenfoque (`backdrop-filter`) y escala coordinados.
+- **Dynamic Dock:**
+  - Replicates the macOS magnification effect.
+  - Uses `useMotionValue` and `useTransform` to map mouse position to icon scale in real-time (60fps), avoiding costly React re-renders.
+- **Screen Transitions:**
+  - Usage of `AnimatePresence` to manage component lifecycles upon mounting and unmounting (e.g., opening/closing the shop, unlocking screen).
+  - Coordinated blur effects (`backdrop-filter`) and scaling.
 
-### ⚡ Gráficos & Shaders (WebGL)
+### ⚡ Graphics & Shaders (WebGL)
 
-El proyecto implementa renderizado gráfico avanzado para los fondos, optimizado para el rendimiento:
+The project implements advanced graphic rendering for backgrounds, optimized for performance:
 
 1.  **Galaxy Background (OGL):**
-    - Implementado con una librería WebGL ligera.
-    - Simulación de partículas con **Vertex & Fragment Shaders** personalizados.
-    - Interactividad reactiva: Las estrellas responden a la posición del ratón mediante `uniforms` actualizados en cada frame.
+    - Implemented with a lightweight WebGL library.
+    - Particle simulation with custom **Vertex & Fragment Shaders**.
+    - Reactive interactivity: Stars respond to mouse position via `uniforms` updated every frame.
 2.  **Silk Background:**
-    - Shader GLSL procedural para simular fluidos y texturas de seda en movimiento.
-    - Renderizado en un plano 3D que ocupa el viewport completo.
+    - Procedural GLSL shader to simulate fluids and silk textures in motion.
+    - Rendered on a 3D plane covering the full viewport.
 
-### 🛠️ Funcionalidades Clave
+### 🛠️ Key Features
 
-#### 🔐 Sistema de Seguridad (Lock Screen)
+#### 🔐 Security System (Lock Screen)
 
-- Pantalla de bloqueo inicial que protege el contenido.
-- Validación de passcode con feedback visual (animación de "shake" en error y feedback háptico visual).
-- Transición cinematográfica al desbloquear (desvanecimiento y zoom-in hacia el escritorio).
+- Initial lock screen protecting content.
+- Passcode validation with visual feedback ("shake" animation on error and visual haptic feedback).
+- Cinematic transition upon unlocking (fade-out and zoom-in towards the desktop).
 
-#### 🛍️ Motor de Personalización (Shop)
+#### 🛍️ Customization Engine (Shop)
 
-- Sistema de equipamiento en tiempo real (**Hot-swapping**).
-- Los cambios en fondos, cursores o mascotas se reflejan instantáneamente en toda la aplicación.
-- Interfaz de usuario con pestañas animadas y previsualizaciones dinámicas de colores y assets.
+- Real-time equipment system (**Hot-swapping**).
+- Changes in backgrounds, cursors, or pets are reflected instantly throughout the application.
+- User interface with animated tabs and dynamic color/asset previews.
 
-#### 🖱️ Cursor Trails & Mascotas
+#### 🖱️ Cursor Trails & Pets
 
-- Sistema de seguimiento del puntero que renderiza elementos gráficos (GIFs/PNGs) siguiendo al ratón.
-- Utiliza interpolación lineal o físicas de resorte (`damping` / `stiffness`) para que el movimiento de la mascota se sienta suave y orgánico, no robótico.
+- Pointer tracking system that renders graphic elements (GIFs/PNGs) following the mouse.
+- Uses linear interpolation or spring physics (`damping` / `stiffness`) so pet movement feels smooth and organic, not robotic.
 
-#### 🎵 Reproductor de Audio Integrado
+#### 🎵 Integrated Audio Player
 
-- Reproductor flotante persistente.
-- Gestión de listas de reproducción (Playlist) con soporte para metadatos.
-- Controles completos: Play/Pause, Seek bar interactiva y control de volumen.
+- Persistent floating player.
+- Playlist management with metadata support.
+- Full controls: Play/Pause, interactive Seek bar, and volume control.
 
-## 📂 Estructura del Proyecto
+## 📂 Project Structure
 
 ```bash
 src/
-├── assets/          # Recursos estáticos (imágenes, música, iconos)
-├── components/      # Componentes React modulares
-│   ├── Backgrounds/ # Implementaciones de WebGL y Canvas
-│   ├── Shop/        # Lógica de la tienda y grid de items
-│   ├── UI/          # Componentes de interfaz (Dock, Menús, LockScreen)
+├── assets/          # Static resources (images, music, icons)
+├── components/      # Modular React components
+│   ├── Backgrounds/ # WebGL and Canvas implementations
+│   ├── Shop/        # Shop logic and item grid
+│   ├── UI/          # Interface components (Dock, Menus, LockScreen)
 │   └── ...
-├── store/           # Stores de Zustand (lógica de negocio)
-├── styles/          # Archivos SCSS modulares para estilos complejos
-└── App.jsx          # Punto de entrada y orquestación de capas
+├── store/           # Zustand stores (business logic)
+├── styles/          # Modular SCSS files for complex styles
+└── App.jsx          # Entry point and layer orchestration
 ```
