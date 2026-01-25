@@ -43,6 +43,13 @@ const SHOP_DATA = {
       price: "Gratis",
       previewColor: "#ff99cc",
     },
+    {
+      id: "ballpit",
+      name: "Ball Pit",
+      description: "Física interactiva y relajante.",
+      price: "Gratis",
+      previewColor: "#29b1ff",
+    },
   ],
   cursors: [
     {

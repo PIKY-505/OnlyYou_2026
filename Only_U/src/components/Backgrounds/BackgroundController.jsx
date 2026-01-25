@@ -3,6 +3,7 @@ import { useGameStore } from "../../store/useStore";
 import GradientBackground from "./GradientBackground";
 import Galaxy from "./Galaxy";
 import Silk from "./Silk";
+import Ballpit from "./Ballpit";
 import { AnimatePresence, motion } from "framer-motion";
 
 const BackgroundController = () => {
@@ -63,6 +64,34 @@ const BackgroundController = () => {
               color="#9726fa"
               noiseIntensity={1.5}
               rotation={0}
+            />
+          </motion.div>
+        )}
+
+        {/* CASO 4: BALLPIT */}
+        {activeBackground === "ballpit" && (
+          <motion.div
+            key="ballpit"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            style={{ position: "absolute", inset: 0, background: "#111111" }}>
+            {" "}
+            {/* <--- CAMBIA EL COLOR DE FONDO AQUÍ */}
+            <Ballpit
+              count={60}
+              gravity={0.1}
+              friction={0.995}
+              wallBounce={0.9}
+              followCursor={
+                false
+              } /* Cambia a false si no quieres que sigan al ratón */
+              colors={[
+                "#f700ff",
+                "#bd71ff",
+                "#29b1ff",
+              ]} /* Añade o cambia colores Hex aquí */
             />
           </motion.div>
         )}
