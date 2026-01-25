@@ -53,7 +53,7 @@ const MainContent = () => {
         }
         .gallery-item {
           height: 220px;
-          width: auto;
+          width: 150px; /* Ancho fijo para consistencia total */
           border-radius: 12px;
           box-shadow: 0 5px 15px rgba(0,0,0,0.3);
           transition: transform 0.3s ease;
