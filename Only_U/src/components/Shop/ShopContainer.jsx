@@ -50,6 +50,13 @@ const SHOP_DATA = {
       price: "Gratis",
       previewColor: "#29b1ff",
     },
+    {
+      id: "floatinglines",
+      name: "Floating Lines",
+      description: "Ondas de energía interactivas.",
+      price: "Gratis",
+      previewColor: "#bd71ff",
+    },
   ],
   cursors: [
     {

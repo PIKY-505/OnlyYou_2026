@@ -4,7 +4,11 @@ import GradientBackground from "./GradientBackground";
 import Galaxy from "./Galaxy";
 import Silk from "./Silk";
 import Ballpit from "./Ballpit";
+import FloatingLines from "./FloatingLines";
 import { AnimatePresence, motion } from "framer-motion";
+
+// FIX: Constante fuera del componente para evitar que se reinicie la animación al re-renderizar
+const FLOATING_LINES_COLORS = ["#f700ff", "#bd71ff", "#29b1ff"];
 
 const BackgroundController = () => {
   const { activeBackground } = useGameStore();
@@ -92,6 +96,24 @@ const BackgroundController = () => {
                 "#bd71ff",
                 "#29b1ff",
               ]} /* Añade o cambia colores Hex aquí */
+            />
+          </motion.div>
+        )}
+
+        {/* CASO 5: FLOATING LINES */}
+        {activeBackground === "floatinglines" && (
+          <motion.div
+            key="floatinglines"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            style={{ position: "absolute", inset: 0, background: "#000" }}>
+            <FloatingLines
+              linesGradient={FLOATING_LINES_COLORS}
+              lineCount={6}
+              lineDistance={5}
+              animationSpeed={0.5}
             />
           </motion.div>
         )}
