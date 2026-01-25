@@ -57,6 +57,13 @@ const SHOP_DATA = {
       price: "Gratis",
       previewColor: "#bd71ff",
     },
+    {
+      id: "lightpillars",
+      name: "Light Pillars",
+      description: "Pilares de luz etéreos.",
+      price: "Gratis",
+      previewColor: "#00ffff",
+    },
   ],
   cursors: [
     {

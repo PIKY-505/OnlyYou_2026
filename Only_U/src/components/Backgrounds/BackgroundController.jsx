@@ -5,6 +5,7 @@ import Galaxy from "./Galaxy";
 import Silk from "./Silk";
 import Ballpit from "./Ballpit";
 import FloatingLines from "./FloatingLines";
+import LightPillars from "./LightPillars";
 import { AnimatePresence, motion } from "framer-motion";
 
 // FIX: Constante fuera del componente para evitar que se reinicie la animación al re-renderizar
@@ -114,6 +115,31 @@ const BackgroundController = () => {
               lineCount={6}
               lineDistance={5}
               animationSpeed={0.5}
+            />
+          </motion.div>
+        )}
+        {/* CASO 6: LIGHT PILLARS */}
+        {activeBackground === "lightpillars" && (
+          <motion.div
+            key="lightpillars"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            style={{ position: "absolute", inset: 0, background: "#000000" }}>
+            <LightPillars
+              topColor="#5227FF"
+              bottomColor="#FF9FFC"
+              intensity={1}
+              rotationSpeed={0.3}
+              glowAmount={0.005}
+              pillarWidth={2.5}
+              pillarHeight={0.4}
+              noiseIntensity={0.7}
+              pillarRotation={67}
+              interactive={false}
+              mixBlendMode="lighten"
+              quality="high"
             />
           </motion.div>
         )}
