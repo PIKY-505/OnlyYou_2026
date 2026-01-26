@@ -12,6 +12,7 @@ const BackgroundController = ({
   floatingLinesConfig: propFlConfig,
   lightPillarsConfig: propLpConfig,
   ballpitConfig: propBpConfig,
+  silkConfig: propSilkConfig,
 }) => {
   // Leemos la configuración del store (si existe)
   const {
@@ -19,12 +20,14 @@ const BackgroundController = ({
     floatingLinesConfig: storeFlConfig,
     lightPillarsConfig: storeLpConfig,
     ballpitConfig: storeBpConfig,
+    silkConfig: storeSilkConfig,
   } = useGameStore();
 
   // Prioridad: Props (desde App) > Store > Default
   const floatingLinesConfig = propFlConfig || storeFlConfig;
   const lightPillarsConfig = propLpConfig || storeLpConfig;
   const ballpitConfig = propBpConfig || storeBpConfig;
+  const silkConfig = propSilkConfig || storeSilkConfig;
 
   // Configuración por defecto (Fallback)
   const flConfig = floatingLinesConfig || {
@@ -60,6 +63,15 @@ const BackgroundController = ({
     friction: 0.995,
     wallBounce: 0.9,
     followCursor: false,
+  };
+
+  // Configuración por defecto para Silk
+  const sConfig = silkConfig || {
+    color: "#9726fa",
+    speed: 4,
+    scale: 1,
+    noiseIntensity: 1.5,
+    rotation: 0,
   };
 
   return (
@@ -112,11 +124,11 @@ const BackgroundController = ({
             transition={{ duration: 1 }}
             style={{ position: "absolute", inset: 0 }}>
             <Silk
-              speed={4}
-              scale={1}
-              color="#9726fa"
-              noiseIntensity={1.5}
-              rotation={0}
+              speed={sConfig.speed}
+              scale={sConfig.scale}
+              color={sConfig.color}
+              noiseIntensity={sConfig.noiseIntensity}
+              rotation={sConfig.rotation}
             />
           </motion.div>
         )}

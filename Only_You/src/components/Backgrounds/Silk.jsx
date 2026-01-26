@@ -108,8 +108,20 @@ const Silk = ({
       uRotation: { value: rotation },
       uTime: { value: 0 },
     }),
-    [speed, scale, noiseIntensity, color, rotation],
+    [], // Inicializar solo una vez para evitar reinicios de uTime
   );
+
+  // Actualizar uniformes dinámicamente cuando cambian las props
+  useEffect(() => {
+    if (meshRef.current) {
+      const u = meshRef.current.material.uniforms;
+      u.uSpeed.value = speed;
+      u.uScale.value = scale;
+      u.uNoiseIntensity.value = noiseIntensity;
+      u.uColor.value.set(...hexToNormalizedRGB(color));
+      u.uRotation.value = rotation;
+    }
+  }, [speed, scale, noiseIntensity, color, rotation]);
 
   // FIX: Forzar actualización de tamaño durante la transición de desbloqueo
   useEffect(() => {

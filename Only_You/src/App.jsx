@@ -43,6 +43,7 @@ function App() {
   const [floatingLinesConfig, setFloatingLinesConfig] = useState(null);
   const [lightPillarsConfig, setLightPillarsConfig] = useState(null);
   const [ballpitConfig, setBallpitConfig] = useState(null);
+  const [silkConfig, setSilkConfig] = useState(null);
 
   const handleMenuClick = (itemId) => {
     if (itemId) {
@@ -93,6 +94,13 @@ function App() {
         if (lockGame) {
           closeShop(); // Cerramos la tienda si estaba abierta
           setShowMusicPlayer(false); // Cerramos el reproductor visualmente
+
+          // Reiniciamos las configuraciones de fondo al bloquear
+          setFloatingLinesConfig(null);
+          setLightPillarsConfig(null);
+          setBallpitConfig(null);
+          setSilkConfig(null);
+
           lockGame(); // Bloqueamos la app
         }
       },
@@ -184,6 +192,7 @@ function App() {
               floatingLinesConfig={floatingLinesConfig}
               lightPillarsConfig={lightPillarsConfig}
               ballpitConfig={ballpitConfig}
+              silkConfig={silkConfig}
             />
 
             {/* MENÚ STAGGERED (Lateral) */}
@@ -234,7 +243,8 @@ function App() {
               {showBackgroundSettings &&
                 (activeBackground === "floatinglines" ||
                   activeBackground === "lightpillars" ||
-                  activeBackground === "ballpit") && (
+                  activeBackground === "ballpit" ||
+                  activeBackground === "silk") && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -257,6 +267,8 @@ function App() {
                         setLightPillarsConfig={setLightPillarsConfig}
                         ballpitConfig={ballpitConfig}
                         setBallpitConfig={setBallpitConfig}
+                        silkConfig={silkConfig}
+                        setSilkConfig={setSilkConfig}
                       />
                     </div>
                   </motion.div>

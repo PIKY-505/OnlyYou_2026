@@ -51,6 +51,14 @@ const DEFAULT_BP_CONFIG = {
   followCursor: false,
 };
 
+const DEFAULT_SILK_CONFIG = {
+  color: "#9726fa",
+  speed: 4,
+  scale: 1,
+  noiseIntensity: 1.5,
+  rotation: 0,
+};
+
 const BackgroundCustomizer = ({
   onClose,
   floatingLinesConfig: propFlConfig,
@@ -59,6 +67,8 @@ const BackgroundCustomizer = ({
   setLightPillarsConfig: propSetLpConfig,
   ballpitConfig: propBpConfig,
   setBallpitConfig: propSetBpConfig,
+  silkConfig: propSilkConfig,
+  setSilkConfig: propSetSilkConfig,
 }) => {
   // Asumimos que estas funciones existen en el store.
   const {
@@ -69,6 +79,8 @@ const BackgroundCustomizer = ({
     setLightPillarsConfig: storeSetLpConfig,
     ballpitConfig: storeBpConfig,
     setBallpitConfig: storeSetBpConfig,
+    silkConfig: storeSilkConfig,
+    setSilkConfig: storeSetSilkConfig,
   } = useGameStore();
 
   // Resolver configuración y setters (Props > Store)
@@ -78,6 +90,8 @@ const BackgroundCustomizer = ({
   const setLightPillarsConfig = propSetLpConfig || storeSetLpConfig;
   const ballpitConfig = propBpConfig || storeBpConfig;
   const setBallpitConfig = propSetBpConfig || storeSetBpConfig;
+  const silkConfig = propSilkConfig || storeSilkConfig;
+  const setSilkConfig = propSetSilkConfig || storeSetSilkConfig;
 
   // --- CONFIGURACIÓN FLOATING LINES ---
   const flConfig = floatingLinesConfig || DEFAULT_FL_CONFIG;
@@ -130,6 +144,15 @@ const BackgroundCustomizer = ({
     updateBpConfig("colors", newColors);
   };
 
+  // --- CONFIGURACIÓN SILK ---
+  const sConfig = silkConfig || DEFAULT_SILK_CONFIG;
+
+  const updateSilkConfig = (key, value) => {
+    if (setSilkConfig) {
+      setSilkConfig({ ...sConfig, [key]: value });
+    }
+  };
+
   // --- FUNCIÓN RESET ---
   const handleReset = () => {
     if (activeBackground === "floatinglines" && setFloatingLinesConfig) {
@@ -138,6 +161,8 @@ const BackgroundCustomizer = ({
       setLightPillarsConfig(DEFAULT_LP_CONFIG);
     } else if (activeBackground === "ballpit" && setBallpitConfig) {
       setBallpitConfig(DEFAULT_BP_CONFIG);
+    } else if (activeBackground === "silk" && setSilkConfig) {
+      setSilkConfig(DEFAULT_SILK_CONFIG);
     }
   };
 
@@ -545,6 +570,83 @@ const BackgroundCustomizer = ({
                 style={{ width: "100%", textAlign: "center" }}>
                 {bpConfig.followCursor ? "Seguir Cursor" : "Cursor Libre"}
               </button>
+            </div>
+          </>
+        )}
+
+        {/* --- CONTENIDO PARA SILK --- */}
+        {activeBackground === "silk" && (
+          <>
+            <div className="section">
+              <label>Color</label>
+              <div className="color-pickers">
+                <div className="color-input-wrapper">
+                  <input
+                    type="color"
+                    value={sConfig.color}
+                    onChange={(e) => updateSilkConfig("color", e.target.value)}
+                  />
+                  <span className="hex-code">{sConfig.color}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="section">
+              <label>
+                Velocidad <span>{sConfig.speed}</span>
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="10"
+                step="0.1"
+                value={sConfig.speed}
+                onChange={(e) =>
+                  updateSilkConfig("speed", parseFloat(e.target.value))
+                }
+              />
+
+              <label>
+                Escala <span>{sConfig.scale}</span>
+              </label>
+              <input
+                type="range"
+                min="0.5"
+                max="3"
+                step="0.1"
+                value={sConfig.scale}
+                onChange={(e) =>
+                  updateSilkConfig("scale", parseFloat(e.target.value))
+                }
+              />
+
+              <label>
+                Ruido <span>{sConfig.noiseIntensity}</span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="5"
+                step="0.1"
+                value={sConfig.noiseIntensity}
+                onChange={(e) =>
+                  updateSilkConfig("noiseIntensity", parseFloat(e.target.value))
+                }
+              />
+
+              <label>
+                Rotación <span>{sConfig.rotation}°</span>
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="360"
+                step="15"
+                value={sConfig.rotation}
+                onChange={(e) =>
+                  updateSilkConfig("rotation", parseInt(e.target.value))
+                }
+              />
             </div>
           </>
         )}
