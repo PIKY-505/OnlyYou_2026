@@ -198,6 +198,7 @@ export default function PixelSnow({
   variant = "square",
   direction = 125,
   rainbow = false,
+  storm = false,
   className = "",
   style = {},
 }) {
@@ -344,7 +345,7 @@ export default function PixelSnow({
     material.uniforms.uFlakeSize.value = flakeSize;
     material.uniforms.uMinFlakeSize.value = minFlakeSize;
     material.uniforms.uPixelResolution.value = pixelResolution;
-    material.uniforms.uSpeed.value = speed;
+    material.uniforms.uSpeed.value = storm ? speed * 4.0 : speed;
     material.uniforms.uDepthFade.value = depthFade;
     material.uniforms.uFarPlane.value = farPlane;
     material.uniforms.uBrightness.value = brightness;
@@ -368,6 +369,7 @@ export default function PixelSnow({
     direction,
     colorVector,
     rainbow,
+    storm,
   ]);
 
   return (

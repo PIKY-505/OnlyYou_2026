@@ -72,6 +72,7 @@ const DEFAULT_GALAXY_CONFIG = {
   starSpeed: 0.5,
   speed: 0.5,
   rainbow: false,
+  warp: false,
 };
 
 const DEFAULT_GRADIENT_CONFIG = {
@@ -94,6 +95,7 @@ const DEFAULT_SNOW_CONFIG = {
   gamma: 0.4545,
   variant: "snowflake",
   rainbow: false,
+  storm: false,
 };
 
 const BackgroundCustomizer = ({
@@ -888,6 +890,16 @@ const BackgroundCustomizer = ({
                 style={{ width: "100%", textAlign: "center" }}>
                 🌈 Modo Arcoíris
               </button>
+              <button
+                className={`toggle-btn ${gConfig.warp ? "active" : ""}`}
+                onClick={() => updateGalaxyConfig("warp", !gConfig.warp)}
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  marginTop: "10px",
+                }}>
+                🚀 Velocidad Warp
+              </button>
             </div>
           </>
         )}
@@ -1060,6 +1072,16 @@ const BackgroundCustomizer = ({
                 }
                 style={{ width: "100%", textAlign: "center" }}>
                 🌈 Modo Arcoíris
+              </button>
+              <button
+                className={`toggle-btn ${psConfig.storm ? "active" : ""}`}
+                onClick={() => updatePixelSnowConfig("storm", !psConfig.storm)}
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  marginTop: "10px",
+                }}>
+                🌪️ Modo Tormenta
               </button>
             </div>
           </>

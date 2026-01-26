@@ -154,6 +154,7 @@ const Galaxy = ({
   autoCenterRepulsion = 0,
   transparent = true,
   rainbow = false,
+  warp = false,
   ...rest
 }) => {
   const ctnDom = useRef(null);
@@ -259,7 +260,9 @@ const Galaxy = ({
       if (!disableAnimation) {
         // Usamos t real para suavidad matemática
         program.uniforms.uTime.value = t * 0.001;
-        program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
+        const currentStarSpeed = warp ? starSpeed * 10.0 : starSpeed;
+        program.uniforms.uStarSpeed.value =
+          (t * 0.001 * currentStarSpeed) / 10.0;
 
         // Lógica Arcoíris
         if (rainbow) {
@@ -342,6 +345,7 @@ const Galaxy = ({
     autoCenterRepulsion,
     transparent,
     rainbow,
+    warp,
   ]);
 
   return (

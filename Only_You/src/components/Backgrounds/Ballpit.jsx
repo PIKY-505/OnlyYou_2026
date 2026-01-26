@@ -556,13 +556,20 @@ class W {
       const dz = s[base + 2] - center.z;
       const distSq = dx * dx + dy * dy + dz * dz;
 
-      // Radio de explosión
-      if (distSq < 20) {
+      // Radio de explosión aumentado y física mejorada
+      if (distSq < 60) {
         const dist = Math.sqrt(distSq) + 0.01;
-        const f = force / dist; // Más fuerza cuanto más cerca
-        o[base] += (dx / dist) * f;
-        o[base + 1] += (dy / dist) * f;
-        o[base + 2] += (dz / dist) * f;
+        // Fuerza explosiva con caída exponencial + multiplicador
+        const f = (force * 50) / (dist + 1.0);
+
+        // Añadir caos aleatorio a la dirección
+        const rx = (Math.random() - 0.5) * 1.5;
+        const ry = (Math.random() - 0.5) * 1.5;
+        const rz = (Math.random() - 0.5) * 1.5;
+
+        o[base] += (dx / dist + rx) * f;
+        o[base + 1] += (dy / dist + ry) * f;
+        o[base + 2] += (dz / dist + rz) * f;
       }
     }
   }

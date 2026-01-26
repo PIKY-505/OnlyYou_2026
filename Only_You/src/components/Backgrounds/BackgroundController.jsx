@@ -98,6 +98,7 @@ const BackgroundController = ({
     starSpeed: 0.5,
     speed: 0.5,
     rainbow: false,
+    warp: false,
   };
 
   // Configuración por defecto para Gradient
@@ -122,6 +123,7 @@ const BackgroundController = ({
     gamma: 0.4545,
     variant: "snowflake",
     rainbow: false,
+    storm: false,
   };
 
   return (
@@ -165,6 +167,7 @@ const BackgroundController = ({
               starSpeed={gConfig.starSpeed}
               speed={gConfig.speed}
               rainbow={gConfig.rainbow}
+              warp={gConfig.warp}
             />
           </motion.div>
         )}
@@ -280,6 +283,7 @@ const BackgroundController = ({
               brightness={psConfig.brightness}
               variant={psConfig.variant}
               rainbow={psConfig.rainbow}
+              storm={psConfig.storm}
             />
           </motion.div>
         )}
