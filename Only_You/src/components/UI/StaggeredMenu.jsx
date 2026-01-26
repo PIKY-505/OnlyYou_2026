@@ -6,6 +6,8 @@ import "../../styles/StaggeredMenu.scss";
 const StaggeredMenu = ({
   // --- AÑADIMOS ESTA PROP PARA PODER ABRIR LA TIENDA ---
   onItemClick,
+  isOpen, // Prop opcional para control externo
+  onToggle, // Callback para control externo
   // -----------------------------------------------------
   position = "left",
   colors = ["#B19EEF", "#5227FF"],
@@ -24,7 +26,10 @@ const StaggeredMenu = ({
   onMenuOpen,
   onMenuClose,
 }) => {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = typeof isOpen === "boolean";
+  const open = isControlled ? isOpen : internalOpen;
+
   const openRef = useRef(false);
   const panelRef = useRef(null);
   const preLayersRef = useRef(null);
@@ -334,20 +339,55 @@ const StaggeredMenu = ({
   }, []);
 
   const toggleMenu = useCallback(() => {
-    const target = !openRef.current;
-    openRef.current = target;
-    setOpen(target);
-    if (target) {
-      onMenuOpen?.();
-      playOpen();
+    if (isControlled) {
+      onToggle && onToggle(!open);
     } else {
-      onMenuClose?.();
-      playClose();
+      const target = !openRef.current;
+      openRef.current = target;
+      setInternalOpen(target);
+      if (target) {
+        onMenuOpen?.();
+        playOpen();
+      } else {
+        onMenuClose?.();
+        playClose();
+      }
+      animateIcon(target);
+      animateColor(target);
+      animateText(target);
     }
-    animateIcon(target);
-    animateColor(target);
-    animateText(target);
   }, [
+    isControlled,
+    isOpen,
+    onToggle,
+    open,
+    playOpen,
+    playClose,
+    animateIcon,
+    animateColor,
+    animateText,
+    onMenuOpen,
+    onMenuClose,
+  ]);
+
+  // Efecto para reaccionar a cambios externos de 'isOpen'
+  React.useEffect(() => {
+    if (isControlled) {
+      openRef.current = isOpen;
+      if (isOpen) {
+        onMenuOpen?.();
+        playOpen();
+      } else {
+        onMenuClose?.();
+        playClose();
+      }
+      animateIcon(isOpen);
+      animateColor(isOpen);
+      animateText(isOpen);
+    }
+  }, [
+    isOpen,
+    isControlled,
     playOpen,
     playClose,
     animateIcon,
@@ -358,16 +398,29 @@ const StaggeredMenu = ({
   ]);
 
   const closeMenu = useCallback(() => {
-    if (openRef.current) {
-      openRef.current = false;
-      setOpen(false);
-      onMenuClose?.();
-      playClose();
-      animateIcon(false);
-      animateColor(false);
-      animateText(false);
+    if (isControlled) {
+      if (open) onToggle && onToggle(false);
+    } else {
+      if (openRef.current) {
+        openRef.current = false;
+        setInternalOpen(false);
+        onMenuClose?.();
+        playClose();
+        animateIcon(false);
+        animateColor(false);
+        animateText(false);
+      }
     }
-  }, [playClose, animateIcon, animateColor, animateText, onMenuClose]);
+  }, [
+    isControlled,
+    open,
+    onToggle,
+    playClose,
+    animateIcon,
+    animateColor,
+    animateText,
+    onMenuClose,
+  ]);
 
   React.useEffect(() => {
     if (!closeOnClickAway || !open) return;

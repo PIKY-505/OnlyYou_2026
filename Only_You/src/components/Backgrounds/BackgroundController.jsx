@@ -8,11 +8,46 @@ import FloatingLines from "./FloatingLines";
 import LightPillars from "./LightPillars";
 import { AnimatePresence, motion } from "framer-motion";
 
-// FIX: Constante fuera del componente para evitar que se reinicie la animación al re-renderizar
-const FLOATING_LINES_COLORS = ["#f700ff", "#bd71ff", "#29b1ff"];
+const BackgroundController = ({
+  floatingLinesConfig: propFlConfig,
+  lightPillarsConfig: propLpConfig,
+}) => {
+  // Leemos la configuración del store (si existe)
+  const {
+    activeBackground,
+    floatingLinesConfig: storeFlConfig,
+    lightPillarsConfig: storeLpConfig,
+  } = useGameStore();
 
-const BackgroundController = () => {
-  const { activeBackground } = useGameStore();
+  // Prioridad: Props (desde App) > Store > Default
+  const floatingLinesConfig = propFlConfig || storeFlConfig;
+  const lightPillarsConfig = propLpConfig || storeLpConfig;
+
+  // Configuración por defecto (Fallback)
+  const flConfig = floatingLinesConfig || {
+    colors: ["#f700ff", "#bd71ff", "#29b1ff"],
+    count: 6,
+    distance: 5,
+    bendRadius: 5,
+    bendStrength: -0.5,
+    enabledWaves: ["top", "middle", "bottom"],
+    interactive: false,
+  };
+
+  // Configuración por defecto para LightPillars
+  const lpConfig = lightPillarsConfig || {
+    topColor: "#5227FF",
+    bottomColor: "#FF9FFC",
+    intensity: 1,
+    rotationSpeed: 0.3,
+    pillarWidth: 3,
+    pillarHeight: 0.4,
+    noiseIntensity: 0.5,
+    pillarRotation: 293,
+    interactive: false,
+    glowAmount: 0.002,
+    quality: "high",
+  };
 
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
@@ -111,10 +146,15 @@ const BackgroundController = () => {
             transition={{ duration: 1 }}
             style={{ position: "absolute", inset: 0, background: "#000" }}>
             <FloatingLines
-              linesGradient={FLOATING_LINES_COLORS}
-              lineCount={6}
-              lineDistance={5}
+              linesGradient={flConfig.colors}
+              lineCount={flConfig.count}
+              lineDistance={flConfig.distance}
               animationSpeed={0.5}
+              bendRadius={flConfig.bendRadius}
+              bendStrength={flConfig.bendStrength}
+              enabledWaves={flConfig.enabledWaves}
+              interactive={flConfig.interactive ?? false}
+              parallax={flConfig.parallax ?? false}
             />
           </motion.div>
         )}
@@ -126,20 +166,19 @@ const BackgroundController = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
-            style={{ position: "absolute", inset: 0, background: "#000000" }}>
+            style={{ position: "absolute", inset: 0, background: "#000" }}>
             <LightPillars
-              topColor="#5227FF"
-              bottomColor="#FF9FFC"
-              intensity={1}
-              rotationSpeed={0.3}
-              glowAmount={0.005}
-              pillarWidth={2.5}
-              pillarHeight={0.4}
-              noiseIntensity={0.7}
-              pillarRotation={293}
-              interactive={false}
-              mixBlendMode="lighten"
-              quality="high"
+              topColor={lpConfig.topColor}
+              bottomColor={lpConfig.bottomColor}
+              intensity={lpConfig.intensity}
+              rotationSpeed={lpConfig.rotationSpeed}
+              glowAmount={lpConfig.glowAmount ?? 0.002}
+              pillarWidth={lpConfig.pillarWidth}
+              pillarHeight={lpConfig.pillarHeight}
+              noiseIntensity={lpConfig.noiseIntensity}
+              pillarRotation={lpConfig.pillarRotation}
+              interactive={lpConfig.interactive ?? true}
+              quality={lpConfig.quality ?? "high"}
             />
           </motion.div>
         )}

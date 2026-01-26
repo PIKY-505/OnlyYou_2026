@@ -48,10 +48,6 @@ uniform float bendRadius;
 uniform float bendStrength;
 uniform float bendInfluence;
 
-uniform bool parallax;
-uniform float parallaxStrength;
-uniform vec2 parallaxOffset;
-
 uniform vec3 lineGradient[8];
 uniform int lineGradientCount;
 
@@ -121,10 +117,6 @@ vec3 getLineColor(float t, vec3 baseColor) {
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   vec2 baseUv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
   baseUv.y *= -1.0;
-  
-  if (parallax) {
-    baseUv += parallaxOffset;
-  }
 
   vec3 col = vec3(0.0);
 
@@ -236,21 +228,25 @@ export default function FloatingLines({
   middleWavePosition,
   bottomWavePosition = { x: 2.0, y: -0.7, rotate: -1 },
   animationSpeed = 1,
-  interactive = true,
+  interactive = false,
   bendRadius = 5.0,
   bendStrength = -0.5,
   mouseDamping = 0.05,
-  parallax = true,
-  parallaxStrength = 0.2,
   mixBlendMode = "screen",
 }) {
   const containerRef = useRef(null);
+  const rendererRef = useRef(null); // Referencia para limpieza
+  const materialRef = useRef(null); // Referencia para actualizar uniformes sin re-renderizar todo
   const targetMouseRef = useRef(new Vector2(-1000, -1000));
   const currentMouseRef = useRef(new Vector2(-1000, -1000));
   const targetInfluenceRef = useRef(0);
   const currentInfluenceRef = useRef(0);
-  const targetParallaxRef = useRef(new Vector2(0, 0));
-  const currentParallaxRef = useRef(new Vector2(0, 0));
+
+  // Ref para manejar el estado de interacción dentro del closure del useEffect
+  const interactiveRef = useRef(interactive);
+  useEffect(() => {
+    interactiveRef.current = interactive;
+  }, [interactive]);
 
   const getLineCount = (waveType) => {
     if (typeof lineCount === "number") return lineCount;
@@ -284,6 +280,81 @@ export default function FloatingLines({
     ? getLineDistance("bottom") * 0.01
     : 0.01;
 
+  // EFECTO 1: Actualizar colores dinámicamente (sin reiniciar la escena)
+  useEffect(() => {
+    if (materialRef.current && linesGradient && linesGradient.length > 0) {
+      const stops = linesGradient.slice(0, MAX_GRADIENT_STOPS);
+      materialRef.current.uniforms.lineGradientCount.value = stops.length;
+
+      stops.forEach((hex, i) => {
+        const color = hexToVec3(hex);
+        materialRef.current.uniforms.lineGradient.value[i].set(
+          color.x,
+          color.y,
+          color.z,
+        );
+      });
+    }
+  }, [linesGradient]);
+
+  // EFECTO 3: Actualizar uniformes de configuración (Sliders/Toggles) sin reiniciar
+  useEffect(() => {
+    if (!materialRef.current) return;
+    const u = materialRef.current.uniforms;
+
+    // Actualizar valores simples
+    u.animationSpeed.value = animationSpeed;
+    u.bendRadius.value = bendRadius;
+    u.bendStrength.value = bendStrength;
+    u.interactive.value = interactive;
+
+    // Actualizar Toggles
+    u.enableTop.value = enabledWaves.includes("top");
+    u.enableMiddle.value = enabledWaves.includes("middle");
+    u.enableBottom.value = enabledWaves.includes("bottom");
+
+    // Actualizar Counts y Distances (Recalculando lógica)
+    const getCount = (type) => {
+      if (typeof lineCount === "number") return lineCount;
+      if (!enabledWaves.includes(type)) return 0;
+      const idx = enabledWaves.indexOf(type);
+      return lineCount[idx] ?? 6;
+    };
+    const getDist = (type) => {
+      if (typeof lineDistance === "number") return lineDistance;
+      if (!enabledWaves.includes(type)) return 0.1;
+      const idx = enabledWaves.indexOf(type);
+      return lineDistance[idx] ?? 0.1;
+    };
+
+    u.topLineCount.value = enabledWaves.includes("top") ? getCount("top") : 0;
+    u.middleLineCount.value = enabledWaves.includes("middle")
+      ? getCount("middle")
+      : 0;
+    u.bottomLineCount.value = enabledWaves.includes("bottom")
+      ? getCount("bottom")
+      : 0;
+
+    u.topLineDistance.value = enabledWaves.includes("top")
+      ? getDist("top") * 0.01
+      : 0.01;
+    u.middleLineDistance.value = enabledWaves.includes("middle")
+      ? getDist("middle") * 0.01
+      : 0.01;
+    u.bottomLineDistance.value = enabledWaves.includes("bottom")
+      ? getDist("bottom") * 0.01
+      : 0.01;
+  }, [
+    animationSpeed,
+    bendRadius,
+    bendStrength,
+    interactive,
+    enabledWaves,
+    lineCount,
+    lineDistance,
+  ]);
+
+  // EFECTO 2: Inicialización de la escena (Solo al montar o cambiar config estructural)
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -297,6 +368,7 @@ export default function FloatingLines({
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     containerRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
 
     const uniforms = {
       iTime: { value: 0 },
@@ -343,10 +415,6 @@ export default function FloatingLines({
       bendStrength: { value: bendStrength },
       bendInfluence: { value: 0 },
 
-      parallax: { value: parallax },
-      parallaxStrength: { value: parallaxStrength },
-      parallaxOffset: { value: new Vector2(0, 0) },
-
       lineGradient: {
         value: Array.from(
           { length: MAX_GRADIENT_STOPS },
@@ -371,6 +439,7 @@ export default function FloatingLines({
       vertexShader,
       fragmentShader,
     });
+    materialRef.current = material; // Guardamos referencia
 
     const geometry = new PlaneGeometry(2, 2);
     const mesh = new Mesh(geometry, material);
@@ -402,6 +471,8 @@ export default function FloatingLines({
     }
 
     const handlePointerMove = (event) => {
+      if (!interactiveRef.current) return;
+
       const rect = renderer.domElement.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -409,33 +480,20 @@ export default function FloatingLines({
 
       targetMouseRef.current.set(x * dpr, (rect.height - y) * dpr);
       targetInfluenceRef.current = 1.0;
-
-      if (parallax) {
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        const offsetX = (x - centerX) / rect.width;
-        const offsetY = -(y - centerY) / rect.height;
-        targetParallaxRef.current.set(
-          offsetX * parallaxStrength,
-          offsetY * parallaxStrength,
-        );
-      }
     };
 
     const handlePointerLeave = () => {
       targetInfluenceRef.current = 0.0;
     };
 
-    if (interactive) {
-      // FIX: Usar window para detectar el mouse incluso si hay elementos (como MainContent) encima
-      window.addEventListener("pointermove", handlePointerMove);
-    }
+    // Escuchamos siempre, pero filtramos dentro con el ref
+    window.addEventListener("pointermove", handlePointerMove);
 
     let raf = 0;
     const renderLoop = () => {
       uniforms.iTime.value = clock.getElapsedTime();
 
-      if (interactive) {
+      if (interactiveRef.current) {
         currentMouseRef.current.lerp(targetMouseRef.current, mouseDamping);
         uniforms.iMouse.value.copy(currentMouseRef.current);
 
@@ -443,14 +501,6 @@ export default function FloatingLines({
           (targetInfluenceRef.current - currentInfluenceRef.current) *
           mouseDamping;
         uniforms.bendInfluence.value = currentInfluenceRef.current;
-      }
-
-      if (parallax) {
-        currentParallaxRef.current.lerp(
-          targetParallaxRef.current,
-          mouseDamping,
-        );
-        uniforms.parallaxOffset.value.copy(currentParallaxRef.current);
       }
 
       renderer.render(scene, camera);
@@ -465,9 +515,7 @@ export default function FloatingLines({
         ro.disconnect();
       }
 
-      if (interactive) {
-        window.removeEventListener("pointermove", handlePointerMove);
-      }
+      window.removeEventListener("pointermove", handlePointerMove);
 
       geometry.dispose();
       material.dispose();
@@ -477,22 +525,7 @@ export default function FloatingLines({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    linesGradient,
-    enabledWaves,
-    lineCount,
-    lineDistance,
-    topWavePosition,
-    middleWavePosition,
-    bottomWavePosition,
-    animationSpeed,
-    interactive,
-    bendRadius,
-    bendStrength,
-    mouseDamping,
-    parallax,
-    parallaxStrength,
-  ]);
+  }, []); // Dependencias vacías para montar solo una vez
 
   return (
     <div

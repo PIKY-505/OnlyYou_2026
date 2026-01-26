@@ -1,0 +1,179 @@
+.bg-customizer-panel {
+  position: fixed;
+  bottom: 100px; /* Encima del Dock */
+  right: 20px; /* O donde prefieras */
+  width: 320px;
+  max-height: 70vh;
+  background: rgba(15, 10, 30, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  .bg-customizer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: white;
+      font-weight: 600;
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1rem;
+      &:hover {
+        color: #f700ff;
+      }
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 1.2rem;
+      &:hover {
+        color: white;
+      }
+    }
+  }
+
+  .bg-customizer-content {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    /* Scrollbar bonita */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.6);
+      display: flex;
+      justify-content: space-between;
+
+      span {
+        color: #f700ff;
+        font-weight: bold;
+      }
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: #f700ff;
+    }
+  }
+
+  .presets-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+
+    .preset-btn {
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: black; /* Para el check */
+      transition: transform 0.2s;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+
+  .color-pickers {
+    display: flex;
+    gap: 10px;
+
+    .color-input-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+
+      input[type="color"] {
+        width: 100%;
+        height: 30px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background: none;
+      }
+
+      .hex-code {
+        font-size: 0.6rem;
+        color: rgba(255, 255, 255, 0.4);
+        font-family: monospace;
+      }
+    }
+  }
+
+  .toggles-row {
+    display: flex;
+    gap: 10px;
+
+    .toggle-btn {
+      flex: 1;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+
+      &.active {
+        background: rgba(247, 0, 255, 0.2);
+        border-color: #f700ff;
+        color: white;
+      }
+    }
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -6,6 +6,7 @@ import BackgroundController from "./components/Backgrounds/BackgroundController"
 import StaggeredMenu from "./components/UI/StaggeredMenu";
 import { AnimatePresence, motion } from "framer-motion";
 import "./styles/main.scss";
+import BackgroundCustomizer from "./components/UI/BackgroundCustomizer";
 
 // 1. IMPORTAMOS EL DOCK Y LOS ICONOS
 import Dock from "./components/UI/Dock";
@@ -29,13 +30,36 @@ const socialItems = [
 ];
 
 function App() {
-  const { isUnlocked, openShop, closeShop, lockGame } = useGameStore();
+  const { isUnlocked, openShop, closeShop, lockGame, activeBackground } =
+    useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
+  const [showBackgroundSettings, setShowBackgroundSettings] = useState(false);
+  // Estado para recordar si el texto estaba abierto antes de editar el fondo
+  const [previousInfoState, setPreviousInfoState] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // --- ESTADO PARA CONFIGURACIÓN DE FONDOS (Lifted State) ---
+  const [floatingLinesConfig, setFloatingLinesConfig] = useState(null);
+  const [lightPillarsConfig, setLightPillarsConfig] = useState(null);
 
   const handleMenuClick = (itemId) => {
     if (itemId) {
       openShop(itemId);
+    }
+  };
+
+  const toggleBackgroundSettings = () => {
+    if (!showBackgroundSettings) {
+      // AL ABRIR: Guardamos estado actual del texto y lo cerramos
+      setIsMenuOpen(false); // Cerramos el menú lateral si se abre la personalización
+      setPreviousInfoState(showInfo);
+      setShowInfo(false);
+      setShowBackgroundSettings(true);
+    } else {
+      // AL CERRAR: Restauramos el texto solo si estaba abierto antes
+      setShowBackgroundSettings(false);
+      if (previousInfoState) setShowInfo(true);
     }
   };
 
@@ -59,7 +83,7 @@ function App() {
     {
       icon: <FiEdit size={22} />,
       label: "Fondo",
-      onClick: () => console.log("Personalize Background"),
+      onClick: toggleBackgroundSettings,
     },
     {
       icon: <FiLock size={22} />,
@@ -155,10 +179,20 @@ function App() {
               overflow: "hidden",
             }}>
             {/* FONDO CONTROLADO */}
-            <BackgroundController />
+            <BackgroundController
+              floatingLinesConfig={floatingLinesConfig}
+              lightPillarsConfig={lightPillarsConfig}
+            />
 
             {/* MENÚ STAGGERED (Lateral) */}
             <StaggeredMenu
+              isOpen={isMenuOpen}
+              onToggle={(val) => {
+                setIsMenuOpen(val);
+                if (val) {
+                  setShowBackgroundSettings(false); // Cerramos personalización si se abre el menú
+                }
+              }}
               items={shopItems}
               socialItems={socialItems}
               isFixed={true}
@@ -191,6 +225,37 @@ function App() {
                   <MainContent />
                 </motion.div>
               )}
+            </AnimatePresence>
+
+            {/* PERSONALIZADOR DE FONDO (Z-Index alto para que funcione el click) */}
+            <AnimatePresence>
+              {showBackgroundSettings &&
+                (activeBackground === "floatinglines" ||
+                  activeBackground === "lightpillars") && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 50 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      zIndex: 200, // Por encima de todo (incluyendo menús y tienda)
+                      height: "100%",
+                      pointerEvents: "auto", // Aseguramos interacción directa
+                    }}>
+                    <div style={{ height: "100%" }}>
+                      <BackgroundCustomizer
+                        onClose={toggleBackgroundSettings}
+                        floatingLinesConfig={floatingLinesConfig}
+                        setFloatingLinesConfig={setFloatingLinesConfig}
+                        lightPillarsConfig={lightPillarsConfig}
+                        setLightPillarsConfig={setLightPillarsConfig}
+                      />
+                    </div>
+                  </motion.div>
+                )}
             </AnimatePresence>
 
             {/* 4. REPRODUCTOR DE MÚSICA (Siempre montado para persistencia) */}
