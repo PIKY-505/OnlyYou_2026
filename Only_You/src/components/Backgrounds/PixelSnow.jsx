@@ -34,6 +34,7 @@ uniform float uGamma;
 uniform float uDensity;
 uniform float uVariant;
 uniform float uDirection;
+uniform float uRainbow; // 0.0 o 1.0
 
 // Precomputed constants
 #define PI 3.14159265
@@ -60,6 +61,13 @@ const vec2 b1d = vec2(0.574, 0.819);
 vec3 hash3(uint n) {
   uvec3 hashed = hash(n) * uvec3(1U, 511U, 262143U);
   return vec3(hashed) * F0;
+}
+
+// Helper para HSV a RGB
+vec3 hsv2rgb(vec3 c) {
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 
 float snowflakeDist(vec2 p) {
@@ -152,7 +160,14 @@ void main() {
           float flakeSizeRatio = uFlakeSize / flakeSize;
           float intensity = exp2(-(t + toIntersection) * invDepthFade) *
                            min(1.0, flakeSizeRatio * flakeSizeRatio) * uBrightness;
-          gl_FragColor = vec4(uColor * pow(vec3(intensity), vec3(uGamma)), 1.0);
+          
+          vec3 finalColor = uColor;
+          if (uRainbow > 0.5) {
+             // Color aleatorio basado en el hash de la celda y el tiempo
+             float hue = fract(cellHash * 10.0 + uTime * 0.2);
+             finalColor = hsv2rgb(vec3(hue, 0.7, 1.0));
+          }
+          gl_FragColor = vec4(finalColor * pow(vec3(intensity), vec3(uGamma)), 1.0);
           return;
         }
       }
@@ -182,6 +197,7 @@ export default function PixelSnow({
   density = 0.3,
   variant = "square",
   direction = 125,
+  rainbow = false,
   className = "",
   style = {},
 }) {
@@ -279,6 +295,7 @@ export default function PixelSnow({
         uDensity: { value: density },
         uVariant: { value: variantValue },
         uDirection: { value: (direction * Math.PI) / 180 },
+        uRainbow: { value: rainbow ? 1.0 : 0.0 },
       },
       transparent: true,
     });
@@ -336,6 +353,7 @@ export default function PixelSnow({
     material.uniforms.uVariant.value = variantValue;
     material.uniforms.uDirection.value = (direction * Math.PI) / 180;
     material.uniforms.uColor.value.copy(colorVector);
+    material.uniforms.uRainbow.value = rainbow ? 1.0 : 0.0;
   }, [
     flakeSize,
     minFlakeSize,
@@ -349,6 +367,7 @@ export default function PixelSnow({
     variantValue,
     direction,
     colorVector,
+    rainbow,
   ]);
 
   return (

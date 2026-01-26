@@ -153,6 +153,7 @@ const Galaxy = ({
   rotationSpeed = 0.05,
   autoCenterRepulsion = 0,
   transparent = true,
+  rainbow = false,
   ...rest
 }) => {
   const ctnDom = useRef(null);
@@ -160,6 +161,7 @@ const Galaxy = ({
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
   const targetMouseActive = useRef(0.0);
   const smoothMouseActive = useRef(0.0);
+  const rainbowHueRef = useRef(hueShift);
 
   useEffect(() => {
     if (!ctnDom.current) return;
@@ -258,6 +260,14 @@ const Galaxy = ({
         // Usamos t real para suavidad matemática
         program.uniforms.uTime.value = t * 0.001;
         program.uniforms.uStarSpeed.value = (t * 0.001 * starSpeed) / 10.0;
+
+        // Lógica Arcoíris
+        if (rainbow) {
+          rainbowHueRef.current += 0.5; // Velocidad del ciclo
+          program.uniforms.uHueShift.value = rainbowHueRef.current % 360;
+        } else {
+          program.uniforms.uHueShift.value = hueShift;
+        }
       }
 
       const lerpFactor = 0.05;
@@ -331,6 +341,7 @@ const Galaxy = ({
     repulsionStrength,
     autoCenterRepulsion,
     transparent,
+    rainbow,
   ]);
 
   return (

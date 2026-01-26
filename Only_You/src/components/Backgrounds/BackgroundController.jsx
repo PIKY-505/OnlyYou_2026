@@ -48,6 +48,7 @@ const BackgroundController = ({
     bendStrength: -0.5,
     enabledWaves: ["top", "middle", "bottom"],
     interactive: false,
+    rainbow: false,
   };
 
   // Configuración por defecto para LightPillars
@@ -73,6 +74,8 @@ const BackgroundController = ({
     friction: 0.995,
     wallBounce: 0.9,
     followCursor: false,
+    enableExplosion: false,
+    rainbow: false,
   };
 
   // Configuración por defecto para Silk
@@ -94,6 +97,7 @@ const BackgroundController = ({
     rotationSpeed: 0.1,
     starSpeed: 0.5,
     speed: 0.5,
+    rainbow: false,
   };
 
   // Configuración por defecto para Gradient
@@ -105,18 +109,19 @@ const BackgroundController = ({
 
   // Configuración por defecto para PixelSnow
   const psConfig = pixelSnowConfig || {
-    color: "#ffffff",
-    flakeSize: 0.01, // Mucho más pequeño para alejarlo
+    color: "#c9c9c9",
+    flakeSize: 0.021, // Mucho más pequeño para alejarlo
     minFlakeSize: 0.6, // Reducido para permitir copos lejanos
     pixelResolution: 800, // Mayor resolución = píxeles más pequeños
-    speed: 1.9,
-    density: 0.45,
+    speed: 0.9,
+    density: 0.6,
     direction: 100,
     brightness: 1.5,
     depthFade: 3,
-    farPlane: 50,
+    farPlane: 100,
     gamma: 0.4545,
     variant: "snowflake",
+    rainbow: false,
   };
 
   return (
@@ -159,6 +164,7 @@ const BackgroundController = ({
               rotationSpeed={gConfig.rotationSpeed}
               starSpeed={gConfig.starSpeed}
               speed={gConfig.speed}
+              rainbow={gConfig.rainbow}
             />
           </motion.div>
         )}
@@ -200,6 +206,8 @@ const BackgroundController = ({
               wallBounce={bpConfig.wallBounce}
               followCursor={bpConfig.followCursor}
               colors={bpConfig.colors}
+              enableExplosion={bpConfig.enableExplosion}
+              rainbow={bpConfig.rainbow}
             />
           </motion.div>
         )}
@@ -223,6 +231,7 @@ const BackgroundController = ({
               enabledWaves={flConfig.enabledWaves}
               interactive={flConfig.interactive ?? false}
               parallax={flConfig.parallax ?? false}
+              rainbow={flConfig.rainbow}
             />
           </motion.div>
         )}
@@ -270,6 +279,7 @@ const BackgroundController = ({
               direction={psConfig.direction}
               brightness={psConfig.brightness}
               variant={psConfig.variant}
+              rainbow={psConfig.rainbow}
             />
           </motion.div>
         )}

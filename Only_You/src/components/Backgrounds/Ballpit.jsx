@@ -546,6 +546,26 @@ class W {
       B.toArray(o, base);
     }
   }
+  // --- NUEVO: Función de explosión ---
+  explode(center, force = 0.5) {
+    const { positionData: s, velocityData: o, config: t } = this;
+    for (let i = 0; i < t.count; i++) {
+      const base = 3 * i;
+      const dx = s[base] - center.x;
+      const dy = s[base + 1] - center.y;
+      const dz = s[base + 2] - center.z;
+      const distSq = dx * dx + dy * dy + dz * dz;
+
+      // Radio de explosión
+      if (distSq < 20) {
+        const dist = Math.sqrt(distSq) + 0.01;
+        const f = force / dist; // Más fuerza cuanto más cerca
+        o[base] += (dx / dist) * f;
+        o[base + 1] += (dy / dist) * f;
+        o[base + 2] += (dz / dist) * f;
+      }
+    }
+  }
 }
 
 class Y extends c {
@@ -605,6 +625,8 @@ const X = {
   maxZ: 2,
   controlSphere0: false,
   followCursor: true,
+  enableExplosion: false, // Nuevo
+  rainbow: false, // Nuevo
 };
 
 const U = new m();
@@ -622,6 +644,8 @@ class Z extends d {
     this.physics = new W(i);
     this.#S();
     this.setColors(i.colors);
+
+    this.rainbowHue = 0; // Para el modo arcoíris
   }
   #S() {
     this.ambientLight = new f(
@@ -671,6 +695,23 @@ class Z extends d {
   }
   update(e) {
     this.physics.update(e);
+
+    // --- LÓGICA ARCOÍRIS ---
+    if (this.config.rainbow) {
+      this.rainbowHue += e.delta * 0.2; // Velocidad del ciclo
+
+      // La luz cambia lentamente
+      this.light.color.setHSL(this.rainbowHue % 1, 1, 0.5);
+
+      for (let i = 0; i < this.count; i++) {
+        // Cada bola tiene un desfase de color basado en su índice
+        const hue = (this.rainbowHue + i * 0.05) % 1;
+        const color = new l().setHSL(hue, 0.9, 0.6);
+        this.setColorAt(i, color);
+      }
+      this.instanceColor.needsUpdate = true;
+    }
+
     for (let idx = 0; idx < this.count; idx++) {
       U.position.fromArray(this.physics.positionData, 3 * idx);
       if (idx === 0 && this.config.followCursor === false) {
@@ -717,6 +758,12 @@ function createBallpit(e, t = {}) {
       s.physics.center.copy(r);
       s.config.controlSphere0 = true;
     },
+    onClick() {
+      // --- NUEVO: Trigger explosión ---
+      if (s && s.config.enableExplosion) {
+        s.physics.explode(s.physics.center, 2.0); // Fuerza 2.0
+      }
+    },
     onLeave() {
       s.config.controlSphere0 = false;
     },
@@ -762,6 +809,8 @@ const Ballpit = ({
   friction = 0.9975,
   wallBounce = 0.95,
   colors = [0, 0, 0],
+  enableExplosion = false,
+  rainbow = false,
   ...props
 }) => {
   const canvasRef = useRef(null);
@@ -778,6 +827,8 @@ const Ballpit = ({
       friction,
       wallBounce,
       colors,
+      enableExplosion,
+      rainbow,
       ...props,
     });
 
@@ -799,9 +850,19 @@ const Ballpit = ({
     config.friction = friction;
     config.wallBounce = wallBounce;
     config.followCursor = followCursor;
+    config.enableExplosion = enableExplosion;
+    config.rainbow = rainbow;
 
     instance.spheres.setColors(colors);
-  }, [gravity, friction, wallBounce, followCursor, colors]);
+  }, [
+    gravity,
+    friction,
+    wallBounce,
+    followCursor,
+    colors,
+    enableExplosion,
+    rainbow,
+  ]);
 
   // Reactividad para la cantidad (requiere reinicialización interna)
   useEffect(() => {

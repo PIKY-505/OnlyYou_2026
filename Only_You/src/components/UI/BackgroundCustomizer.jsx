@@ -20,6 +20,7 @@ const DEFAULT_FL_CONFIG = {
   bendStrength: -0.5,
   enabledWaves: ["top", "middle", "bottom"],
   interactive: false,
+  rainbow: false,
 };
 
 const QUALITY_OPTIONS = [
@@ -49,6 +50,8 @@ const DEFAULT_BP_CONFIG = {
   friction: 0.995,
   wallBounce: 0.9,
   followCursor: false,
+  enableExplosion: false,
+  rainbow: false,
 };
 
 const DEFAULT_SILK_CONFIG = {
@@ -68,6 +71,7 @@ const DEFAULT_GALAXY_CONFIG = {
   rotationSpeed: 0.1,
   starSpeed: 0.5,
   speed: 0.5,
+  rainbow: false,
 };
 
 const DEFAULT_GRADIENT_CONFIG = {
@@ -77,18 +81,19 @@ const DEFAULT_GRADIENT_CONFIG = {
 };
 
 const DEFAULT_SNOW_CONFIG = {
-  color: "#ffffff",
-  flakeSize: 0.01,
-  minFlakeSize: 0.6,
-  pixelResolution: 800,
-  speed: 1.9,
-  density: 0.45,
+  color: "#c9c9c9",
+  flakeSize: 0.021, // Mucho más pequeño para alejarlo
+  minFlakeSize: 0.6, // Reducido para permitir copos lejanos
+  pixelResolution: 800, // Mayor resolución = píxeles más pequeños
+  speed: 0.9,
+  density: 0.6,
   direction: 100,
   brightness: 1.5,
   depthFade: 3,
-  farPlane: 50,
+  farPlane: 10,
   gamma: 0.4545,
   variant: "snowflake",
+  rainbow: false,
 };
 
 const BackgroundCustomizer = ({
@@ -339,7 +344,7 @@ const BackgroundCustomizer = ({
               </label>
               <input
                 type="range"
-                min="1"
+                min="5"
                 max="10"
                 step="0.1"
                 value={flConfig.bendRadius}
@@ -353,8 +358,8 @@ const BackgroundCustomizer = ({
               </label>
               <input
                 type="range"
-                min="-2"
-                max="2"
+                min="-7"
+                max="7"
                 step="0.1"
                 value={flConfig.bendStrength}
                 onChange={(e) =>
@@ -393,6 +398,16 @@ const BackgroundCustomizer = ({
                 {flConfig.interactive !== false
                   ? "Activada (Ratón)"
                   : "Desactivada"}
+              </button>
+            </div>
+
+            <div className="section">
+              <label>Efectos</label>
+              <button
+                className={`toggle-btn ${flConfig.rainbow ? "active" : ""}`}
+                onClick={() => updateFlConfig("rainbow", !flConfig.rainbow)}
+                style={{ width: "100%", textAlign: "center" }}>
+                🌈 Modo Arcoíris
               </button>
             </div>
           </>
@@ -654,6 +669,26 @@ const BackgroundCustomizer = ({
                 {bpConfig.followCursor ? "Seguir Cursor" : "Cursor Libre"}
               </button>
             </div>
+
+            <div className="section">
+              <label>Eventos Divertidos</label>
+              <div className="toggles-row">
+                <button
+                  className={`toggle-btn ${bpConfig.enableExplosion ? "active" : ""}`}
+                  onClick={() =>
+                    updateBpConfig("enableExplosion", !bpConfig.enableExplosion)
+                  }
+                  title="Haz clic para explotar las bolas">
+                  💥 Explosión al Clic
+                </button>
+                <button
+                  className={`toggle-btn ${bpConfig.rainbow ? "active" : ""}`}
+                  onClick={() => updateBpConfig("rainbow", !bpConfig.rainbow)}
+                  title="Ciclo de colores automático">
+                  🌈 Modo Arcoíris
+                </button>
+              </div>
+            </div>
           </>
         )}
 
@@ -844,6 +879,16 @@ const BackgroundCustomizer = ({
                 }
               />
             </div>
+
+            <div className="section">
+              <label>Efectos</label>
+              <button
+                className={`toggle-btn ${gConfig.rainbow ? "active" : ""}`}
+                onClick={() => updateGalaxyConfig("rainbow", !gConfig.rainbow)}
+                style={{ width: "100%", textAlign: "center" }}>
+                🌈 Modo Arcoíris
+              </button>
+            </div>
           </>
         )}
 
@@ -1004,6 +1049,18 @@ const BackgroundCustomizer = ({
                   )
                 }
               />
+            </div>
+
+            <div className="section">
+              <label>Efectos</label>
+              <button
+                className={`toggle-btn ${psConfig.rainbow ? "active" : ""}`}
+                onClick={() =>
+                  updatePixelSnowConfig("rainbow", !psConfig.rainbow)
+                }
+                style={{ width: "100%", textAlign: "center" }}>
+                🌈 Modo Arcoíris
+              </button>
             </div>
           </>
         )}

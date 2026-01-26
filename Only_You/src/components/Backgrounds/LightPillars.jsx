@@ -284,6 +284,7 @@ const LightPillars = ({
         materialRef.current.uniforms.uTime.value = t;
         materialRef.current.uniforms.uRotCos.value = Math.cos(t * 0.3);
         materialRef.current.uniforms.uRotSin.value = Math.sin(t * 0.3);
+
         rendererRef.current.render(sceneRef.current, cameraRef.current);
         lastTime = currentTime - (deltaTime % frameTime);
       }

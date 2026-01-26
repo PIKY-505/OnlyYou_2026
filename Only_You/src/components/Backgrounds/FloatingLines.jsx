@@ -9,6 +9,7 @@ import {
   Vector3,
   Vector2,
   Clock,
+  Color,
 } from "three";
 
 const vertexShader = `
@@ -233,6 +234,7 @@ export default function FloatingLines({
   bendStrength = -0.5,
   mouseDamping = 0.05,
   mixBlendMode = "screen",
+  rainbow = false,
 }) {
   const containerRef = useRef(null);
   const rendererRef = useRef(null); // Referencia para limpieza
@@ -241,12 +243,17 @@ export default function FloatingLines({
   const currentMouseRef = useRef(new Vector2(-1000, -1000));
   const targetInfluenceRef = useRef(0);
   const currentInfluenceRef = useRef(0);
+  const rainbowRef = useRef(rainbow);
 
   // Ref para manejar el estado de interacción dentro del closure del useEffect
   const interactiveRef = useRef(interactive);
   useEffect(() => {
     interactiveRef.current = interactive;
   }, [interactive]);
+
+  useEffect(() => {
+    rainbowRef.current = rainbow;
+  }, [rainbow]);
 
   const getLineCount = (waveType) => {
     if (typeof lineCount === "number") return lineCount;
@@ -282,7 +289,12 @@ export default function FloatingLines({
 
   // EFECTO 1: Actualizar colores dinámicamente (sin reiniciar la escena)
   useEffect(() => {
-    if (materialRef.current && linesGradient && linesGradient.length > 0) {
+    if (
+      materialRef.current &&
+      linesGradient &&
+      linesGradient.length > 0 &&
+      !rainbow
+    ) {
       const stops = linesGradient.slice(0, MAX_GRADIENT_STOPS);
       materialRef.current.uniforms.lineGradientCount.value = stops.length;
 
@@ -295,7 +307,7 @@ export default function FloatingLines({
         );
       });
     }
-  }, [linesGradient]);
+  }, [linesGradient, rainbow]);
 
   // EFECTO 3: Actualizar uniformes de configuración (Sliders/Toggles) sin reiniciar
   useEffect(() => {
@@ -501,6 +513,21 @@ export default function FloatingLines({
           (targetInfluenceRef.current - currentInfluenceRef.current) *
           mouseDamping;
         uniforms.bendInfluence.value = currentInfluenceRef.current;
+      }
+
+      // Lógica Arcoíris
+      if (rainbowRef.current) {
+        const t = clock.getElapsedTime();
+        // Aseguramos que haya suficientes paradas de gradiente
+        if (uniforms.lineGradientCount.value < 3)
+          uniforms.lineGradientCount.value = 3;
+
+        for (let i = 0; i < MAX_GRADIENT_STOPS; i++) {
+          // Desfase de color basado en el índice para variedad
+          const hue = (t * 0.1 + i * 0.15) % 1;
+          const color = new Color().setHSL(hue, 0.8, 0.5);
+          uniforms.lineGradient.value[i].set(color.r, color.g, color.b);
+        }
       }
 
       renderer.render(scene, camera);
