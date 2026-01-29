@@ -519,7 +519,7 @@ class W {
         if (dist < sumRadius0) {
           const diff = sumRadius0 - dist;
           j.copy(_.normalize()).multiplyScalar(diff);
-          H.copy(j).multiplyScalar(Math.max(B.length(), 2));
+          H.copy(j).multiplyScalar(Math.max(B.length(), 1.0));
           I.sub(j);
           B.sub(H);
         }
@@ -547,7 +547,7 @@ class W {
     }
   }
   // --- NUEVO: Función de explosión ---
-  explode(center, force = 0.5) {
+  explode(center, force = 2.0) {
     const { positionData: s, velocityData: o, config: t } = this;
     for (let i = 0; i < t.count; i++) {
       const base = 3 * i;
@@ -768,7 +768,7 @@ function createBallpit(e, t = {}) {
     onClick() {
       // --- NUEVO: Trigger explosión ---
       if (s && s.config.enableExplosion) {
-        s.physics.explode(s.physics.center, 2.0); // Fuerza 2.0
+        s.physics.explode(s.physics.center);
       }
     },
     onLeave() {

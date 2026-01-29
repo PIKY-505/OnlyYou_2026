@@ -21,15 +21,10 @@ uniform float uStarSpeed;
 uniform float uDensity;
 uniform float uHueShift;
 uniform float uSpeed;
-uniform vec2 uMouse;
 uniform float uGlowIntensity;
 uniform float uSaturation;
-uniform bool uMouseRepulsion;
 uniform float uTwinkleIntensity;
 uniform float uRotationSpeed;
-uniform float uRepulsionStrength;
-uniform float uMouseActiveFactor;
-uniform float uAutoCenterRepulsion;
 uniform bool uTransparent;
 varying vec2 vUv;
 
@@ -97,22 +92,7 @@ vec3 StarLayer(vec2 uv) {
 void main() {
   vec2 focalPx = uFocal * uResolution.xy;
   vec2 uv = (vUv * uResolution.xy - focalPx) / uResolution.y;
-  vec2 mouseNorm = uMouse - vec2(0.5);
   
-  if (uAutoCenterRepulsion > 0.0) {
-    vec2 centerUV = vec2(0.0, 0.0);
-    float centerDist = length(uv - centerUV);
-    vec2 repulsion = normalize(uv - centerUV) * (uAutoCenterRepulsion / (centerDist + 0.1));
-    uv += repulsion * 0.05;
-  } else if (uMouseRepulsion) {
-    vec2 mousePosUV = (uMouse * uResolution.xy - focalPx) / uResolution.y;
-    float mouseDist = length(uv - mousePosUV);
-    vec2 repulsion = normalize(uv - mousePosUV) * (uRepulsionStrength / (mouseDist + 0.1));
-    uv += repulsion * 0.05 * uMouseActiveFactor;
-  } else {
-    vec2 mouseOffset = mouseNorm * 0.1 * uMouseActiveFactor;
-    uv += mouseOffset;
-  }
   float autoRotAngle = uTime * uRotationSpeed;
   mat2 autoRot = mat2(cos(autoRotAngle), -sin(autoRotAngle), sin(autoRotAngle), cos(autoRotAngle));
   uv = autoRot * uv;
@@ -144,38 +124,53 @@ const Galaxy = ({
   hueShift = 300,
   disableAnimation = false,
   speed = 0.5,
-  mouseInteraction = true,
   glowIntensity = 0.5,
   saturation = 0.8,
-  mouseRepulsion = true,
-  repulsionStrength = 0.5,
   twinkleIntensity = 0.5,
   rotationSpeed = 0.05,
-  autoCenterRepulsion = 0,
   transparent = true,
+  colorCycleSpeed = 10.0,
   rainbow = false,
   warp = false,
   ...rest
 }) => {
   const ctnDom = useRef(null);
-  const targetMousePos = useRef({ x: 0.5, y: 0.5 });
-  const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
-  const targetMouseActive = useRef(0.0);
-  const smoothMouseActive = useRef(0.0);
   const rainbowHueRef = useRef(hueShift);
+  const programRef = useRef(null);
 
+  // Guardamos la configuración en un ref para acceder a ella en el loop de animación
+  // sin tener que recrear el loop cada vez que cambia una prop.
+  const configRef = useRef({
+    starSpeed,
+    disableAnimation,
+    rainbow,
+    colorCycleSpeed,
+    warp,
+    hueShift,
+  });
+
+  useEffect(() => {
+    configRef.current = {
+      starSpeed,
+      disableAnimation,
+      rainbow,
+      colorCycleSpeed,
+      warp,
+      hueShift,
+    };
+  }, [starSpeed, disableAnimation, rainbow, colorCycleSpeed, warp, hueShift]);
+
+  // EFECTO 1: Inicialización (Solo al montar o cambiar transparencia)
   useEffect(() => {
     if (!ctnDom.current) return;
     const ctn = ctnDom.current;
 
-    // 1. Limpieza anti-duplicados (Vital para React Strict Mode)
     ctn.innerHTML = "";
 
-    // 2. Renderer optimizado (DPR 1)
     const renderer = new Renderer({
       alpha: transparent,
       premultipliedAlpha: false,
-      dpr: 1, // Fuerza resolución estándar (ignora Retina/4K para rendimiento)
+      dpr: 1,
     });
     const gl = renderer.gl;
 
@@ -190,12 +185,11 @@ const Galaxy = ({
     let program;
 
     function resize() {
-      // 3. Escalado de resolución interna (75% de calidad)
       const scale = 1;
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
 
-      if (program) {
-        program.uniforms.uResolution.value = new Color(
+      if (programRef.current) {
+        programRef.current.uniforms.uResolution.value = new Color(
           gl.canvas.width,
           gl.canvas.height,
           gl.canvas.width / gl.canvas.height,
@@ -224,128 +218,102 @@ const Galaxy = ({
         uDensity: { value: density },
         uHueShift: { value: hueShift },
         uSpeed: { value: speed },
-        uMouse: { value: new Float32Array([0.5, 0.5]) },
         uGlowIntensity: { value: glowIntensity },
         uSaturation: { value: saturation },
-        uMouseRepulsion: { value: mouseRepulsion },
         uTwinkleIntensity: { value: twinkleIntensity },
         uRotationSpeed: { value: rotationSpeed },
-        uRepulsionStrength: { value: repulsionStrength },
-        uMouseActiveFactor: { value: 0.0 },
-        uAutoCenterRepulsion: { value: autoCenterRepulsion },
         uTransparent: { value: transparent },
       },
     });
+    programRef.current = program;
 
     const mesh = new Mesh(gl, { geometry, program });
     let animateId;
 
-    // --- 4. LIMITADOR DE FPS (SALVAVIDAS PARA LA GPU) ---
     let lastTime = 0;
-    const fps = 30; // 30 Frames por segundo son suficientes
+    const fps = 30;
     const interval = 1000 / fps;
 
     function update(t) {
       animateId = requestAnimationFrame(update);
 
-      if (!ctnDom.current) return;
+      if (!ctnDom.current || !programRef.current) return;
 
-      // Lógica de freno de frames
       const delta = t - lastTime;
-      if (delta < interval) return; // Si vamos muy rápido, esperamos
+      if (delta < interval) return;
 
-      // Ajuste de tiempo para fluidez
       lastTime = t - (delta % interval);
 
-      if (!disableAnimation) {
-        // Usamos t real para suavidad matemática
-        program.uniforms.uTime.value = t * 0.001;
-        const currentStarSpeed = warp ? starSpeed * 10.0 : starSpeed;
-        program.uniforms.uStarSpeed.value =
-          (t * 0.001 * currentStarSpeed) / 10.0;
+      const {
+        starSpeed: currentStarSpeedProp,
+        disableAnimation: currentDisable,
+        rainbow: currentRainbow,
+        colorCycleSpeed: currentCycleSpeed,
+        warp: currentWarp,
+        hueShift: currentHueShift,
+      } = configRef.current;
 
-        // Lógica Arcoíris
-        if (rainbow) {
-          rainbowHueRef.current += 0.5; // Velocidad del ciclo
+      if (!currentDisable) {
+        program.uniforms.uTime.value = t * 0.001;
+        const effectiveStarSpeed = currentWarp
+          ? currentStarSpeedProp * 10.0
+          : currentStarSpeedProp;
+        program.uniforms.uStarSpeed.value =
+          (t * 0.001 * effectiveStarSpeed) / 10.0;
+
+        if (currentRainbow) {
+          rainbowHueRef.current += currentCycleSpeed * 0.05;
           program.uniforms.uHueShift.value = rainbowHueRef.current % 360;
         } else {
-          program.uniforms.uHueShift.value = hueShift;
+          program.uniforms.uHueShift.value = currentHueShift;
         }
       }
-
-      const lerpFactor = 0.05;
-      smoothMousePos.current.x +=
-        (targetMousePos.current.x - smoothMousePos.current.x) * lerpFactor;
-      smoothMousePos.current.y +=
-        (targetMousePos.current.y - smoothMousePos.current.y) * lerpFactor;
-      smoothMouseActive.current +=
-        (targetMouseActive.current - smoothMouseActive.current) * lerpFactor;
-
-      program.uniforms.uMouse.value[0] = smoothMousePos.current.x;
-      program.uniforms.uMouse.value[1] = smoothMousePos.current.y;
-      program.uniforms.uMouseActiveFactor.value = smoothMouseActive.current;
 
       renderer.render({ scene: mesh });
     }
     animateId = requestAnimationFrame(update);
     ctn.appendChild(gl.canvas);
 
-    // Ajustes CSS para que el canvas de baja resolución ocupe todo
     gl.canvas.style.width = "100%";
     gl.canvas.style.height = "100%";
     gl.canvas.style.display = "block";
-    gl.canvas.style.willChange = "transform"; // Pista para el navegador
-
-    function handleMouseMove(e) {
-      const rect = ctn.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = 1.0 - (e.clientY - rect.top) / rect.height;
-      targetMousePos.current = { x, y };
-      targetMouseActive.current = 1.0;
-    }
-
-    function handleMouseLeave() {
-      targetMouseActive.current = 0.0;
-    }
-
-    if (mouseInteraction) {
-      ctn.addEventListener("mousemove", handleMouseMove);
-      ctn.addEventListener("mouseleave", handleMouseLeave);
-    }
+    gl.canvas.style.willChange = "transform";
 
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener("resize", resize);
-      if (mouseInteraction) {
-        ctn.removeEventListener("mousemove", handleMouseMove);
-        ctn.removeEventListener("mouseleave", handleMouseLeave);
-      }
 
-      // Limpieza segura
       if (ctn && gl.canvas && ctn.contains(gl.canvas)) {
         ctn.removeChild(gl.canvas);
       }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
+      programRef.current = null;
     };
+  }, [transparent]); // Solo reiniciamos si cambia la transparencia (configuración del renderer)
+
+  // EFECTO 2: Actualización de Uniforms (Reactivo y rápido)
+  useEffect(() => {
+    if (!programRef.current) return;
+    const u = programRef.current.uniforms;
+
+    u.uFocal.value = new Float32Array(focal);
+    u.uRotation.value = new Float32Array(rotation);
+    u.uDensity.value = density;
+    u.uSpeed.value = speed;
+    u.uGlowIntensity.value = glowIntensity;
+    u.uSaturation.value = saturation;
+    u.uTwinkleIntensity.value = twinkleIntensity;
+    u.uRotationSpeed.value = rotationSpeed;
+    // Nota: starSpeed, hueShift, rainbow, warp se manejan en el loop de animación via ref
   }, [
     focal,
     rotation,
-    starSpeed,
     density,
-    hueShift,
-    disableAnimation,
     speed,
-    mouseInteraction,
     glowIntensity,
     saturation,
-    mouseRepulsion,
     twinkleIntensity,
     rotationSpeed,
-    repulsionStrength,
-    autoCenterRepulsion,
-    transparent,
-    rainbow,
-    warp,
   ]);
 
   return (
@@ -358,7 +326,6 @@ const Galaxy = ({
         position: "absolute",
         top: 0,
         left: 0,
-        // 5. Aislamiento CSS
         contain: "strict",
         overflow: "hidden",
       }}
@@ -367,5 +334,4 @@ const Galaxy = ({
   );
 };
 
-// 6. Memoización para evitar re-renderizados innecesarios
 export default React.memo(Galaxy);

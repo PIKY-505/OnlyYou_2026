@@ -26,6 +26,7 @@ precision highp float;
 uniform float iTime;
 uniform vec3  iResolution;
 uniform float animationSpeed;
+uniform float amplitude;
 
 uniform bool enableTop;
 uniform bool enableMiddle;
@@ -101,7 +102,7 @@ vec3 getLineColor(float t, vec3 baseColor) {
 
   float x_offset   = offset;
   float x_movement = time * 0.1;
-  float amp        = sin(offset + time * 0.2) * 0.3;
+  float amp        = sin(offset + time * 0.2) * 0.3 * amplitude;
   float y          = sin(uv.x + x_offset + x_movement) * amp;
 
   if (shouldBend) {
@@ -234,6 +235,7 @@ export default function FloatingLines({
   bendStrength = -0.5,
   mouseDamping = 0.05,
   mixBlendMode = "screen",
+  amplitude = 1.0,
   rainbow = false,
 }) {
   const containerRef = useRef(null);
@@ -316,6 +318,7 @@ export default function FloatingLines({
 
     // Actualizar valores simples
     u.animationSpeed.value = animationSpeed;
+    u.amplitude.value = amplitude;
     u.bendRadius.value = bendRadius;
     u.bendStrength.value = bendStrength;
     u.interactive.value = interactive;
@@ -358,6 +361,7 @@ export default function FloatingLines({
       : 0.01;
   }, [
     animationSpeed,
+    amplitude,
     bendRadius,
     bendStrength,
     interactive,
@@ -386,6 +390,7 @@ export default function FloatingLines({
       iTime: { value: 0 },
       iResolution: { value: new Vector3(1, 1, 1) },
       animationSpeed: { value: animationSpeed },
+      amplitude: { value: amplitude },
 
       enableTop: { value: enabledWaves.includes("top") },
       enableMiddle: { value: enabledWaves.includes("middle") },

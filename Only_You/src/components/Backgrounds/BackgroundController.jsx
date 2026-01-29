@@ -48,6 +48,7 @@ const BackgroundController = ({
     bendStrength: -0.5,
     enabledWaves: ["top", "middle", "bottom"],
     interactive: false,
+    amplitude: 1.0,
     rainbow: false,
   };
 
@@ -156,8 +157,6 @@ const BackgroundController = ({
             transition={{ duration: 1.5 }}
             style={{ position: "absolute", inset: 0, background: "#050010" }}>
             <Galaxy
-              mouseRepulsion={false}
-              mouseInteraction={false}
               density={gConfig.density}
               glowIntensity={gConfig.glowIntensity}
               saturation={gConfig.saturation}
@@ -234,6 +233,7 @@ const BackgroundController = ({
               enabledWaves={flConfig.enabledWaves}
               interactive={flConfig.interactive ?? false}
               parallax={flConfig.parallax ?? false}
+              amplitude={flConfig.amplitude ?? 1.0}
               rainbow={flConfig.rainbow}
             />
           </motion.div>

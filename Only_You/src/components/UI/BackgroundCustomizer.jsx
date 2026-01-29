@@ -20,6 +20,7 @@ const DEFAULT_FL_CONFIG = {
   bendStrength: -0.5,
   enabledWaves: ["top", "middle", "bottom"],
   interactive: false,
+  amplitude: 1.0,
   rainbow: false,
 };
 
@@ -51,7 +52,6 @@ const DEFAULT_BP_CONFIG = {
   wallBounce: 0.9,
   followCursor: false,
   enableExplosion: false,
-  rainbow: false,
 };
 
 const DEFAULT_SILK_CONFIG = {
@@ -342,6 +342,20 @@ const BackgroundCustomizer = ({
 
             <div className="section">
               <label>
+                Amplitud de Onda <span>{flConfig.amplitude}</span>
+              </label>
+              <input
+                type="range"
+                min="0.1"
+                max="3"
+                step="0.1"
+                value={flConfig.amplitude || 1.0}
+                onChange={(e) =>
+                  updateFlConfig("amplitude", parseFloat(e.target.value))
+                }
+              />
+
+              <label>
                 Radio de Curvatura <span>{flConfig.bendRadius}</span>
               </label>
               <input
@@ -551,7 +565,6 @@ const BackgroundCustomizer = ({
             </div>
 
             <div className="section">
-              <label>Calidad</label>
               <div className="toggles-row">
                 {QUALITY_OPTIONS.map((q) => (
                   <button
