@@ -98,7 +98,7 @@ const DEFAULT_SNOW_CONFIG = {
   storm: false,
 };
 
-const HYPERSPEED_PRESETS = {
+export const HYPERSPEED_PRESETS = {
   cyberpunk: {
     onSpeedUp: () => {},
     onSlowDown: () => {},
