@@ -11,7 +11,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/ShopContainer.scss";
 
-// --- ASSETS PARA PREVIEW ---
+// --- ASSETS ---
 import appleCat from "../../assets/trails/apple-cat.gif";
 import jumpCat from "../../assets/trails/jump-cat.gif";
 import rollingCat from "../../assets/trails/rolling-cat.gif";
@@ -19,7 +19,7 @@ import duck from "../../assets/trails/duck.png";
 import pompom from "../../assets/trails/pompom.png";
 import skeletonRun from "../../assets/trails/skeleton-run.gif";
 
-// --- BASE DE DATOS DE LA TIENDA ---
+// --- SHOP DATA ---
 const SHOP_DATA = {
   backgrounds: [
     {
@@ -155,7 +155,6 @@ const ShopContainer = () => {
     activeShop,
     openShop,
     closeShop,
-    // Estados de equipamiento
     activeBackground,
     setBackground,
     activeCursor,
@@ -164,8 +163,7 @@ const ShopContainer = () => {
     setTrail,
   } = useGameStore();
 
-  // --- TRUCO PARA ANIMACIÓN DE SALIDA ---
-  // Guardamos la última tienda activa para mostrarla mientras se cierra (fade out)
+  // --- STATE ---
   const [displayShop, setDisplayShop] = useState(activeShop);
 
   useEffect(() => {
@@ -174,16 +172,12 @@ const ShopContainer = () => {
     }
   }, [activeShop]);
 
-  // Usamos 'displayShop' para los datos, así no crashea al cerrar
   const currentItems = SHOP_DATA[displayShop] || [];
 
   const handleEquip = (itemId) => {
     if (activeShop === "backgrounds") setBackground(itemId);
     if (activeShop === "cursors") setCursor(itemId);
     if (activeShop === "trails") setTrail(itemId);
-
-    // ¡HEMOS QUITADO EL closeShop() AQUÍ!
-    // Ahora la tienda sigue abierta para que sigas comprando.
   };
 
   const isEquipped = (itemId) => {
@@ -195,15 +189,12 @@ const ShopContainer = () => {
 
   return (
     <AnimatePresence>
-      {/* Solo renderizamos si activeShop tiene valor (está abierta) */}
       {activeShop && (
         <motion.div
           className="shop-overlay"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.2 } }} // Salida suave del fondo
-        >
-          {/* Al hacer click en el fondo (overlay), cerramos la tienda */}
+          exit={{ opacity: 0, transition: { duration: 0.2 } }}>
           <div
             className="click-outside-layer"
             onClick={closeShop}
@@ -219,9 +210,8 @@ const ShopContainer = () => {
               y: 10,
               opacity: 0,
               transition: { duration: 0.2 },
-            }} // Salida pop-out de la ventana
-          >
-            {/* CABECERA */}
+            }}>
+            {/* --- HEADER --- */}
             <div className="shop-header-row">
               <div className="shop-tabs">
                 {TABS.map((tab) => (
@@ -255,7 +245,7 @@ const ShopContainer = () => {
                   : "Mascotas"}
             </div>
 
-            {/* GRILLA */}
+            {/* --- GRID --- */}
             <div className="shop-grid">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -266,11 +256,10 @@ const ShopContainer = () => {
                   transition={{ duration: 0.2 }}
                   style={{
                     display: "grid",
-                    // Aquí ajustamos el tamaño: 180px es perfecto para que entren 3
                     gridTemplateColumns:
                       "repeat(auto-fill, minmax(180px, 1fr))",
                     gap: "20px",
-                    width: "100%", // Vital para que ocupe todo el ancho disponible
+                    width: "100%",
                   }}>
                   {currentItems.map((item) => (
                     <div

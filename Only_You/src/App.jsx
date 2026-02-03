@@ -8,16 +8,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import "./styles/main.scss";
 import BackgroundCustomizer from "./components/UI/BackgroundCustomizer";
 
-// 1. IMPORTAMOS EL DOCK Y LOS ICONOS
 import Dock from "./components/UI/Dock";
 import { FiStar, FiMusic, FiPlayCircle, FiEdit, FiLock } from "react-icons/fi";
-
 import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
 import LoadingScreen from "./components/UI/LoadingScreen";
 import MusicPlayer from "./components/UI/MusicPlayer";
 
-// CONFIGURACIÓN DEL MENÚ LATERAL
 const shopItems = [
   { id: "backgrounds", label: "Fondos", ariaLabel: "Galería de Fondos" },
   { id: "cursors", label: "Cursores", ariaLabel: "Personalizar Cursor" },
@@ -30,16 +27,15 @@ const socialItems = [
 ];
 
 function App() {
+  // --- STORE & STATE ---
   const { isUnlocked, openShop, closeShop, lockGame, activeBackground } =
     useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
   const [showBackgroundSettings, setShowBackgroundSettings] = useState(false);
-  // Estado para recordar si el texto estaba abierto antes de editar el fondo
   const [previousInfoState, setPreviousInfoState] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // --- ESTADO PARA CONFIGURACIÓN DE FONDOS (Lifted State) ---
   const [floatingLinesConfig, setFloatingLinesConfig] = useState(null);
   const [lightPillarsConfig, setLightPillarsConfig] = useState(null);
   const [ballpitConfig, setBallpitConfig] = useState(null);
@@ -48,6 +44,7 @@ function App() {
   const [gradientConfig, setGradientConfig] = useState(null);
   const [pixelSnowConfig, setPixelSnowConfig] = useState(null);
 
+  // --- HANDLERS ---
   const handleMenuClick = (itemId) => {
     if (itemId) {
       openShop(itemId);
@@ -56,19 +53,17 @@ function App() {
 
   const toggleBackgroundSettings = () => {
     if (!showBackgroundSettings) {
-      // AL ABRIR: Guardamos estado actual del texto y lo cerramos
-      setIsMenuOpen(false); // Cerramos el menú lateral si se abre la personalización
+      setIsMenuOpen(false);
+      closeShop();
       setPreviousInfoState(showInfo);
       setShowInfo(false);
       setShowBackgroundSettings(true);
     } else {
-      // AL CERRAR: Restauramos el texto solo si estaba abierto antes
       setShowBackgroundSettings(false);
       if (previousInfoState) setShowInfo(true);
     }
   };
 
-  // --- 2. DEFINICIÓN DE LOS ÍTEMS DEL DOCK (ESTO FALTABA) ---
   const dockItems = [
     {
       icon: <FiStar size={22} />,
@@ -95,10 +90,9 @@ function App() {
       label: "Bloquear",
       onClick: () => {
         if (lockGame) {
-          closeShop(); // Cerramos la tienda si estaba abierta
-          setShowMusicPlayer(false); // Cerramos el reproductor visualmente
+          closeShop();
+          setShowMusicPlayer(false);
 
-          // Reiniciamos las configuraciones de fondo al bloquear
           setFloatingLinesConfig(null);
           setLightPillarsConfig(null);
           setBallpitConfig(null);
@@ -107,13 +101,13 @@ function App() {
           setGradientConfig(null);
           setPixelSnowConfig(null);
 
-          lockGame(); // Bloqueamos la app
+          lockGame();
         }
       },
     },
   ];
 
-  // --- LÓGICA DE CARGA ---
+  // --- LOADING LOGIC ---
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -140,17 +134,16 @@ function App() {
         height: "100vh",
         overflow: "hidden",
       }}>
-      {/* 0. PANTALLA DE CARGA */}
+      {/* --- LOADING SCREEN --- */}
       <AnimatePresence mode="wait">
         {isLoading && <LoadingScreen key="loader" progress={progress} />}
       </AnimatePresence>
 
-      {/* 1. EL CANDADO */}
+      {/* --- LOCK SCREEN --- */}
       <AnimatePresence>
         {!isUnlocked && (
           <motion.div
             key="lock-screen"
-            // ESTILO COPIADO DEL DESBLOQUEO (Invertido para la entrada)
             initial={{ opacity: 0, filter: "blur(20px)", scale: 1.1 }}
             animate={{ opacity: 1, filter: "blur(0px)", scale: 1 }}
             exit={{
@@ -164,14 +157,14 @@ function App() {
               position: "fixed",
               zIndex: 9999,
               inset: 0,
-              background: "#000", // Fondo sólido para tapar la app limpiamente
+              background: "#000",
             }}>
             <LockScreen />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 2. EL CONTENIDO PRINCIPAL */}
+      {/* --- MAIN CONTENT --- */}
       <AnimatePresence>
         {isUnlocked && (
           <motion.div
@@ -181,7 +174,6 @@ function App() {
             animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
             exit={{
               opacity: 0,
-              // ESTILO COPIADO DE LA ENTRADA (Simétrico)
               scale: 1.1,
               filter: "blur(10px)",
               transition: { duration: 1 },
@@ -193,7 +185,7 @@ function App() {
               position: "relative",
               overflow: "hidden",
             }}>
-            {/* FONDO CONTROLADO */}
+            {/* --- BACKGROUND --- */}
             <BackgroundController
               floatingLinesConfig={floatingLinesConfig}
               lightPillarsConfig={lightPillarsConfig}
@@ -204,7 +196,7 @@ function App() {
               pixelSnowConfig={pixelSnowConfig}
             />
 
-            {/* MENÚ STAGGERED (Lateral) */}
+            {/* --- MENU --- */}
             <StaggeredMenu
               isOpen={isMenuOpen}
               onToggle={(val) => {
@@ -226,7 +218,7 @@ function App() {
               logoUrl={null}
             />
 
-            {/* RESTO DE COMPONENTES */}
+            {/* --- COMPONENTS --- */}
             <ShopContainer />
             <TrailSystem />
             <AnimatePresence>
@@ -247,7 +239,7 @@ function App() {
               )}
             </AnimatePresence>
 
-            {/* PERSONALIZADOR DE FONDO (Z-Index alto para que funcione el click) */}
+            {/* --- CUSTOMIZER --- */}
             <AnimatePresence>
               {showBackgroundSettings &&
                 [
@@ -268,9 +260,9 @@ function App() {
                       position: "absolute",
                       top: 0,
                       right: 0,
-                      zIndex: 200, // Por encima de todo (incluyendo menús y tienda)
+                      zIndex: 200,
                       height: "100%",
-                      pointerEvents: "auto", // Aseguramos interacción directa
+                      pointerEvents: "auto",
                     }}>
                     <div style={{ height: "100%" }}>
                       <BackgroundCustomizer
@@ -295,13 +287,13 @@ function App() {
                 )}
             </AnimatePresence>
 
-            {/* 4. REPRODUCTOR DE MÚSICA (Siempre montado para persistencia) */}
+            {/* --- MUSIC PLAYER --- */}
             <MusicPlayer
               visible={showMusicPlayer}
               onClose={() => setShowMusicPlayer(false)}
             />
 
-            {/* 3. DOCK (Barra inferior) */}
+            {/* --- DOCK --- */}
             <Dock
               items={dockItems}
               panelHeight={60}

@@ -1,14 +1,11 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-// IMPORTANTE: Asegúrate de que esta ruta apunte a donde guardaste el CSS
 import "../../styles/StaggeredMenu.scss";
 
 const StaggeredMenu = ({
-  // --- AÑADIMOS ESTA PROP PARA PODER ABRIR LA TIENDA ---
   onItemClick,
-  isOpen, // Prop opcional para control externo
-  onToggle, // Callback para control externo
-  // -----------------------------------------------------
+  isOpen,
+  onToggle,
   position = "left",
   colors = ["#B19EEF", "#5227FF"],
   items = [],
@@ -26,6 +23,7 @@ const StaggeredMenu = ({
   onMenuOpen,
   onMenuClose,
 }) => {
+  // --- STATE & REFS ---
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = typeof isOpen === "boolean";
   const open = isControlled ? isOpen : internalOpen;
@@ -50,6 +48,7 @@ const StaggeredMenu = ({
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef(null);
 
+  // --- ANIMATION SETUP ---
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const panel = panelRef.current;
@@ -78,6 +77,7 @@ const StaggeredMenu = ({
     return () => ctx.revert();
   }, [menuButtonColor, position]);
 
+  // --- TIMELINES ---
   const buildOpenTimeline = useCallback(() => {
     const panel = panelRef.current;
     const layers = preLayerElsRef.current;
@@ -199,6 +199,7 @@ const StaggeredMenu = ({
     return tl;
   }, []);
 
+  // --- PLAYBACK CONTROLS ---
   const playOpen = useCallback(() => {
     if (busyRef.current) return;
     busyRef.current = true;
@@ -256,6 +257,7 @@ const StaggeredMenu = ({
     });
   }, [position]);
 
+  // --- ELEMENT ANIMATIONS ---
   const animateIcon = useCallback((opening) => {
     const icon = iconRef.current;
     if (!icon) return;
@@ -338,6 +340,7 @@ const StaggeredMenu = ({
     });
   }, []);
 
+  // --- TOGGLE LOGIC ---
   const toggleMenu = useCallback(() => {
     if (isControlled) {
       onToggle && onToggle(!open);
@@ -370,7 +373,6 @@ const StaggeredMenu = ({
     onMenuClose,
   ]);
 
-  // Efecto para reaccionar a cambios externos de 'isOpen'
   React.useEffect(() => {
     if (isControlled) {
       openRef.current = isOpen;
@@ -426,17 +428,13 @@ const StaggeredMenu = ({
     if (!closeOnClickAway || !open) return;
 
     const handleClickOutside = (event) => {
-      // 1. Verificamos si el clic fue dentro del propio menú o su botón
       const isInsideMenu =
         panelRef.current && panelRef.current.contains(event.target);
       const isInsideButton =
         toggleBtnRef.current && toggleBtnRef.current.contains(event.target);
 
-      // 2. NUEVO: Verificamos si el clic fue dentro de la TIENDA (.shop-overlay)
-      // Usamos .closest() para ver si el elemento clicado o alguno de sus padres es la tienda
       const isInsideShop = event.target.closest(".shop-overlay");
 
-      // Si NO es menú, NO es botón y NO es tienda -> Cerramos
       if (!isInsideMenu && !isInsideButton && !isInsideShop) {
         closeMenu();
       }
@@ -458,6 +456,7 @@ const StaggeredMenu = ({
       style={accentColor ? { ["--sm-accent"]: accentColor } : undefined}
       data-position={position}
       data-open={open || undefined}>
+      {/* --- PRELAYERS --- */}
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
         {(() => {
           const raw =
@@ -474,6 +473,7 @@ const StaggeredMenu = ({
           ));
         })()}
       </div>
+      {/* --- HEADER --- */}
       <header
         className="staggered-menu-header"
         aria-label="Main navigation header">
@@ -516,6 +516,7 @@ const StaggeredMenu = ({
         </button>
       </header>
 
+      {/* --- PANEL --- */}
       <aside
         id="staggered-menu-panel"
         ref={panelRef}
@@ -529,20 +530,17 @@ const StaggeredMenu = ({
             {items && items.length ? (
               items.map((it, idx) => (
                 <li className="sm-panel-itemWrap" key={it.label + idx}>
-                  {/* --- AQUÍ ESTÁ EL CAMBIO CLAVE --- */}
                   <a
                     className="sm-panel-item"
-                    href="#" // Ponemos # porque manejaremos el clic manual
+                    href="#"
                     onClick={(e) => {
-                      e.preventDefault(); // Evitamos que recargue la página
-                      // Si nos pasaron la función onItemClick, la ejecutamos con el ID del item
+                      e.preventDefault();
                       if (onItemClick) onItemClick(it.id);
                     }}
                     aria-label={it.ariaLabel}
                     data-index={idx + 1}>
                     <span className="sm-panel-itemLabel">{it.label}</span>
                   </a>
-                  {/* --------------------------------- */}
                 </li>
               ))
             ) : (

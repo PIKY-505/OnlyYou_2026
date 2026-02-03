@@ -18,7 +18,7 @@ const BackgroundController = ({
   gradientConfig: propGradientConfig,
   pixelSnowConfig: propPixelSnowConfig,
 }) => {
-  // Leemos la configuración del store (si existe)
+  // --- STORE CONFIG ---
   const {
     activeBackground,
     floatingLinesConfig: storeFlConfig,
@@ -30,7 +30,7 @@ const BackgroundController = ({
     pixelSnowConfig: storePixelSnowConfig,
   } = useGameStore();
 
-  // Prioridad: Props (desde App) > Store > Default
+  // --- CONFIG RESOLUTION ---
   const floatingLinesConfig = propFlConfig || storeFlConfig;
   const lightPillarsConfig = propLpConfig || storeLpConfig;
   const ballpitConfig = propBpConfig || storeBpConfig;
@@ -39,7 +39,7 @@ const BackgroundController = ({
   const gradientConfig = propGradientConfig || storeGradientConfig;
   const pixelSnowConfig = propPixelSnowConfig || storePixelSnowConfig;
 
-  // Configuración por defecto (Fallback)
+  // --- DEFAULTS ---
   const flConfig = floatingLinesConfig || {
     colors: ["#f700ff", "#bd71ff", "#29b1ff"],
     count: 6,
@@ -52,7 +52,6 @@ const BackgroundController = ({
     rainbow: false,
   };
 
-  // Configuración por defecto para LightPillars
   const lpConfig = lightPillarsConfig || {
     topColor: "#5227FF",
     bottomColor: "#FF9FFC",
@@ -67,7 +66,6 @@ const BackgroundController = ({
     quality: "high",
   };
 
-  // Configuración por defecto para Ballpit
   const bpConfig = ballpitConfig || {
     colors: ["#f700ff", "#bd71ff", "#29b1ff"],
     count: 60,
@@ -79,7 +77,6 @@ const BackgroundController = ({
     rainbow: false,
   };
 
-  // Configuración por defecto para Silk
   const sConfig = silkConfig || {
     color: "#9726fa",
     speed: 4,
@@ -88,7 +85,6 @@ const BackgroundController = ({
     rotation: 0,
   };
 
-  // Configuración por defecto para Galaxy
   const gConfig = galaxyConfig || {
     density: 1,
     glowIntensity: 0.5,
@@ -102,19 +98,17 @@ const BackgroundController = ({
     warp: false,
   };
 
-  // Configuración por defecto para Gradient
   const gradConfig = gradientConfig || {
     color1: "#b117f8",
     color2: "#2c0b2e",
     speed: 20,
   };
 
-  // Configuración por defecto para PixelSnow
   const psConfig = pixelSnowConfig || {
     color: "#c9c9c9",
-    flakeSize: 0.021, // Mucho más pequeño para alejarlo
-    minFlakeSize: 0.6, // Reducido para permitir copos lejanos
-    pixelResolution: 800, // Mayor resolución = píxeles más pequeños
+    flakeSize: 0.021,
+    minFlakeSize: 0.6,
+    pixelResolution: 800,
     speed: 0.9,
     density: 0.6,
     direction: 100,
@@ -130,7 +124,7 @@ const BackgroundController = ({
   return (
     <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
       <AnimatePresence mode="wait">
-        {/* CASO 1: GRADIENTE */}
+        {/* --- GRADIENT --- */}
         {activeBackground === "gradient" && (
           <motion.div
             key="gradient"
@@ -147,7 +141,7 @@ const BackgroundController = ({
           </motion.div>
         )}
 
-        {/* CASO 2: GALAXY (SIEMPRE LIGERO) */}
+        {/* --- GALAXY --- */}
         {activeBackground === "galaxy" && (
           <motion.div
             key="galaxy"
@@ -171,7 +165,7 @@ const BackgroundController = ({
           </motion.div>
         )}
 
-        {/* CASO 3: SILK */}
+        {/* --- SILK --- */}
         {activeBackground === "silk" && (
           <motion.div
             key="silk"
@@ -190,7 +184,7 @@ const BackgroundController = ({
           </motion.div>
         )}
 
-        {/* CASO 4: BALLPIT */}
+        {/* --- BALLPIT --- */}
         {activeBackground === "ballpit" && (
           <motion.div
             key="ballpit"
@@ -199,8 +193,6 @@ const BackgroundController = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
             style={{ position: "absolute", inset: 0, background: "#111111" }}>
-            {" "}
-            {/* <--- CAMBIA EL COLOR DE FONDO AQUÍ */}
             <Ballpit
               count={bpConfig.count}
               gravity={bpConfig.gravity}
@@ -214,7 +206,7 @@ const BackgroundController = ({
           </motion.div>
         )}
 
-        {/* CASO 5: FLOATING LINES */}
+        {/* --- FLOATING LINES --- */}
         {activeBackground === "floatinglines" && (
           <motion.div
             key="floatinglines"
@@ -238,7 +230,7 @@ const BackgroundController = ({
             />
           </motion.div>
         )}
-        {/* CASO 6: LIGHT PILLARS */}
+        {/* --- LIGHT PILLARS --- */}
         {activeBackground === "lightpillars" && (
           <motion.div
             key="lightpillars"
@@ -263,7 +255,7 @@ const BackgroundController = ({
           </motion.div>
         )}
 
-        {/* CASO 7: PIXEL SNOW */}
+        {/* --- PIXEL SNOW --- */}
         {activeBackground === "pixelsnow" && (
           <motion.div
             key="pixelsnow"

@@ -546,7 +546,7 @@ class W {
       B.toArray(o, base);
     }
   }
-  // --- NUEVO: Función de explosión ---
+  // --- EXPLOSION LOGIC ---
   explode(center, force = 2.0) {
     const { positionData: s, velocityData: o, config: t } = this;
     for (let i = 0; i < t.count; i++) {
@@ -556,13 +556,10 @@ class W {
       const dz = s[base + 2] - center.z;
       const distSq = dx * dx + dy * dy + dz * dz;
 
-      // Radio de explosión aumentado y física mejorada
       if (distSq < 60) {
         const dist = Math.sqrt(distSq) + 0.01;
-        // Fuerza explosiva con caída exponencial + multiplicador
         const f = (force * 50) / (dist + 1.0);
 
-        // Añadir caos aleatorio a la dirección
         const rx = (Math.random() - 0.5) * 1.5;
         const ry = (Math.random() - 0.5) * 1.5;
         const rz = (Math.random() - 0.5) * 1.5;
@@ -632,8 +629,8 @@ const X = {
   maxZ: 2,
   controlSphere0: false,
   followCursor: true,
-  enableExplosion: false, // Nuevo
-  rainbow: false, // Nuevo
+  enableExplosion: false,
+  rainbow: false,
 };
 
 const U = new m();
@@ -652,7 +649,7 @@ class Z extends d {
     this.#S();
     this.setColors(i.colors);
 
-    this.rainbowHue = 0; // Para el modo arcoíris
+    this.rainbowHue = 0;
   }
   #S() {
     this.ambientLight = new f(
@@ -703,15 +700,13 @@ class Z extends d {
   update(e) {
     this.physics.update(e);
 
-    // --- LÓGICA ARCOÍRIS ---
+    // --- RAINBOW MODE ---
     if (this.config.rainbow) {
-      this.rainbowHue += e.delta * 0.2; // Velocidad del ciclo
+      this.rainbowHue += e.delta * 0.2;
 
-      // La luz cambia lentamente
       this.light.color.setHSL(this.rainbowHue % 1, 1, 0.5);
 
       for (let i = 0; i < this.count; i++) {
-        // Cada bola tiene un desfase de color basado en su índice
         const hue = (this.rainbowHue + i * 0.05) % 1;
         const color = new l().setHSL(hue, 0.9, 0.6);
         this.setColorAt(i, color);
@@ -766,7 +761,7 @@ function createBallpit(e, t = {}) {
       s.config.controlSphere0 = true;
     },
     onClick() {
-      // --- NUEVO: Trigger explosión ---
+      // --- EXPLOSION TRIGGER ---
       if (s && s.config.enableExplosion) {
         s.physics.explode(s.physics.center);
       }
@@ -847,7 +842,7 @@ const Ballpit = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Reactividad para parámetros físicos y visuales
+  // --- CONFIG UPDATE ---
   useEffect(() => {
     const instance = spheresInstanceRef.current;
     if (!instance || !instance.spheres) return;
@@ -871,7 +866,7 @@ const Ballpit = ({
     rainbow,
   ]);
 
-  // Reactividad para la cantidad (requiere reinicialización interna)
+  // --- COUNT UPDATE ---
   useEffect(() => {
     const instance = spheresInstanceRef.current;
     if (!instance) return;

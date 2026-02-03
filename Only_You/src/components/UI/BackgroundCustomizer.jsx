@@ -11,7 +11,7 @@ const PRESETS = [
   { name: "CMY", colors: ["#ff00ff", "#ffff00", "#00ffff"] },
 ];
 
-// Valores por defecto para el botón de Reset
+// --- DEFAULTS ---
 const DEFAULT_FL_CONFIG = {
   colors: PRESETS[0].colors,
   count: 6,
@@ -83,9 +83,9 @@ const DEFAULT_GRADIENT_CONFIG = {
 
 const DEFAULT_SNOW_CONFIG = {
   color: "#c9c9c9",
-  flakeSize: 0.021, // Mucho más pequeño para alejarlo
-  minFlakeSize: 0.6, // Reducido para permitir copos lejanos
-  pixelResolution: 800, // Mayor resolución = píxeles más pequeños
+  flakeSize: 0.021,
+  minFlakeSize: 0.6,
+  pixelResolution: 800,
   speed: 0.9,
   density: 0.6,
   direction: 100,
@@ -115,7 +115,7 @@ const BackgroundCustomizer = ({
   pixelSnowConfig: propPixelSnowConfig,
   setPixelSnowConfig: propSetPixelSnowConfig,
 }) => {
-  // Asumimos que estas funciones existen en el store.
+  // --- STORE ---
   const {
     activeBackground,
     floatingLinesConfig: storeFlConfig,
@@ -134,7 +134,7 @@ const BackgroundCustomizer = ({
     setPixelSnowConfig: storeSetPixelSnowConfig,
   } = useGameStore();
 
-  // Resolver configuración y setters (Props > Store)
+  // --- CONFIG RESOLUTION ---
   const floatingLinesConfig = propFlConfig || storeFlConfig;
   const setFloatingLinesConfig = propSetFlConfig || storeSetFlConfig;
   const lightPillarsConfig = propLpConfig || storeLpConfig;
@@ -237,7 +237,7 @@ const BackgroundCustomizer = ({
     }
   };
 
-  // --- FUNCIÓN RESET ---
+  // --- RESET HANDLER ---
   const handleReset = () => {
     if (activeBackground === "floatinglines" && setFloatingLinesConfig) {
       setFloatingLinesConfig(DEFAULT_FL_CONFIG);
@@ -274,7 +274,7 @@ const BackgroundCustomizer = ({
       </div>
 
       <div className="bg-customizer-content">
-        {/* --- CONTENIDO PARA FLOATING LINES --- */}
+        {/* --- FLOATING LINES UI --- */}
         {activeBackground === "floatinglines" && (
           <>
             <div className="section">
@@ -429,7 +429,7 @@ const BackgroundCustomizer = ({
           </>
         )}
 
-        {/* --- CONTENIDO PARA LIGHT PILLARS --- */}
+        {/* --- LIGHT PILLARS UI --- */}
         {activeBackground === "lightpillars" && (
           <>
             <div className="section">
@@ -596,7 +596,7 @@ const BackgroundCustomizer = ({
           </>
         )}
 
-        {/* --- CONTENIDO PARA BALLPIT --- */}
+        {/* --- BALLPIT UI --- */}
         {activeBackground === "ballpit" && (
           <>
             <div className="section">
@@ -707,7 +707,7 @@ const BackgroundCustomizer = ({
           </>
         )}
 
-        {/* --- CONTENIDO PARA SILK --- */}
+        {/* --- SILK UI --- */}
         {activeBackground === "silk" && (
           <>
             <div className="section">
@@ -784,7 +784,7 @@ const BackgroundCustomizer = ({
           </>
         )}
 
-        {/* --- CONTENIDO PARA GALAXY --- */}
+        {/* --- GALAXY UI --- */}
         {activeBackground === "galaxy" && (
           <>
             <div className="section">
@@ -917,7 +917,7 @@ const BackgroundCustomizer = ({
           </>
         )}
 
-        {/* --- CONTENIDO PARA GRADIENT --- */}
+        {/* --- GRADIENT UI --- */}
         {activeBackground === "gradient" && (
           <>
             <div className="section">
@@ -968,7 +968,7 @@ const BackgroundCustomizer = ({
           </>
         )}
 
-        {/* --- CONTENIDO PARA PIXEL SNOW --- */}
+        {/* --- PIXEL SNOW UI --- */}
         {activeBackground === "pixelsnow" && (
           <>
             <div className="section">

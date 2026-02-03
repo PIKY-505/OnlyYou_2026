@@ -6,7 +6,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-// Usamos 'framer-motion' que es la versión estable que tienes instalada
 import {
   motion,
   useMotionValue,
@@ -30,30 +29,18 @@ function DockItem({
   const isHovered = useMotionValue(0);
 
   const mouseDistance = useTransform(mouseX, (val) => {
-    // Si no hay referencia, devolvemos una distancia enorme para que no reaccione
     if (!ref.current) return Infinity;
-
-    // Obtenemos el rectángulo del elemento en el DOM
     const rect = ref.current.getBoundingClientRect();
-
-    // Calculamos el centro X del elemento
     const elementCenterX = rect.x + rect.width / 2;
-
-    // Devolvemos la distancia absoluta (sin signo) para evitar errores de cálculo
     return Math.abs(val - elementCenterX);
   });
 
-  // Transformamos la distancia en tamaño
-  // Si la distancia es 0 (ratón encima), tamaño = magnification
-  // Si la distancia es 'distance' (ej: 150px), tamaño = baseItemSize
   const targetSize = useTransform(
     mouseDistance,
     [0, distance],
     [magnification, baseItemSize],
   );
 
-  // ARREGLO 1: Físicas más "pesadas".
-  // Al pasar el 'spring' desde el padre, asegúrate de que tenga suficiente 'damping'.
   const size = useSpring(targetSize, spring);
 
   return (
@@ -62,7 +49,6 @@ function DockItem({
       style={{
         width: size,
         height: size,
-        // ARREGLO 2: Forzamos min-width y min-height para que Flexbox no se vuelva loco
         minWidth: size,
         minHeight: size,
       }}
@@ -81,7 +67,6 @@ function DockLabel({ children, className = "", ...rest }) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Escuchamos los cambios del valor de animación
     const unsubscribe = isHovered.on("change", (latest) => {
       setIsVisible(latest === 1);
     });
@@ -98,8 +83,7 @@ function DockLabel({ children, className = "", ...rest }) {
           transition={{ duration: 0.2 }}
           className={`dock-label ${className}`}
           role="tooltip"
-          style={{ left: "50%", x: "-50%" }} // Centrado absoluto forzado
-        >
+          style={{ left: "50%", x: "-50%" }}>
           {children}
         </motion.div>
       )}
@@ -114,10 +98,6 @@ function DockIcon({ children, className = "" }) {
 export default function Dock({
   items,
   className = "",
-  // --- CAMBIO AQUÍ: VELOCIDAD ---
-  // mass: 0.1 (muy ligero)
-  // stiffness: 300 (mucha tensión = vuelve rápido a su sitio)
-  // damping: 20 (frena rápido sin rebotar eternamente)
   spring = { mass: 0.1, stiffness: 300, damping: 20 },
 
   magnification = 70,
