@@ -7,6 +7,7 @@ import Ballpit from "./Ballpit";
 import FloatingLines from "./FloatingLines";
 import LightPillars from "./LightPillars";
 import PixelSnow from "./PixelSnow";
+import Hyperspeed from "./Hyperspeed";
 import { AnimatePresence, motion } from "framer-motion";
 
 const BackgroundController = ({
@@ -17,6 +18,7 @@ const BackgroundController = ({
   galaxyConfig: propGalaxyConfig,
   gradientConfig: propGradientConfig,
   pixelSnowConfig: propPixelSnowConfig,
+  hyperspeedConfig: propHyperspeedConfig,
 }) => {
   // --- STORE CONFIG ---
   const {
@@ -28,6 +30,7 @@ const BackgroundController = ({
     galaxyConfig: storeGalaxyConfig,
     gradientConfig: storeGradientConfig,
     pixelSnowConfig: storePixelSnowConfig,
+    hyperspeedConfig: storeHyperspeedConfig,
   } = useGameStore();
 
   // --- CONFIG RESOLUTION ---
@@ -38,6 +41,7 @@ const BackgroundController = ({
   const galaxyConfig = propGalaxyConfig || storeGalaxyConfig;
   const gradientConfig = propGradientConfig || storeGradientConfig;
   const pixelSnowConfig = propPixelSnowConfig || storePixelSnowConfig;
+  const hyperspeedConfig = propHyperspeedConfig || storeHyperspeedConfig;
 
   // --- DEFAULTS ---
   const flConfig = floatingLinesConfig || {
@@ -277,6 +281,19 @@ const BackgroundController = ({
               rainbow={psConfig.rainbow}
               storm={psConfig.storm}
             />
+          </motion.div>
+        )}
+
+        {/* --- HYPERSPEED --- */}
+        {activeBackground === "hyperspeed" && (
+          <motion.div
+            key="hyperspeed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            style={{ position: "absolute", inset: 0, background: "#000" }}>
+            <Hyperspeed effectOptions={hyperspeedConfig} />
           </motion.div>
         )}
       </AnimatePresence>

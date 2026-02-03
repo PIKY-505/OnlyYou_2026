@@ -98,6 +98,194 @@ const DEFAULT_SNOW_CONFIG = {
   storm: false,
 };
 
+const HYPERSPEED_PRESETS = {
+  cyberpunk: {
+    onSpeedUp: () => {},
+    onSlowDown: () => {},
+    distortion: "turbulentDistortion",
+    length: 400,
+    roadWidth: 10,
+    islandWidth: 2,
+    lanesPerRoad: 3,
+    fov: 90,
+    fovSpeedUp: 150,
+    speedUp: 2,
+    carLightsFade: 0.4,
+    totalSideLightSticks: 20,
+    lightPairsPerRoadWay: 40,
+    shoulderLinesWidthPercentage: 0.05,
+    brokenLinesWidthPercentage: 0.1,
+    brokenLinesLengthPercentage: 0.5,
+    lightStickWidth: [0.12, 0.5],
+    lightStickHeight: [1.3, 1.7],
+    movingAwaySpeed: [60, 80],
+    movingCloserSpeed: [-120, -160],
+    carLightsLength: [400 * 0.03, 400 * 0.2],
+    carLightsRadius: [0.05, 0.14],
+    carWidthPercentage: [0.3, 0.5],
+    carShiftX: [-0.8, 0.8],
+    carFloorSeparation: [0, 5],
+    colors: {
+      roadColor: 0x080808,
+      islandColor: 0x0a0a0a,
+      background: 0x000000,
+      shoulderLines: 0x131318,
+      brokenLines: 0x131318,
+      leftCars: [0xd856bf, 0x6750a2, 0xc247ac],
+      rightCars: [0x03b3c3, 0x0e5ea5, 0x324555],
+      sticks: 0x03b3c3,
+    },
+  },
+  akira: {
+    onSpeedUp: () => {},
+    onSlowDown: () => {},
+    distortion: "mountainDistortion",
+    length: 400,
+    roadWidth: 9,
+    islandWidth: 2,
+    lanesPerRoad: 3,
+    fov: 90,
+    fovSpeedUp: 150,
+    speedUp: 2,
+    carLightsFade: 0.4,
+    totalSideLightSticks: 50,
+    lightPairsPerRoadWay: 50,
+    shoulderLinesWidthPercentage: 0.05,
+    brokenLinesWidthPercentage: 0.1,
+    brokenLinesLengthPercentage: 0.5,
+    lightStickWidth: [0.12, 0.5],
+    lightStickHeight: [1.3, 1.7],
+    movingAwaySpeed: [60, 80],
+    movingCloserSpeed: [-120, -160],
+    carLightsLength: [400 * 0.05, 400 * 0.15],
+    carLightsRadius: [0.05, 0.14],
+    carWidthPercentage: [0.3, 0.5],
+    carShiftX: [-0.2, 0.2],
+    carFloorSeparation: [0.05, 1],
+    colors: {
+      roadColor: 0x080808,
+      islandColor: 0x0a0a0a,
+      background: 0x000000,
+      shoulderLines: 0x131318,
+      brokenLines: 0x131318,
+      leftCars: [0xff102a, 0xeb383e, 0xff102a],
+      rightCars: [0xdadafa, 0xbebae3, 0x8f97e4],
+      sticks: 0xdadafa,
+    },
+  },
+  golden: {
+    onSpeedUp: () => {},
+    onSlowDown: () => {},
+    distortion: "deepDistortion",
+    length: 400,
+    roadWidth: 18,
+    islandWidth: 2,
+    lanesPerRoad: 3,
+    fov: 90,
+    fovSpeedUp: 150,
+    speedUp: 2,
+    carLightsFade: 0.4,
+    totalSideLightSticks: 50,
+    lightPairsPerRoadWay: 50,
+    shoulderLinesWidthPercentage: 0.05,
+    brokenLinesWidthPercentage: 0.1,
+    brokenLinesLengthPercentage: 0.5,
+    lightStickWidth: [0.12, 0.5],
+    lightStickHeight: [1.3, 1.7],
+    movingAwaySpeed: [60, 80],
+    movingCloserSpeed: [-120, -160],
+    carLightsLength: [400 * 0.05, 400 * 0.15],
+    carLightsRadius: [0.05, 0.14],
+    carWidthPercentage: [0.3, 0.5],
+    carShiftX: [-0.2, 0.2],
+    carFloorSeparation: [0.05, 1],
+    colors: {
+      roadColor: 0x080808,
+      islandColor: 0x0a0a0a,
+      background: 0x000000,
+      shoulderLines: 0x131318,
+      brokenLines: 0x131318,
+      leftCars: [0xff322f, 0xa33010, 0xa81508],
+      rightCars: [0xfdfdf0, 0xf3dea0, 0xe2bb88],
+      sticks: 0xfdfdf0,
+    },
+  },
+  split: {
+    onSpeedUp: () => {},
+    onSlowDown: () => {},
+    distortion: "LongRaceDistortion",
+    length: 400,
+    roadWidth: 10,
+    islandWidth: 5,
+    lanesPerRoad: 2,
+    fov: 90,
+    fovSpeedUp: 150,
+    speedUp: 2,
+    carLightsFade: 0.4,
+    totalSideLightSticks: 50,
+    lightPairsPerRoadWay: 70,
+    shoulderLinesWidthPercentage: 0.05,
+    brokenLinesWidthPercentage: 0.1,
+    brokenLinesLengthPercentage: 0.5,
+    lightStickWidth: [0.12, 0.5],
+    lightStickHeight: [1.3, 1.7],
+    movingAwaySpeed: [60, 80],
+    movingCloserSpeed: [-120, -160],
+    carLightsLength: [400 * 0.05, 400 * 0.15],
+    carLightsRadius: [0.05, 0.14],
+    carWidthPercentage: [0.3, 0.5],
+    carShiftX: [-0.2, 0.2],
+    carFloorSeparation: [0.05, 1],
+    colors: {
+      roadColor: 0x080808,
+      islandColor: 0x0a0a0a,
+      background: 0x000000,
+      shoulderLines: 0x131318,
+      brokenLines: 0x131318,
+      leftCars: [0xff5f73, 0xe74d60, 0xff102a],
+      rightCars: [0xa4e3e6, 0x80d1d4, 0x53c2c6],
+      sticks: 0xa4e3e6,
+    },
+  },
+  highway: {
+    onSpeedUp: () => {},
+    onSlowDown: () => {},
+    distortion: "turbulentDistortion",
+    length: 400,
+    roadWidth: 9,
+    islandWidth: 2,
+    lanesPerRoad: 3,
+    fov: 90,
+    fovSpeedUp: 150,
+    speedUp: 2,
+    carLightsFade: 0.4,
+    totalSideLightSticks: 50,
+    lightPairsPerRoadWay: 50,
+    shoulderLinesWidthPercentage: 0.05,
+    brokenLinesWidthPercentage: 0.1,
+    brokenLinesLengthPercentage: 0.5,
+    lightStickWidth: [0.12, 0.5],
+    lightStickHeight: [1.3, 1.7],
+    movingAwaySpeed: [60, 80],
+    movingCloserSpeed: [-120, -160],
+    carLightsLength: [400 * 0.05, 400 * 0.15],
+    carLightsRadius: [0.05, 0.14],
+    carWidthPercentage: [0.3, 0.5],
+    carShiftX: [-0.2, 0.2],
+    carFloorSeparation: [0.05, 1],
+    colors: {
+      roadColor: 0x080808,
+      islandColor: 0x0a0a0a,
+      background: 0x000000,
+      shoulderLines: 0x131318,
+      brokenLines: 0x131318,
+      leftCars: [0xdc5b20, 0xdca320, 0xdc2020],
+      rightCars: [0x334bf7, 0xe5e6ed, 0xbfc6f3],
+      sticks: 0xc5e8eb,
+    },
+  },
+};
+
 const BackgroundCustomizer = ({
   onClose,
   floatingLinesConfig: propFlConfig,
@@ -114,6 +302,8 @@ const BackgroundCustomizer = ({
   setGradientConfig: propSetGradientConfig,
   pixelSnowConfig: propPixelSnowConfig,
   setPixelSnowConfig: propSetPixelSnowConfig,
+  hyperspeedConfig: propHyperspeedConfig,
+  setHyperspeedConfig: propSetHyperspeedConfig,
 }) => {
   // --- STORE ---
   const {
@@ -132,6 +322,8 @@ const BackgroundCustomizer = ({
     setGradientConfig: storeSetGradientConfig,
     pixelSnowConfig: storePixelSnowConfig,
     setPixelSnowConfig: storeSetPixelSnowConfig,
+    hyperspeedConfig: storeHyperspeedConfig,
+    setHyperspeedConfig: storeSetHyperspeedConfig,
   } = useGameStore();
 
   // --- CONFIG RESOLUTION ---
@@ -149,6 +341,9 @@ const BackgroundCustomizer = ({
   const setGradientConfig = propSetGradientConfig || storeSetGradientConfig;
   const pixelSnowConfig = propPixelSnowConfig || storePixelSnowConfig;
   const setPixelSnowConfig = propSetPixelSnowConfig || storeSetPixelSnowConfig;
+  const hyperspeedConfig = propHyperspeedConfig || storeHyperspeedConfig;
+  const setHyperspeedConfig =
+    propSetHyperspeedConfig || storeSetHyperspeedConfig;
 
   // --- CONFIGURACIÓN FLOATING LINES ---
   const flConfig = floatingLinesConfig || DEFAULT_FL_CONFIG;
@@ -237,6 +432,38 @@ const BackgroundCustomizer = ({
     }
   };
 
+  // --- CONFIGURACIÓN HYPERSPEED ---
+  const hsConfig = hyperspeedConfig || HYPERSPEED_PRESETS.cyberpunk;
+
+  const updateHyperspeedPreset = (presetKey) => {
+    if (setHyperspeedConfig && HYPERSPEED_PRESETS[presetKey]) {
+      setHyperspeedConfig(HYPERSPEED_PRESETS[presetKey]);
+    }
+  };
+
+  // --- HELPERS HYPERSPEED ---
+  const updateHyperspeedConfig = (key, value) => {
+    if (setHyperspeedConfig) {
+      setHyperspeedConfig({ ...hsConfig, [key]: value });
+    }
+  };
+
+  const updateHyperspeedColor = (key, value) => {
+    if (setHyperspeedConfig) {
+      setHyperspeedConfig({
+        ...hsConfig,
+        colors: { ...hsConfig.colors, [key]: value },
+      });
+    }
+  };
+
+  const ensureHex = (color) => {
+    if (typeof color === "number") {
+      return "#" + color.toString(16).padStart(6, "0");
+    }
+    return color || "#000000";
+  };
+
   // --- RESET HANDLER ---
   const handleReset = () => {
     if (activeBackground === "floatinglines" && setFloatingLinesConfig) {
@@ -253,6 +480,8 @@ const BackgroundCustomizer = ({
       setGradientConfig(DEFAULT_GRADIENT_CONFIG);
     } else if (activeBackground === "pixelsnow" && setPixelSnowConfig) {
       setPixelSnowConfig(DEFAULT_SNOW_CONFIG);
+    } else if (activeBackground === "hyperspeed" && setHyperspeedConfig) {
+      setHyperspeedConfig(HYPERSPEED_PRESETS.cyberpunk);
     }
   };
 
@@ -1096,6 +1325,114 @@ const BackgroundCustomizer = ({
                 }}>
                 🌪️ Modo Tormenta
               </button>
+            </div>
+          </>
+        )}
+
+        {/* --- CONTENIDO PARA HYPERSPEED --- */}
+        {activeBackground === "hyperspeed" && (
+          <>
+            <div className="section">
+              <label>Estilo Visual</label>
+              <div className="toggles-row" style={{ flexWrap: "wrap" }}>
+                {Object.keys(HYPERSPEED_PRESETS).map((preset) => (
+                  <button
+                    key={preset}
+                    className={`toggle-btn ${JSON.stringify(hsConfig.colors) === JSON.stringify(HYPERSPEED_PRESETS[preset].colors) ? "active" : ""}`}
+                    onClick={() => updateHyperspeedPreset(preset)}>
+                    {preset.charAt(0).toUpperCase() + preset.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="section">
+              <label>Geometría</label>
+              <label>
+                Ancho Carretera <span>{hsConfig.roadWidth}</span>
+              </label>
+              <input
+                type="range"
+                min="5"
+                max="30"
+                step="1"
+                value={hsConfig.roadWidth}
+                onChange={(e) =>
+                  updateHyperspeedConfig(
+                    "roadWidth",
+                    parseFloat(e.target.value),
+                  )
+                }
+              />
+
+              <label>
+                Ancho Isla <span>{hsConfig.islandWidth}</span>
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                step="0.5"
+                value={hsConfig.islandWidth}
+                onChange={(e) =>
+                  updateHyperspeedConfig(
+                    "islandWidth",
+                    parseFloat(e.target.value),
+                  )
+                }
+              />
+
+              <label>
+                Carriles <span>{hsConfig.lanesPerRoad}</span>
+              </label>
+              <input
+                type="range"
+                min="1"
+                max="5"
+                step="1"
+                value={hsConfig.lanesPerRoad}
+                onChange={(e) =>
+                  updateHyperspeedConfig(
+                    "lanesPerRoad",
+                    parseInt(e.target.value),
+                  )
+                }
+              />
+            </div>
+
+            <div className="section">
+              <label>Distorsión</label>
+              <select
+                value={hsConfig.distortion}
+                onChange={(e) =>
+                  updateHyperspeedConfig("distortion", e.target.value)
+                }
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  borderRadius: "8px",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  color: "white",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  marginTop: "5px",
+                  cursor: "pointer",
+                }}>
+                <option style={{ color: "black" }} value="turbulentDistortion">
+                  Turbulent
+                </option>
+                <option style={{ color: "black" }} value="deepDistortion">
+                  Deep
+                </option>
+                <option style={{ color: "black" }} value="mountainDistortion">
+                  Mountain
+                </option>
+                <option style={{ color: "black" }} value="xyDistortion">
+                  XY
+                </option>
+                <option style={{ color: "black" }} value="LongRaceDistortion">
+                  Long Race
+                </option>
+              </select>
             </div>
           </>
         )}

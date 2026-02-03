@@ -71,6 +71,13 @@ const SHOP_DATA = {
       price: "Gratis",
       previewColor: "#ffffff",
     },
+    {
+      id: "hyperspeed",
+      name: "Hyperspeed",
+      description: "Velocidad luz y distorsión.",
+      price: "Gratis",
+      previewColor: "#d856bf",
+    },
   ],
   cursors: [
     {

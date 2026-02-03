@@ -7,7 +7,6 @@ import StaggeredMenu from "./components/UI/StaggeredMenu";
 import { AnimatePresence, motion } from "framer-motion";
 import "./styles/main.scss";
 import BackgroundCustomizer from "./components/UI/BackgroundCustomizer";
-
 import Dock from "./components/UI/Dock";
 import { FiStar, FiMusic, FiPlayCircle, FiEdit, FiLock } from "react-icons/fi";
 import ShopContainer from "./components/Shop/ShopContainer";
@@ -43,6 +42,7 @@ function App() {
   const [galaxyConfig, setGalaxyConfig] = useState(null);
   const [gradientConfig, setGradientConfig] = useState(null);
   const [pixelSnowConfig, setPixelSnowConfig] = useState(null);
+  const [hyperspeedConfig, setHyperspeedConfig] = useState(null);
 
   // --- HANDLERS ---
   const handleMenuClick = (itemId) => {
@@ -100,6 +100,7 @@ function App() {
           setGalaxyConfig(null);
           setGradientConfig(null);
           setPixelSnowConfig(null);
+          setHyperspeedConfig(null);
 
           lockGame();
         }
@@ -194,6 +195,7 @@ function App() {
               galaxyConfig={galaxyConfig}
               gradientConfig={gradientConfig}
               pixelSnowConfig={pixelSnowConfig}
+              hyperspeedConfig={hyperspeedConfig}
             />
 
             {/* --- MENU --- */}
@@ -202,7 +204,7 @@ function App() {
               onToggle={(val) => {
                 setIsMenuOpen(val);
                 if (val) {
-                  setShowBackgroundSettings(false); // Cerramos personalización si se abre el menú
+                  setShowBackgroundSettings(false);
                 }
               }}
               items={shopItems}
@@ -250,6 +252,7 @@ function App() {
                   "galaxy",
                   "gradient",
                   "pixelsnow",
+                  "hyperspeed",
                 ].includes(activeBackground) && (
                   <motion.div
                     initial={{ opacity: 0, x: 50 }}
@@ -281,6 +284,8 @@ function App() {
                         setGradientConfig={setGradientConfig}
                         pixelSnowConfig={pixelSnowConfig}
                         setPixelSnowConfig={setPixelSnowConfig}
+                        hyperspeedConfig={hyperspeedConfig}
+                        setHyperspeedConfig={setHyperspeedConfig}
                       />
                     </div>
                   </motion.div>
