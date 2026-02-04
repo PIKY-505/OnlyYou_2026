@@ -48,7 +48,7 @@ const MusicPlayer = ({ visible, onClose }) => {
   const containerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [volume, setVolume] = useState(0.05); // Volumen inicial MUY bajo (5%)
+  const [volume, setVolume] = useState(0.3); // Volumen inicial MUY bajo (5%)
   const [isMuted, setIsMuted] = useState(false);
 
   // Nuevos estados para la UI compacta

@@ -20,16 +20,21 @@ const SKINS = {
 };
 
 export default function GameOverlay() {
-  const { addCoins, activeCoinSkin } = useGameStore();
+  const { addCoins, activeCoinSkin, gameVolume, unlockAchievement, coins } =
+    useGameStore();
   const [entities, setEntities] = useState([]);
+  const [particles, setParticles] = useState([]);
+  const [combo, setCombo] = useState(1);
   const requestRef = useRef();
   const audioRef = useRef(null);
   const isMounted = useRef(false);
+  const comboTimeoutRef = useRef(null);
 
   useEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
+      if (comboTimeoutRef.current) clearTimeout(comboTimeoutRef.current);
     };
   }, []);
 
@@ -40,9 +45,22 @@ export default function GameOverlay() {
   useEffect(() => {
     if (currentSkin.sound) {
       audioRef.current = new Audio(currentSkin.sound);
-      audioRef.current.volume = 0.4;
+      audioRef.current.volume = gameVolume;
     }
-  }, [currentSkin]);
+  }, [currentSkin, gameVolume]);
+
+  // --- ADMIN CHEAT: Ctrl + Alt + K (Koins) ---
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.altKey && (e.key === "k" || e.key === "K")) {
+        addCoins(1000000);
+        unlockAchievement("hacker"); // LOGRO HACKER
+        console.log("CHEAT ACTIVATED: +1,000,000 Coins");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [addCoins, unlockAchievement]);
 
   // Inicializar monedas
   useEffect(() => {
@@ -102,6 +120,20 @@ export default function GameOverlay() {
       }),
     );
 
+    // Actualizar partículas
+    setParticles((prev) => {
+      if (prev.length === 0) return prev;
+      return prev
+        .map((p) => ({
+          ...p,
+          x: p.x + p.vx,
+          y: p.y + p.vy,
+          vy: p.vy + 0.5, // Gravedad
+          life: p.life - 0.03, // Desvanecimiento
+        }))
+        .filter((p) => p.life > 0);
+    });
+
     requestRef.current = requestAnimationFrame(update);
   }, []);
 
@@ -111,13 +143,54 @@ export default function GameOverlay() {
   }, [update]);
 
   const handleCoinClick = (entity) => {
-    addCoins(entity.value);
+    // --- SISTEMA DE COMBO ---
+    let nextCombo = combo + 1;
+    if (nextCombo > 10) nextCombo = 10; // Máximo x10
+    setCombo(nextCombo);
+
+    // Reiniciar temporizador del combo
+    if (comboTimeoutRef.current) clearTimeout(comboTimeoutRef.current);
+
+    // Dificultad: Menos tiempo para mantener el combo cuanto más alto sea (Min 0.5s)
+    const timeWindow = Math.max(500, 2500 - nextCombo * 200);
+
+    comboTimeoutRef.current = setTimeout(() => {
+      if (isMounted.current) setCombo(1);
+    }, timeWindow);
+
+    // Puntos con multiplicador
+    const earned = entity.value * nextCombo;
+    addCoins(earned);
+
+    // --- CHEQUEO DE LOGROS ---
+    unlockAchievement("first_coin"); // Primer logro siempre
+    if (nextCombo >= 10) unlockAchievement("velocista");
+
+    const currentTotal = coins + earned; // Calculamos el total actual
+    if (currentTotal >= 100) unlockAchievement("rico");
+    if (currentTotal >= 1000) unlockAchievement("millonario");
 
     if (entity.type === "shiny" && audioRef.current) {
       const soundClone = audioRef.current.cloneNode();
-      soundClone.volume = 0.4;
+      soundClone.volume = gameVolume;
       soundClone.play().catch((e) => console.log("Audio error:", e));
     }
+
+    // Generar partículas
+    const newParticles = [];
+    const pColor = entity.type === "shiny" ? "#ffd700" : "#ffffff";
+    for (let i = 0; i < 12; i++) {
+      newParticles.push({
+        id: `${Date.now()}-${i}-${Math.random()}`,
+        x: entity.x + COIN_SIZE / 2,
+        y: entity.y + COIN_SIZE / 2,
+        vx: (Math.random() - 0.5) * 15,
+        vy: (Math.random() - 0.5) * 15,
+        life: 1.0,
+        color: pColor,
+      });
+    }
+    setParticles((prev) => [...prev, ...newParticles]);
 
     // 3. Desaparecer la moneda temporalmente (eliminar del array)
     setEntities((prev) => prev.filter((e) => e.id !== entity.id));
@@ -129,15 +202,25 @@ export default function GameOverlay() {
       setEntities((prev) => {
         const width = window.innerWidth;
         const height = window.innerHeight;
+
+        // Dificultad: Velocidad aumenta con el combo (+15% por nivel)
+        const speedMultiplier = 1 + nextCombo * 0.15;
+
         const newEntity = {
           ...entity,
           // Generamos un ID único para forzar a React a renderizarlo de nuevo
           id: `${entity.type}-${Date.now()}-${Math.random()}`,
           x: Math.random() * (width - COIN_SIZE),
           y: Math.random() * (height - COIN_SIZE),
-          // Cambiamos ligeramente la dirección al azar
-          vx: (Math.random() - 0.5) * (entity.type === "shiny" ? 12 : 8),
-          vy: (Math.random() - 0.5) * (entity.type === "shiny" ? 12 : 8),
+          // Cambiamos ligeramente la dirección al azar y aplicamos multiplicador de velocidad
+          vx:
+            (Math.random() - 0.5) *
+            (entity.type === "shiny" ? 12 : 8) *
+            speedMultiplier,
+          vy:
+            (Math.random() - 0.5) *
+            (entity.type === "shiny" ? 12 : 8) *
+            speedMultiplier,
         };
         return [...prev, newEntity];
       });
@@ -156,6 +239,51 @@ export default function GameOverlay() {
         pointerEvents: "auto",
         overflow: "hidden",
       }}>
+      {/* --- COMBO UI --- */}
+      <div
+        style={{
+          position: "absolute",
+          top: "80px",
+          right: "40px",
+          pointerEvents: "none",
+          textAlign: "right",
+          zIndex: 100,
+        }}>
+        {combo > 1 && (
+          <div
+            style={{
+              fontFamily: "var(--font-main)",
+              fontSize: "3rem",
+              fontWeight: "900",
+              color: "#f700ff",
+              textShadow: "0 0 20px rgba(247, 0, 255, 0.8)",
+              transform: `scale(${1 + combo * 0.1})`,
+              transition:
+                "transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            }}>
+            x{combo}
+          </div>
+        )}
+      </div>
+
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          style={{
+            position: "absolute",
+            left: p.x,
+            top: p.y,
+            width: "8px",
+            height: "8px",
+            backgroundColor: p.color,
+            borderRadius: "50%",
+            opacity: p.life,
+            pointerEvents: "none",
+            transform: "translate(-50%, -50%)",
+            boxShadow: `0 0 8px ${p.color}`,
+          }}
+        />
+      ))}
       {entities.map((entity) => (
         <img
           key={entity.id}

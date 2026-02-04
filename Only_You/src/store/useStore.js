@@ -17,6 +17,10 @@ export const useGameStore = create((set) => ({
   coins: 0,
   addCoins: (amount) => set((state) => ({ coins: state.coins + amount })),
 
+  // Volumen del juego (0.0 a 1.0)
+  gameVolume: 0.4,
+  setGameVolume: (vol) => set({ gameVolume: vol }),
+
   // Skin actual de las monedas (por defecto 'dase')
   activeCoinSkin: "dase",
   setCoinSkin: (skin) => set({ activeCoinSkin: skin }),
@@ -33,6 +37,34 @@ export const useGameStore = create((set) => ({
         };
       }
       return state; // No hay suficientes monedas
+    }),
+
+  // --- LOGROS Y NOTIFICACIONES ---
+  achievements: [], // Array de IDs de logros desbloqueados
+  notification: null, // { type: 'achievement', id: 'rico' }
+
+  unlockAchievement: (id) =>
+    set((state) => {
+      if (state.achievements.includes(id)) return state; // Ya desbloqueado
+      return {
+        achievements: [...state.achievements, id],
+        notification: { type: "achievement", id },
+      };
+    }),
+
+  clearNotification: () => set({ notification: null }),
+
+  // --- RESETEAR PROGRESO (Opción de Ajustes) ---
+  resetProgress: () =>
+    set({
+      coins: 0,
+      ownedItems: ["gradient", "default", "none", "dase"],
+      activeBackground: "gradient",
+      activeCursor: "default",
+      activeTrail: "none",
+      activeCoinSkin: "dase",
+      achievements: [],
+      isGameActive: false,
     }),
 
   // --- INVENTARIO EQUIPADO ---

@@ -20,6 +20,8 @@ import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
 import LoadingScreen from "./components/UI/LoadingScreen";
 import MusicPlayer from "./components/UI/MusicPlayer";
+import SettingsMenu from "./components/UI/SettingsMenu";
+import AchievementToast from "./components/UI/AchievementToast";
 
 const shopItems = [
   { id: "backgrounds", label: "Fondos", ariaLabel: "Galería de Fondos" },
@@ -248,6 +250,12 @@ function App() {
               pixelSnowConfig={pixelSnowConfig}
               hyperspeedConfig={hyperspeedConfig}
             />
+
+            {/* --- SETTINGS MENU (Top Left) --- */}
+            <SettingsMenu />
+
+            {/* --- NOTIFICACIONES DE LOGROS --- */}
+            <AchievementToast />
 
             {/* --- MENU --- */}
             <StaggeredMenu
