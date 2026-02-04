@@ -164,10 +164,14 @@ export default function GameOverlay() {
 
     // --- CHEQUEO DE LOGROS ---
     unlockAchievement("first_coin"); // Primer logro siempre
+    if (nextCombo >= 5) unlockAchievement("combo_5");
     if (nextCombo >= 10) unlockAchievement("velocista");
+
+    if (entity.type === "shiny") unlockAchievement("shiny_hunter");
 
     const currentTotal = coins + earned; // Calculamos el total actual
     if (currentTotal >= 100) unlockAchievement("rico");
+    if (currentTotal >= 500) unlockAchievement("half_k");
     if (currentTotal >= 1000) unlockAchievement("millonario");
 
     if (entity.type === "shiny" && audioRef.current) {
@@ -298,6 +302,7 @@ export default function GameOverlay() {
             transform: `translate3d(${entity.x}px, ${entity.y}px, 0)`,
             width: COIN_SIZE,
             height: COIN_SIZE,
+            objectFit: "contain", // Mantiene la proporción original (rectangular) sin deformar
             cursor: "pointer",
             userSelect: "none",
             filter:
