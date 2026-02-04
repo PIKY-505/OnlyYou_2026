@@ -8,7 +8,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import "./styles/main.scss";
 import BackgroundCustomizer from "./components/UI/BackgroundCustomizer";
 import Dock from "./components/UI/Dock";
-import { FiStar, FiMusic, FiPlayCircle, FiEdit, FiLock } from "react-icons/fi";
+import {
+  FiStar,
+  FiMusic,
+  FiEdit,
+  FiLock,
+  FiShoppingCart,
+} from "react-icons/fi";
+import { FaGamepad } from "react-icons/fa";
 import ShopContainer from "./components/Shop/ShopContainer";
 import TrailSystem from "./components/Effects/TrailSystem";
 import LoadingScreen from "./components/UI/LoadingScreen";
@@ -18,6 +25,7 @@ const shopItems = [
   { id: "backgrounds", label: "Fondos", ariaLabel: "Galería de Fondos" },
   { id: "cursors", label: "Cursores", ariaLabel: "Personalizar Cursor" },
   { id: "trails", label: "Mascotas", ariaLabel: "Personalizar Mascota" },
+  { id: "skins", label: "Monedas", ariaLabel: "Personalizar Monedas" },
 ];
 
 const socialItems = [
@@ -27,12 +35,22 @@ const socialItems = [
 
 function App() {
   // --- STORE & STATE ---
-  const { isUnlocked, openShop, closeShop, lockGame, activeBackground } =
-    useGameStore();
+  const {
+    isUnlocked,
+    openShop,
+    closeShop,
+    lockGame,
+    activeBackground,
+    toggleGame,
+    isGameActive,
+    activeShop,
+  } = useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
   const [showBackgroundSettings, setShowBackgroundSettings] = useState(false);
   const [previousInfoState, setPreviousInfoState] = useState(false);
+  const [wasInfoVisibleBeforeGame, setWasInfoVisibleBeforeGame] =
+    useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const [floatingLinesConfig, setFloatingLinesConfig] = useState(null);
@@ -68,17 +86,50 @@ function App() {
     {
       icon: <FiStar size={22} />,
       label: "Texto",
-      onClick: () => setShowInfo(!showInfo),
+      onClick: () => {
+        closeShop();
+        // Si el juego está activo, lo cerramos para mostrar el texto
+        if (isGameActive) {
+          toggleGame();
+        } else {
+          setShowInfo(!showInfo);
+        }
+      },
     },
     {
       icon: <FiMusic size={22} />,
       label: "Música",
-      onClick: () => setShowMusicPlayer(!showMusicPlayer),
+      onClick: () => {
+        closeShop();
+        setShowMusicPlayer(!showMusicPlayer);
+      },
     },
     {
-      icon: <FiPlayCircle size={22} />,
+      icon: <FiShoppingCart size={22} />,
+      label: "Tienda",
+      onClick: () => {
+        if (activeShop) closeShop();
+        setIsMenuOpen(!isMenuOpen);
+      },
+    },
+    {
+      icon: (
+        <FaGamepad
+          size={22}
+          color={isGameActive ? "#f700ff" : "currentColor"}
+        />
+      ),
       label: "Juego",
-      onClick: () => console.log("Toggle Game"),
+      onClick: () => {
+        closeShop();
+        if (!isGameActive) {
+          setWasInfoVisibleBeforeGame(showInfo);
+          setShowInfo(true);
+        } else {
+          setShowInfo(wasInfoVisibleBeforeGame);
+        }
+        toggleGame();
+      },
     },
     {
       icon: <FiEdit size={22} />,

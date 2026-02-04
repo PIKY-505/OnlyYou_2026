@@ -424,28 +424,6 @@ const StaggeredMenu = ({
     onMenuClose,
   ]);
 
-  React.useEffect(() => {
-    if (!closeOnClickAway || !open) return;
-
-    const handleClickOutside = (event) => {
-      const isInsideMenu =
-        panelRef.current && panelRef.current.contains(event.target);
-      const isInsideButton =
-        toggleBtnRef.current && toggleBtnRef.current.contains(event.target);
-
-      const isInsideShop = event.target.closest(".shop-overlay");
-
-      if (!isInsideMenu && !isInsideButton && !isInsideShop) {
-        closeMenu();
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [closeOnClickAway, open, closeMenu]);
-
   return (
     <div
       className={
@@ -456,6 +434,21 @@ const StaggeredMenu = ({
       style={accentColor ? { ["--sm-accent"]: accentColor } : undefined}
       data-position={position}
       data-open={open || undefined}>
+      {/* --- BACKDROP (Capa para cerrar al hacer click fuera) --- */}
+      {open && closeOnClickAway && (
+        <div
+          className="sm-backdrop"
+          onClick={() => closeMenu()}
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 5, // Debajo del panel (z-10) pero encima del contenido
+            pointerEvents: "auto",
+          }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* --- PRELAYERS --- */}
       <div ref={preLayersRef} className="sm-prelayers" aria-hidden="true">
         {(() => {

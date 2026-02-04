@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ShinyText from "../UI/ShinyText"; // Reutilizamos tu texto brillante
 import "../../styles/MainContent.scss";
+import { useGameStore } from "../../store/useStore";
+import GameOverlay from "./GameOverlay"; // CORREGIDO: Está en la misma carpeta Layout
 
 // Carga dinámica de imágenes desde la carpeta assets/photos
 const photoModules = import.meta.glob(
@@ -14,6 +16,7 @@ const photos = Object.values(photoModules).map((module) => module.default);
 
 const MainContent = () => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const { isGameActive } = useGameStore();
 
   // Lógica para asegurar scroll infinito suave:
   // 1. Si hay pocas fotos, las repetimos hasta tener una base sólida (min 10 items)
@@ -27,9 +30,27 @@ const MainContent = () => {
   const displayPhotos = [...baseList, ...baseList];
 
   return (
-    <div className="main-container">
-      {/* Estilos inyectados para la galería */}
-      <style>{`
+    <AnimatePresence mode="wait">
+      {isGameActive ? (
+        <motion.div
+          key="game"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ width: "100%", height: "100%" }}>
+          <GameOverlay />
+        </motion.div>
+      ) : (
+        <motion.div
+          key="content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="main-container">
+          {/* Estilos inyectados para la galería */}
+          <style>{`
         .gallery-container {
           margin-top: 0; /* El espaciado lo controla el contenedor padre ahora */
           width: 100%;
@@ -73,124 +94,126 @@ const MainContent = () => {
         }
       `}</style>
 
-      {/* TARJETA DE CRISTAL (Glass Card) */}
-      <div className="glass-card">
-        {/* CABECERA */}
-        <header>
-          {/* Título Lorem Ipsum */}
-          <h1>Lorem Ipsum</h1>
-          <div className="subtitle">
-            Dolor sit amet, consectetur adipiscing elit
-          </div>
-        </header>
+          {/* TARJETA DE CRISTAL (Glass Card) */}
+          <div className="glass-card">
+            {/* CABECERA */}
+            <header>
+              {/* Título Lorem Ipsum */}
+              <h1>Lorem Ipsum</h1>
+              <div className="subtitle">
+                Dolor sit amet, consectetur adipiscing elit
+              </div>
+            </header>
 
-        {/* CUERPO DEL TEXTO */}
-        <div className="content-body">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat.
-          </p>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt mollit
-            anim id est laborum.
-          </p>
-        </div>
-      </div>
-
-      {/* GALERÍA DE FOTOS (AHORA FUERA DE LA TARJETA) */}
-      {photos.length > 0 && (
-        <div className="gallery-container">
-          <div className="gallery-track">
-            {displayPhotos.map((src, index) => (
-              <img
-                key={index}
-                src={src}
-                alt={`Memory ${index}`}
-                className="gallery-item"
-                onClick={() => setSelectedImage(src)}
-              />
-            ))}
+            {/* CUERPO DEL TEXTO */}
+            <div className="content-body">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+              <p>
+                Duis aute irure dolor in reprehenderit in voluptate velit esse
+                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+                cupidatat non proident, sunt in culpa qui officia deserunt
+                mollit anim id est laborum.
+              </p>
+            </div>
           </div>
-        </div>
+
+          {/* GALERÍA DE FOTOS (AHORA FUERA DE LA TARJETA) */}
+          {photos.length > 0 && (
+            <div className="gallery-container">
+              <div className="gallery-track">
+                {displayPhotos.map((src, index) => (
+                  <img
+                    key={index}
+                    src={src}
+                    alt={`Memory ${index}`}
+                    className="gallery-item"
+                    onClick={() => setSelectedImage(src)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* LIGHTBOX (VISOR DE FOTOS) */}
+          <AnimatePresence>
+            {selectedImage && (
+              <motion.div
+                initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
+                exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                onClick={() => setSelectedImage(null)}
+                style={{
+                  position: "fixed",
+                  inset: 0,
+                  zIndex: 10000,
+                  background: "rgba(0, 0, 0, 0.7)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "zoom-out",
+                }}>
+                <motion.img
+                  src={selectedImage}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                  style={{
+                    maxHeight: "85vh",
+                    maxWidth: "90vw",
+                    borderRadius: "16px",
+                    boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                  }}
+                  onClick={(e) => e.stopPropagation()} // Evitar cierre al hacer click en la foto
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       )}
-
-      {/* LIGHTBOX (VISOR DE FOTOS) */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            onClick={() => setSelectedImage(null)}
-            style={{
-              position: "fixed",
-              inset: 0,
-              zIndex: 10000,
-              background: "rgba(0, 0, 0, 0.7)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "zoom-out",
-            }}>
-            <motion.img
-              src={selectedImage}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              style={{
-                maxHeight: "85vh",
-                maxWidth: "90vw",
-                borderRadius: "16px",
-                boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-                border: "1px solid rgba(255,255,255,0.1)",
-              }}
-              onClick={(e) => e.stopPropagation()} // Evitar cierre al hacer click en la foto
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+    </AnimatePresence>
   );
 };
 

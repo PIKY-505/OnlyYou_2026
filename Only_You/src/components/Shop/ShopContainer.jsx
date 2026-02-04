@@ -7,6 +7,7 @@ import {
   FiMousePointer,
   FiSlash,
   FiHeart,
+  FiDisc,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/ShopContainer.scss";
@@ -26,56 +27,64 @@ const SHOP_DATA = {
       id: "gradient",
       name: "Original Gradient",
       description: "El clásico atemporal.",
-      price: "Gratis",
+      price: 0,
+      type: "background",
       previewColor: "linear-gradient(45deg, #8629b1, #f700ff)",
     },
     {
       id: "galaxy",
       name: "Galaxy",
       description: "Un viaje a las estrellas.",
-      price: "Gratis",
+      price: 50,
+      type: "background",
       previewColor: "#000", // Placeholder negro
     },
     {
       id: "silk",
       name: "Silk",
       description: "Suavidad y elegancia.",
-      price: "Gratis",
+      price: 100,
+      type: "background",
       previewColor: "#ff99cc",
     },
     {
       id: "ballpit",
       name: "Ball Pit",
       description: "Física interactiva y relajante.",
-      price: "Gratis",
+      price: 150,
+      type: "background",
       previewColor: "#29b1ff",
     },
     {
       id: "floatinglines",
       name: "Floating Lines",
       description: "Ondas de energía interactivas.",
-      price: "Gratis",
+      price: 200,
+      type: "background",
       previewColor: "#bd71ff",
     },
     {
       id: "lightpillars",
       name: "Light Pillars",
       description: "Pilares de luz etéreos.",
-      price: "Gratis",
+      price: 250,
+      type: "background",
       previewColor: "#00ffff",
     },
     {
       id: "pixelsnow",
       name: "Pixel Snow",
       description: "Nevada suave y distante.",
-      price: "Gratis",
+      price: 300,
+      type: "background",
       previewColor: "#ffffff",
     },
     {
       id: "hyperspeed",
       name: "Hyperspeed",
       description: "Velocidad luz y distorsión.",
-      price: "Gratis",
+      price: 500,
+      type: "background",
       previewColor: "#d856bf",
     },
   ],
@@ -84,7 +93,8 @@ const SHOP_DATA = {
       id: "default",
       name: "Ratón Estándar",
       description: "El cursor de toda la vida.",
-      price: "Gratis",
+      price: 0,
+      type: "cursor",
       previewColor: "transparent",
       icon: <FiMousePointer />,
     },
@@ -94,7 +104,8 @@ const SHOP_DATA = {
       id: "none",
       name: "Ninguno",
       description: "Sin rastro, limpio y rápido.",
-      price: "Gratis",
+      price: 0,
+      type: "trail",
       previewColor: "transparent",
       icon: <FiSlash />,
     },
@@ -102,7 +113,8 @@ const SHOP_DATA = {
       id: "apple-cat",
       name: "Gato Manzana",
       description: "Un gatito adorable en una manzana.",
-      price: "Gratis",
+      price: 100,
+      type: "trail",
       previewColor: "#ffadad",
       icon: <img src={appleCat} alt="Apple Cat" style={{ width: "40px" }} />,
     },
@@ -110,7 +122,8 @@ const SHOP_DATA = {
       id: "jump-cat",
       name: "Gato Saltarín",
       description: "Siempre lleno de energía.",
-      price: "Gratis",
+      price: 100,
+      type: "trail",
       previewColor: "#a89c8d",
       icon: <img src={jumpCat} alt="Jump Cat" style={{ width: "40px" }} />,
     },
@@ -118,7 +131,8 @@ const SHOP_DATA = {
       id: "rolling-cat",
       name: "Gato Rodante",
       description: "Rodando hacia tu corazón.",
-      price: "Gratis",
+      price: 100,
+      type: "trail",
       previewColor: "#ffecb6",
       icon: (
         <img src={rollingCat} alt="Rolling Cat" style={{ width: "40px" }} />
@@ -128,7 +142,8 @@ const SHOP_DATA = {
       id: "duck",
       name: "Pato",
       description: "Cuack cuack.",
-      price: "Gratis",
+      price: 100,
+      type: "trail",
       previewColor: "#ebe371",
       icon: <img src={duck} alt="Duck" style={{ width: "40px" }} />,
     },
@@ -136,7 +151,8 @@ const SHOP_DATA = {
       id: "pompom",
       name: "Pompom",
       description: "Suave y esponjoso.",
-      price: "Gratis",
+      price: 100,
+      type: "trail",
       previewColor: "#e3e4b2",
       icon: <img src={pompom} alt="Pompom" style={{ width: "40px" }} />,
     },
@@ -144,9 +160,21 @@ const SHOP_DATA = {
       id: "skeleton-run",
       name: "Esqueleto",
       description: "Spooky scary skeletons.",
-      price: "Gratis",
+      price: 100,
+      type: "trail",
       previewColor: "#a3a3a3",
       icon: <img src={skeletonRun} alt="Skeleton" style={{ width: "40px" }} />,
+    },
+  ],
+  skins: [
+    {
+      id: "dase",
+      name: "Dase Original",
+      description: "La moneda original.",
+      price: 0,
+      type: "skin",
+      previewColor: "#ffd700",
+      icon: <FiDisc />,
     },
   ],
 };
@@ -155,6 +183,7 @@ const TABS = [
   { id: "backgrounds", label: "Fondos", icon: <FiImage /> },
   { id: "cursors", label: "Cursores", icon: <FiMousePointer /> },
   { id: "trails", label: "Mascotas", icon: <FiHeart /> },
+  { id: "skins", label: "Monedas", icon: <FiDisc /> },
 ];
 
 const ShopContainer = () => {
@@ -168,6 +197,11 @@ const ShopContainer = () => {
     setCursor,
     activeTrail,
     setTrail,
+    coins,
+    buyItem,
+    ownedItems,
+    activeCoinSkin,
+    setCoinSkin,
   } = useGameStore();
 
   // --- STATE ---
@@ -181,16 +215,26 @@ const ShopContainer = () => {
 
   const currentItems = SHOP_DATA[displayShop] || [];
 
-  const handleEquip = (itemId) => {
-    if (activeShop === "backgrounds") setBackground(itemId);
-    if (activeShop === "cursors") setCursor(itemId);
-    if (activeShop === "trails") setTrail(itemId);
+  const handleItemClick = (item) => {
+    if (ownedItems.includes(item.id)) {
+      // Equipar
+      if (activeShop === "backgrounds") setBackground(item.id);
+      if (activeShop === "cursors") setCursor(item.id);
+      if (activeShop === "trails") setTrail(item.id);
+      if (activeShop === "skins") setCoinSkin(item.id);
+    } else {
+      // Comprar
+      if (coins >= item.price) {
+        buyItem(item);
+      }
+    }
   };
 
   const isEquipped = (itemId) => {
     if (activeShop === "backgrounds") return activeBackground === itemId;
     if (activeShop === "cursors") return activeCursor === itemId;
     if (activeShop === "trails") return activeTrail === itemId;
+    if (activeShop === "skins") return activeCoinSkin === itemId;
     return false;
   };
 
@@ -205,7 +249,7 @@ const ShopContainer = () => {
           <div
             className="click-outside-layer"
             onClick={closeShop}
-            style={{ position: "absolute", inset: 0 }}
+            style={{ position: "absolute", inset: 0, pointerEvents: "auto" }}
           />
 
           <motion.div
@@ -238,6 +282,17 @@ const ShopContainer = () => {
                 ))}
               </div>
 
+              <div
+                className="coin-display"
+                style={{
+                  color: "#ffd700",
+                  fontWeight: "bold",
+                  fontSize: "1.2rem",
+                  marginRight: "20px",
+                }}>
+                {coins} 🪙
+              </div>
+
               <button onClick={closeShop} className="close-btn">
                 <FiX />
               </button>
@@ -249,7 +304,9 @@ const ShopContainer = () => {
                 ? "Fondos"
                 : displayShop === "cursors"
                   ? "Cursores"
-                  : "Mascotas"}
+                  : displayShop === "trails"
+                    ? "Mascotas"
+                    : "Monedas"}
             </div>
 
             {/* --- GRID --- */}
@@ -272,7 +329,7 @@ const ShopContainer = () => {
                     <div
                       key={item.id}
                       className={`shop-item ${isEquipped(item.id) ? "equipped" : ""}`}
-                      onClick={() => handleEquip(item.id)}>
+                      onClick={() => handleItemClick(item)}>
                       <div
                         className="item-preview"
                         style={{ background: item.previewColor }}>
@@ -290,7 +347,20 @@ const ShopContainer = () => {
                       <div className="item-info">
                         <h3>{item.name}</h3>
                         <p>{item.description}</p>
-                        <span className="price-tag">{item.price}</span>
+                        {ownedItems.includes(item.id) ? (
+                          <span
+                            className="price-tag"
+                            style={{
+                              color: "#00e676",
+                              background: "rgba(0, 230, 118, 0.15)",
+                            }}>
+                            {isEquipped(item.id) ? "Equipado" : "En propiedad"}
+                          </span>
+                        ) : (
+                          <span className="price-tag">
+                            {item.price} Monedas
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}
