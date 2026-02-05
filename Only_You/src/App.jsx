@@ -51,6 +51,8 @@ function App() {
     addCoins,
     unlockAchievement,
     achievements,
+    setCursor,
+    activeCursor,
   } = useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
@@ -69,6 +71,23 @@ function App() {
   const [pixelSnowConfig, setPixelSnowConfig] = useState(null);
   const [hyperspeedConfig, setHyperspeedConfig] = useState(null);
 
+  // --- SETTINGS STATE ---
+  const [goldShopEnabled, setGoldShopEnabled] = useState(true);
+  const [previousCursor, setPreviousCursor] = useState("default");
+
+  const togglePrestigeCursor = (enable) => {
+    if (enable) {
+      // Guardamos el cursor actual si no es el de prestigio
+      if (activeCursor !== "cursor_prestige") {
+        setPreviousCursor(activeCursor);
+      }
+      setCursor("cursor_prestige");
+    } else {
+      // Restauramos el anterior
+      setCursor(previousCursor || "default");
+    }
+  };
+
   // --- GLOBAL PRESTIGE CHECK ---
   // Comprueba automáticamente si tienes todos los logros para darte el de Prestigio
   useEffect(() => {
@@ -79,9 +98,11 @@ function App() {
 
       if (hasAll) {
         unlockAchievement("prestige");
+        // Auto-equipar el cursor secreto de prestigio (collar de diamantes)
+        if (setCursor) setCursor("cursor_prestige");
       }
     }
-  }, [achievements, isUnlocked, unlockAchievement]);
+  }, [achievements, isUnlocked, unlockAchievement, setCursor]);
 
   // --- GLOBAL CHEAT: Konami Code (↑ ↑ ↓ ↓ ← → ← → B A) ---
   const konamiIndex = useRef(0);
@@ -313,7 +334,11 @@ function App() {
             />
 
             {/* --- SETTINGS MENU (Top Left) --- */}
-            <SettingsMenu />
+            <SettingsMenu 
+              goldShopEnabled={goldShopEnabled}
+              setGoldShopEnabled={setGoldShopEnabled}
+              onTogglePrestige={togglePrestigeCursor}
+            />
 
             {/* --- NOTIFICACIONES DE LOGROS --- */}
             <AchievementToast />
@@ -342,7 +367,7 @@ function App() {
 
             {/* --- COMPONENTS --- */}
             <CursorController />
-            <ShopContainer />
+            <ShopContainer enableGoldTheme={goldShopEnabled} />
             <TrailSystem />
             <AnimatePresence>
               {showInfo && (

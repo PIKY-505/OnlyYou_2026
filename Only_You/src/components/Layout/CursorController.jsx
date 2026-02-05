@@ -12,9 +12,11 @@ import {
   FiNavigation,
   FiAperture,
 } from "react-icons/fi";
+import { FaTrophy } from "react-icons/fa";
 import TargetCursor from "./TargetCursor";
 import SplashCursor from "./SplashCursor";
 import Crosshair from "./Crosshair";
+import PrestigeCursor from "./PrestigeCursor";
 
 // --- ASSETS ---
 import ringCursor from "../../assets/img/cursor/ring.gif";
@@ -80,6 +82,16 @@ export const CURSOR_CONFIG = {
     icon: <FiMaximize />,
     type: "custom", // Nuevo tipo para componentes completos
     component: TargetCursor,
+  },
+  cursor_prestige: {
+    name: "Prestigio",
+    price: 0,
+    desc: "Símbolo de máxima excelencia.",
+    icon: <FaTrophy />,
+    type: "custom",
+    component: PrestigeCursor,
+    requiresAchievement: "prestige", // Propiedad especial para filtrado
+    hiddenInShop: true, // No aparecerá en la lista de compra
   },
 };
 

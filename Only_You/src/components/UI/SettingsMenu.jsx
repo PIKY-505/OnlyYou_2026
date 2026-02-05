@@ -13,13 +13,17 @@ import { ACHIEVEMENTS_DATA } from "../../data/achievements";
 import { SHOP_DATA } from "../Shop/ShopContainer";
 import "../../styles/SettingsMenu.scss";
 
-const SettingsMenu = () => {
+const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showDoc, setShowDoc] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const menuRef = useRef(null);
-  const { gameVolume, setGameVolume, resetProgress, achievements, ownedItems } =
+  const { gameVolume, setGameVolume, resetProgress, achievements, ownedItems, activeCursor } =
     useGameStore();
+
+  const isPrestigeUnlocked = achievements.includes("prestige");
+  const isCollectorUnlocked = achievements.includes("collector");
+  const isPrestigeActive = activeCursor === "cursor_prestige";
 
   // Cerrar al hacer click fuera
   useEffect(() => {
@@ -61,6 +65,25 @@ const SettingsMenu = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}>
+              
+              {/* Toggles Especiales */}
+              <div style={{ marginBottom: "15px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <ToggleItem
+                  label="Cursor Prestigio"
+                  isActive={isPrestigeActive}
+                  isLocked={!isPrestigeUnlocked}
+                  onToggle={() => onTogglePrestige(!isPrestigeActive)}
+                  color="#f700ff"
+                />
+                <ToggleItem
+                  label="Tienda Dorada"
+                  isActive={goldShopEnabled}
+                  isLocked={!isCollectorUnlocked}
+                  onToggle={() => setGoldShopEnabled(!goldShopEnabled)}
+                  color="#ffd700"
+                />
+              </div>
+
               {/* Volumen */}
               <div className="setting-item">
                 <div className="label">
@@ -258,5 +281,40 @@ const SettingsMenu = () => {
     </>
   );
 };
+
+const ToggleItem = ({ label, isActive, isLocked, onToggle, color }) => (
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", opacity: isLocked ? 0.5 : 1 }}>
+    <span style={{ fontSize: "0.9rem", fontWeight: 500, display: "flex", alignItems: "center", gap: "8px", color: "white" }}>
+      {label} {isLocked && <FaLock size={10} style={{ opacity: 0.7 }} />}
+    </span>
+    
+    <div
+      onClick={!isLocked ? onToggle : undefined}
+      style={{
+        width: "40px",
+        height: "22px",
+        background: isActive ? color : "rgba(255,255,255,0.2)",
+        borderRadius: "12px",
+        position: "relative",
+        cursor: isLocked ? "not-allowed" : "pointer",
+        transition: "background 0.3s ease",
+      }}
+    >
+      <motion.div
+        animate={{ x: isActive ? 18 : 2 }}
+        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        style={{
+          width: "18px",
+          height: "18px",
+          background: "white",
+          borderRadius: "50%",
+          position: "absolute",
+          top: "2px",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+        }}
+      />
+    </div>
+  </div>
+);
 
 export default SettingsMenu;

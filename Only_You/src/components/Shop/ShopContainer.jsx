@@ -126,6 +126,8 @@ export const SHOP_DATA = {
       type: "cursor",
       previewColor: "transparent",
       icon: config.icon,
+      requiresAchievement: config.requiresAchievement,
+      hiddenInShop: config.hiddenInShop,
     })).sort((a, b) => a.price - b.price),
   ],
   trails: [
@@ -233,7 +235,7 @@ const TABS = [
   { id: "skins", label: "Monedas", icon: <FiDisc /> },
 ];
 
-const ShopContainer = () => {
+const ShopContainer = ({ enableGoldTheme = true }) => {
   const {
     activeShop,
     openShop,
@@ -268,7 +270,8 @@ const ShopContainer = () => {
   useEffect(() => {
     if (ownedItems && !achievements.includes("collector")) {
       // Filtramos las skins para que no cuenten
-      const allNonSkinItems = Object.values(SHOP_DATA).flat().filter((item) => item.type !== "skin");
+      // TAMBIÉN filtramos los items que requieren logros (como el cursor de prestigio)
+      const allNonSkinItems = Object.values(SHOP_DATA).flat().filter((item) => item.type !== "skin" && !item.requiresAchievement);
       const hasAllNonSkins = allNonSkinItems.every((item) => ownedItems.includes(item.id));
 
       if (hasAllNonSkins) {
@@ -278,10 +281,11 @@ const ShopContainer = () => {
   }, [ownedItems, achievements, unlockAchievement]);
 
   const isCollector = achievements && achievements.includes("collector");
+  const showGold = isCollector && enableGoldTheme;
 
   // --- PARTICLE SYSTEM FOR GOLDEN SHOP ---
   const updateParticles = useCallback(() => {
-    if (!isCollector) return;
+    if (!showGold) return;
 
     setShopParticles((prev) =>
       prev
@@ -296,17 +300,17 @@ const ShopContainer = () => {
     );
 
     requestRef.current = requestAnimationFrame(updateParticles);
-  }, [isCollector]);
+  }, [showGold]);
 
   useEffect(() => {
-    if (isCollector && activeShop) {
+    if (showGold && activeShop) {
       requestRef.current = requestAnimationFrame(updateParticles);
     }
     return () => cancelAnimationFrame(requestRef.current);
-  }, [isCollector, activeShop, updateParticles]);
+  }, [showGold, activeShop, updateParticles]);
 
   const handleShopMouseMove = (e) => {
-    if (!isCollector) return;
+    if (!showGold) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -326,7 +330,14 @@ const ShopContainer = () => {
     setShopParticles((prev) => [...prev, newParticle]);
   };
 
-  const currentItems = SHOP_DATA[displayShop] || [];
+  // Filtramos los items para ocultar los secretos si no se tiene el logro
+  const currentItems = (SHOP_DATA[displayShop] || []).filter((item) => {
+    if (item.hiddenInShop) return false;
+    if (item.requiresAchievement) {
+      return achievements.includes(item.requiresAchievement);
+    }
+    return true;
+  });
 
   // Helper: Consideramos un item "en propiedad" si está en la lista de comprados O si su precio es 0 (gratis/default)
   const isOwned = (item) => ownedItems.includes(item.id) || item.price === 0;
@@ -374,7 +385,7 @@ const ShopContainer = () => {
           />
 
           <motion.div
-            className={`shop-window ${isCollector ? "gold-theme" : ""}`}
+            className={`shop-window ${showGold ? "gold-theme" : ""}`}
             onMouseMove={handleShopMouseMove}
             // Transición unificada (Spring) para entrada/salida, sea dorado o no
             initial={{ opacity: 0 }}
@@ -385,7 +396,7 @@ const ShopContainer = () => {
             <motion.div
               className="gold-bg-layer"
               initial={{ opacity: 0 }}
-              animate={{ opacity: isCollector ? 1 : 0 }}
+              animate={{ opacity: showGold ? 1 : 0 }}
               transition={{ duration: 0.8 }}
             />
 
