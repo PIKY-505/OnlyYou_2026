@@ -49,19 +49,6 @@ export default function GameOverlay() {
     }
   }, [currentSkin, gameVolume]);
 
-  // --- ADMIN CHEAT: Ctrl + Alt + K (Koins) ---
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.altKey && (e.key === "k" || e.key === "K")) {
-        addCoins(1000000);
-        unlockAchievement("hacker"); // LOGRO HACKER
-        console.log("CHEAT ACTIVATED: +1,000,000 Coins");
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [addCoins, unlockAchievement]);
-
   // Inicializar monedas
   useEffect(() => {
     const width = window.innerWidth;

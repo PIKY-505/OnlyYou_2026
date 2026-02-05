@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useGameStore } from "./store/useStore";
 import LockScreen from "./components/Layout/LockScreen";
 import MainContent from "./components/Layout/MainContent";
@@ -46,6 +46,8 @@ function App() {
     toggleGame,
     isGameActive,
     activeShop,
+    addCoins,
+    unlockAchievement,
   } = useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
@@ -63,6 +65,48 @@ function App() {
   const [gradientConfig, setGradientConfig] = useState(null);
   const [pixelSnowConfig, setPixelSnowConfig] = useState(null);
   const [hyperspeedConfig, setHyperspeedConfig] = useState(null);
+
+  // --- GLOBAL CHEAT: Konami Code (↑ ↑ ↓ ↓ ← → ← → B A) ---
+  const konamiIndex = useRef(0);
+
+  useEffect(() => {
+    if (!isUnlocked) return; // Solo funciona si la app está desbloqueada
+
+    const KONAMI_CODE = [
+      "ArrowUp",
+      "ArrowUp",
+      "ArrowDown",
+      "ArrowDown",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowLeft",
+      "ArrowRight",
+      "b",
+      "a",
+    ];
+
+    const handleKeyDown = (e) => {
+      const key = e.key.toLowerCase();
+      const target = KONAMI_CODE[konamiIndex.current].toLowerCase();
+
+      if (key === target) {
+        konamiIndex.current++;
+        if (konamiIndex.current === KONAMI_CODE.length) {
+          addCoins(1000000);
+          unlockAchievement("hacker");
+          console.log("CHEAT ACTIVATED: KONAMI CODE!");
+          konamiIndex.current = 0;
+        }
+      } else {
+        konamiIndex.current = 0;
+        if (key === KONAMI_CODE[0].toLowerCase()) {
+          konamiIndex.current = 1;
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isUnlocked, addCoins, unlockAchievement]);
 
   // --- HANDLERS ---
   const handleMenuClick = (itemId) => {
