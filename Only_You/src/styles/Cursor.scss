@@ -134,45 +134,19 @@ body.hide-native-cursor * {
   }
 }
 
-/* --- CURSOR 3: GHOST (Fantasma) --- */
-.cursor-ghost {
+/* --- CURSOR 3: RING (Anillo) --- */
+.cursor-ring {
   position: relative;
   width: 32px;
   height: 32px;
-
-  /* IMAGEN DEL FANTASMA (SVG Data URI) */
-  background-image: url("https://freepngimg.com/download/mario/114725-mario-boo-super-bros-king.png");
   background-size: contain;
   background-repeat: no-repeat;
-
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
-  opacity: 0.8;
-
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-position: center;
+  z-index: 100;
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6));
 
   &.clicking {
-    transform: scale(0.6);
-  }
-}
-
-.ghost-particle {
-  position: absolute;
-  width: 15px;
-  height: 15px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
-  pointer-events: none;
-  animation: ghostFade 0.6s ease-out forwards;
-}
-
-@keyframes ghostFade {
-  0% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(2) translate(0, -10px);
+    transform: scale(0.8);
   }
 }
 

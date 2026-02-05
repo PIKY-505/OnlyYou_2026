@@ -9,10 +9,15 @@ import {
   FiCrosshair,
   FiDroplet,
   FiMaximize,
+  FiNavigation,
+  FiAperture,
 } from "react-icons/fi";
 import TargetCursor from "./TargetCursor";
 import SplashCursor from "./SplashCursor";
 import Crosshair from "./Crosshair";
+
+// --- ASSETS ---
+import ringCursor from "../../assets/img/cursor/ring.gif";
 
 // Configuración de los cursores
 export const CURSOR_CONFIG = {
@@ -21,7 +26,7 @@ export const CURSOR_CONFIG = {
     name: "Neon Pulse",
     price: 500,
     desc: "Estilo Cyberpunk. Cambia de color.",
-    icon: <FiMousePointer />,
+    icon: <FiNavigation />,
     type: "replace", // Oculta el nativo
     className: "cursor-neon",
   },
@@ -34,53 +39,47 @@ export const CURSOR_CONFIG = {
     className: "cursor-gold",
     effect: "sparkle",
   },
-  cursor_ghost: {
-    name: "Fantasma",
+  cursor_ring: {
+    name: "Anillo",
     price: 1500,
-    desc: "Espíritu flotante con rastro.",
-    icon: (
-      <img
-        src="https://freepngimg.com/download/mario/114725-mario-boo-super-bros-king.png"
-        alt="ghost"
-        style={{ width: "24px", height: "24px" }}
-      />
-    ),
+    desc: "Un anillo animado.",
+    icon: <FiDisc />,
     type: "replace",
-    className: "cursor-ghost",
-    effect: "ghost_trail",
+    className: "cursor-ring",
+    backgroundImage: ringCursor,
   },
   cursor_blackhole: {
     name: "Agujero Negro",
     price: 2000,
     desc: "Singularidad que distorsiona la luz.",
-    icon: <FiDisc />,
+    icon: <FiAperture />,
     type: "replace",
     className: "cursor-blackhole",
   },
-  cursor_target: {
-    name: "Target HUD",
-    price: 5000,
-    desc: "Sistema de fijación táctico.",
+  cursor_crosshair: {
+    name: "Crosshair",
+    price: 3000,
+    desc: "Líneas de precisión con distorsión.",
     icon: <FiCrosshair />,
-    type: "custom", // Nuevo tipo para componentes completos
-    component: TargetCursor,
+    type: "custom",
+    component: Crosshair,
   },
   cursor_splash: {
     name: "Splash Fluid",
-    price: 8000,
+    price: 4000,
     desc: "Tinta fluida reactiva.",
     icon: <FiDroplet />,
     type: "custom",
     component: SplashCursor,
     hideNative: false,
   },
-  cursor_crosshair: {
-    name: "Crosshair",
-    price: 3000,
-    desc: "Líneas de precisión con distorsión.",
+  cursor_target: {
+    name: "Target HUD",
+    price: 5000,
+    desc: "Sistema de fijación táctico.",
     icon: <FiMaximize />,
-    type: "custom",
-    component: Crosshair,
+    type: "custom", // Nuevo tipo para componentes completos
+    component: TargetCursor,
   },
 };
 
@@ -108,11 +107,6 @@ export default function CursorController() {
         // Efecto Sparkle (Oro)
         if (config.effect === "sparkle" && Math.random() > 0.7) {
           createParticle(clientX, clientY, "sparkle");
-        }
-        // Efecto Ghost (Rastro continuo)
-        // Usamos un umbral más bajo para que el rastro sea más continuo
-        if (config.effect === "ghost_trail" && Math.random() > 0.3) {
-          createParticle(clientX, clientY, "ghost");
         }
       }
     };
@@ -144,16 +138,27 @@ export default function CursorController() {
   // 3. Ocultar/Mostrar cursor nativo
   useEffect(() => {
     const config = CURSOR_CONFIG[activeCursor];
-    if (
-      config &&
-      (config.type === "replace" || config.type === "custom") &&
-      config.hideNative !== false
-    ) {
-      document.body.classList.add("hide-native-cursor");
-    } else {
-      document.body.classList.remove("hide-native-cursor");
+
+    if (config) {
+      // Caso 1: Ocultar nativo (para reemplazos div o custom)
+      if (
+        (config.type === "replace" || config.type === "custom") &&
+        config.hideNative !== false
+      ) {
+        document.body.classList.add("hide-native-cursor");
+      }
+      // Caso 2: Cursor nativo personalizado (CSS class)
+      if (config.bodyClass) {
+        document.body.classList.add(config.bodyClass);
+      }
     }
-    return () => document.body.classList.remove("hide-native-cursor");
+    
+    return () => {
+      document.body.classList.remove("hide-native-cursor");
+      if (config && config.bodyClass) {
+        document.body.classList.remove(config.bodyClass);
+      }
+    };
   }, [activeCursor]);
 
   // Si no hay cursor activo o es el default, no renderizamos nada (o solo partículas si quedan)
@@ -165,7 +170,7 @@ export default function CursorController() {
       {particles.map((p) => (
         <div
           key={p.id}
-          className={p.type === "ghost" ? "ghost-particle" : "sparkle-particle"}
+          className="sparkle-particle"
           style={{ left: p.x, top: p.y }}
         />
       ))}
@@ -175,6 +180,7 @@ export default function CursorController() {
         <div ref={cursorRef} className="cursor-follower">
           <div
             className={`${config.className} ${isClicking ? "clicking" : ""}`}
+            style={config.backgroundImage ? { backgroundImage: `url(${config.backgroundImage})` } : {}}
           />
         </div>
       )}

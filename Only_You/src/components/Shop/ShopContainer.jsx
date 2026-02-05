@@ -20,6 +20,16 @@ import rollingCat from "../../assets/trails/rolling-cat.gif";
 import duck from "../../assets/trails/duck.png";
 import pompom from "../../assets/trails/pompom.png";
 import skeletonRun from "../../assets/trails/skeleton-run.gif";
+import daseImg from "../../assets/coin/coin_img/dase.png";
+
+// --- BACKGROUND GIFS ---
+import bgGalaxy from "../../assets/img/bkg/galaxy.gif";
+import bgSilk from "../../assets/img/bkg/silk.gif";
+import bgBallpit from "../../assets/img/bkg/ballpit.gif";
+import bgFloating from "../../assets/img/bkg/floatinglines.gif";
+import bgPillars from "../../assets/img/bkg/lightpillar.gif";
+import bgSnow from "../../assets/img/bkg/pixel-snow.gif";
+import bgHyperspeed from "../../assets/img/bkg/hyperspeed.gif";
 
 // --- SHOP DATA ---
 export const SHOP_DATA = {
@@ -33,28 +43,31 @@ export const SHOP_DATA = {
       previewColor: "linear-gradient(45deg, #8629b1, #f700ff)",
     },
     {
-      id: "galaxy",
-      name: "Galaxy",
-      description: "Un viaje a las estrellas.",
-      price: 50,
-      type: "background",
-      previewColor: "#000", // Placeholder negro
-    },
-    {
       id: "silk",
       name: "Silk",
       description: "Suavidad y elegancia.",
-      price: 100,
+      price: 50,
       type: "background",
       previewColor: "#ff99cc",
+      image: bgSilk,
     },
     {
-      id: "ballpit",
-      name: "Ball Pit",
-      description: "Física interactiva y relajante.",
+      id: "lightpillars",
+      name: "Light Pillars",
+      description: "Pilares de luz etéreos.",
+      price: 100,
+      type: "background",
+      previewColor: "#00ffff",
+      image: bgPillars,
+    },
+    {
+      id: "pixelsnow",
+      name: "Pixel Snow",
+      description: "Nevada suave y distante.",
       price: 150,
       type: "background",
-      previewColor: "#29b1ff",
+      previewColor: "#ffffff",
+      image: bgSnow,
     },
     {
       id: "floatinglines",
@@ -63,22 +76,16 @@ export const SHOP_DATA = {
       price: 200,
       type: "background",
       previewColor: "#bd71ff",
+      image: bgFloating,
     },
     {
-      id: "lightpillars",
-      name: "Light Pillars",
-      description: "Pilares de luz etéreos.",
-      price: 250,
-      type: "background",
-      previewColor: "#00ffff",
-    },
-    {
-      id: "pixelsnow",
-      name: "Pixel Snow",
-      description: "Nevada suave y distante.",
+      id: "galaxy",
+      name: "Galaxy",
+      description: "Un viaje a las estrellas.",
       price: 300,
       type: "background",
-      previewColor: "#ffffff",
+      previewColor: "#000", // Placeholder negro
+      image: bgGalaxy,
     },
     {
       id: "hyperspeed",
@@ -87,6 +94,16 @@ export const SHOP_DATA = {
       price: 500,
       type: "background",
       previewColor: "#d856bf",
+      image: bgHyperspeed,
+    },
+    {
+      id: "ballpit",
+      name: "Ball Pit",
+      description: "Física interactiva y relajante.",
+      price: 800,
+      type: "background",
+      previewColor: "#29b1ff",
+      image: bgBallpit,
     },
   ],
   cursors: [
@@ -107,7 +124,7 @@ export const SHOP_DATA = {
       type: "cursor",
       previewColor: "transparent",
       icon: config.icon,
-    })),
+    })).sort((a, b) => a.price - b.price),
   ],
   trails: [
     {
@@ -184,7 +201,7 @@ export const SHOP_DATA = {
       price: 0,
       type: "skin",
       previewColor: "#ffd700",
-      icon: <FiDisc />,
+      icon: <img src={daseImg} alt="Dase" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
     },
   ],
 };
@@ -337,15 +354,10 @@ const ShopContainer = () => {
             className={`shop-window ${isCollector ? "gold-theme" : ""}`}
             onMouseMove={handleShopMouseMove}
             // Transición unificada (Spring) para entrada/salida, sea dorado o no
-            initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
-            animate={{ scale: 1, opacity: 1, rotate: 0 }}
-            exit={{
-              scale: 0.95,
-              y: 10,
-              opacity: 0,
-              transition: { duration: 0.2 },
-            }}
-            transition={{ type: "spring", stiffness: 120, damping: 12 }}>
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}>
             {/* --- CAPA DE FONDO DORADO (Transición suave) --- */}
             <motion.div
               className="gold-bg-layer"
@@ -429,10 +441,28 @@ const ShopContainer = () => {
                       className={`shop-item ${isEquipped(item.id) ? "equipped" : ""}`}
                       onClick={() => handleItemClick(item)}>
                       <div
-                        className="item-preview"
-                        style={{ background: item.previewColor }}>
+                        className={`item-preview ${item.type}`}
+                        style={{
+                          background: item.previewColor,
+                        }}>
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                            }}
+                          />
+                        )}
                         {item.icon && (
-                          <div className="preview-icon">{item.icon}</div>
+                          <div className="preview-icon" style={{ zIndex: 1 }}>
+                            {item.icon}
+                          </div>
                         )}
 
                         {isEquipped(item.id) && (

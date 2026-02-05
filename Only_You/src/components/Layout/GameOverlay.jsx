@@ -30,6 +30,7 @@ export default function GameOverlay() {
     coins,
     achievements,
     ownedItems,
+    activeCursor,
   } = useGameStore();
   const [entities, setEntities] = useState([]);
   const [particles, setParticles] = useState([]);
@@ -37,13 +38,13 @@ export default function GameOverlay() {
   const requestRef = useRef();
   const audioRef = useRef(null);
   const isMounted = useRef(false);
-  const comboTimeoutRef = useRef(null);
+  const comboExpirationRef = useRef(0);
+  const comboDurationRef = useRef(0);
 
   useEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
-      if (comboTimeoutRef.current) clearTimeout(comboTimeoutRef.current);
     };
   }, []);
 
@@ -95,6 +96,12 @@ export default function GameOverlay() {
 
   // Bucle de animación
   const update = useCallback(() => {
+    // Chequear temporizador del combo
+    if (comboExpirationRef.current > 0 && Date.now() > comboExpirationRef.current) {
+      setCombo((prev) => (prev > 1 ? 1 : prev));
+      comboExpirationRef.current = 0;
+    }
+
     setEntities((prev) =>
       prev.map((entity) => {
         let { x, y, vx, vy } = entity;
@@ -141,18 +148,13 @@ export default function GameOverlay() {
   const handleCoinClick = (entity) => {
     // --- SISTEMA DE COMBO ---
     let nextCombo = combo + 1;
-    if (nextCombo > 10) nextCombo = 10; // Máximo x10
+    if (nextCombo > 20) nextCombo = 20; // Máximo x20
     setCombo(nextCombo);
 
-    // Reiniciar temporizador del combo
-    if (comboTimeoutRef.current) clearTimeout(comboTimeoutRef.current);
-
     // Dificultad: Menos tiempo para mantener el combo cuanto más alto sea (Min 0.5s)
-    const timeWindow = Math.max(500, 2500 - nextCombo * 200);
-
-    comboTimeoutRef.current = setTimeout(() => {
-      if (isMounted.current) setCombo(1);
-    }, timeWindow);
+    const timeWindow = Math.max(500, 2500 - nextCombo * 100);
+    comboDurationRef.current = timeWindow;
+    comboExpirationRef.current = Date.now() + timeWindow;
 
     // Puntos con multiplicador
     const earned = entity.value * nextCombo;
@@ -235,7 +237,8 @@ export default function GameOverlay() {
         const height = window.innerHeight;
 
         // Dificultad: Velocidad aumenta con el combo (+15% por nivel)
-        const speedMultiplier = 1 + nextCombo * 0.15;
+        // Topeamos la velocidad al nivel 10 para que no sea imposible al llegar a 20
+        const speedMultiplier = 1 + Math.min(nextCombo, 10) * 0.15;
 
         const newEntity = {
           ...entity,
@@ -258,6 +261,20 @@ export default function GameOverlay() {
     }, 2000);
   };
 
+  // Cálculos visuales para el círculo del combo
+  const now = Date.now();
+  const timeLeft = Math.max(0, comboExpirationRef.current - now);
+  const progress = combo > 1 && comboDurationRef.current > 0 ? timeLeft / comboDurationRef.current : 0;
+  const radius = 60;
+  const stroke = 8;
+  const normalizedRadius = radius - stroke * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDashoffset = circumference - progress * circumference;
+
+  // Color dinámico: Verde -> Amarillo -> Rojo
+  const hue = Math.min(120, Math.max(0, progress * 120));
+  const ringColor = `hsl(${hue}, 100%, 50%)`;
+
   return (
     <div
       style={{
@@ -270,30 +287,82 @@ export default function GameOverlay() {
         pointerEvents: "auto",
         overflow: "hidden",
       }}>
+      {/* --- CONTADOR DE MONEDAS --- */}
+      <div
+        style={{
+          position: "absolute",
+          top: "110px",
+          left: "30px",
+          zIndex: 100,
+          display: "flex",
+          alignItems: "center",
+          gap: "10px",
+          background: "rgba(0,0,0,0.5)",
+          padding: "10px 20px",
+          borderRadius: "30px",
+          border: "1px solid rgba(255,255,255,0.2)",
+          backdropFilter: "blur(5px)",
+          color: "#ffd700",
+          fontFamily: "var(--font-main)",
+          fontWeight: "bold",
+          fontSize: "1.2rem",
+          pointerEvents: "none",
+        }}>
+        <img src={currentSkin.normal} alt="coin" style={{ width: "24px", height: "24px" }} />
+        <span>{coins}</span>
+      </div>
+
       {/* --- COMBO UI --- */}
       <div
         style={{
           position: "absolute",
-          top: "80px",
+          top: "40px",
           right: "40px",
           pointerEvents: "none",
-          textAlign: "right",
           zIndex: 100,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "140px",
+          height: "140px",
         }}>
         {combo > 1 && (
-          <div
-            style={{
-              fontFamily: "var(--font-main)",
-              fontSize: "3rem",
-              fontWeight: "900",
-              color: "#f700ff",
-              textShadow: "0 0 20px rgba(247, 0, 255, 0.8)",
-              transform: `scale(${1 + combo * 0.1})`,
-              transition:
-                "transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-            }}>
-            x{combo}
-          </div>
+          <>
+            <svg
+              height={radius * 2}
+              width={radius * 2}
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: "translate(-50%, -50%) rotate(-90deg)",
+              }}>
+              <circle stroke="rgba(255, 255, 255, 0.1)" strokeWidth={stroke} fill="transparent" r={normalizedRadius} cx={radius} cy={radius} />
+              <circle
+                stroke={ringColor}
+                strokeWidth={stroke}
+                strokeDasharray={circumference + " " + circumference}
+                style={{ strokeDashoffset, transition: "stroke-dashoffset 0.1s linear" }}
+                strokeLinecap="round"
+                fill="transparent"
+                r={normalizedRadius}
+                cx={radius}
+                cy={radius}
+              />
+            </svg>
+            <div
+              style={{
+                fontFamily: "var(--font-main)",
+                fontSize: "3rem",
+                fontWeight: "900",
+                color: "#f700ff",
+                textShadow: "0 0 20px rgba(247, 0, 255, 0.8)",
+                transform: `scale(${1 + Math.min(combo, 10) * 0.1})`,
+                transition: "transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              }}>
+              x{combo}
+            </div>
+          </>
         )}
       </div>
 
@@ -315,32 +384,49 @@ export default function GameOverlay() {
           }}
         />
       ))}
-      {entities.map((entity) => (
-        <img
-          key={entity.id}
-          src={entity.img}
-          alt="coin"
-          className="coin-entity"
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            handleCoinClick(entity);
-          }}
-          style={{
-            position: "absolute",
-            transform: `translate3d(${entity.x}px, ${entity.y}px, 0)`,
-            width: COIN_SIZE,
-            height: COIN_SIZE,
-            objectFit: "contain", // Mantiene la proporción original (rectangular) sin deformar
-            cursor: "pointer",
-            userSelect: "none",
-            filter:
-              entity.type === "shiny"
-                ? "drop-shadow(0 0 15px gold) brightness(1.2)"
-                : "drop-shadow(0 0 5px rgba(255,255,255,0.3))",
-          }}
-          draggable={false}
-        />
-      ))}
+      {entities.map((entity) => {
+        const isTarget = activeCursor === "cursor_target";
+        const hitPadding = isTarget ? 10 : 0;
+
+        return (
+          <div
+            key={entity.id}
+            className="coin-entity"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              handleCoinClick(entity);
+            }}
+            style={{
+              position: "absolute",
+              transform: `translate3d(${entity.x - hitPadding}px, ${entity.y - hitPadding}px, 0)`,
+              width: COIN_SIZE + hitPadding * 2,
+              height: COIN_SIZE + hitPadding * 2,
+              cursor: "pointer",
+              userSelect: "none",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 20,
+            }}
+          >
+            <img
+              src={entity.img}
+              alt="coin"
+              style={{
+                width: COIN_SIZE,
+                height: COIN_SIZE,
+                objectFit: "contain",
+                filter:
+                  entity.type === "shiny"
+                    ? "drop-shadow(0 0 15px gold) brightness(1.2)"
+                    : "drop-shadow(0 0 5px rgba(255,255,255,0.3))",
+                pointerEvents: "none",
+              }}
+              draggable={false}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef, no-unused-vars */
 import { useEffect, useRef } from "react";
 
 function SplashCursor({
