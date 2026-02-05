@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../styles/ShopContainer.scss";
+import { CURSOR_CONFIG } from "../Layout/CursorController";
 
 // --- ASSETS ---
 import appleCat from "../../assets/trails/apple-cat.gif";
@@ -98,6 +99,15 @@ export const SHOP_DATA = {
       previewColor: "transparent",
       icon: <FiMousePointer />,
     },
+    ...Object.entries(CURSOR_CONFIG).map(([id, config]) => ({
+      id: id,
+      name: config.name,
+      description: config.desc,
+      price: config.price,
+      type: "cursor",
+      previewColor: "transparent",
+      icon: config.icon,
+    })),
   ],
   trails: [
     {
@@ -292,6 +302,11 @@ const ShopContainer = () => {
       // Comprar
       if (coins >= item.price) {
         buyItem(item);
+        // Auto-equipar al comprar para feedback inmediato
+        if (activeShop === "backgrounds") setBackground(item.id);
+        if (activeShop === "cursors") setCursor(item.id);
+        if (activeShop === "trails") setTrail(item.id);
+        if (activeShop === "skins") setCoinSkin(item.id);
       }
     }
   };

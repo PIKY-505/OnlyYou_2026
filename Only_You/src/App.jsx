@@ -23,6 +23,7 @@ import MusicPlayer from "./components/UI/MusicPlayer";
 import SettingsMenu from "./components/UI/SettingsMenu";
 import AchievementToast from "./components/UI/AchievementToast";
 import { ACHIEVEMENTS_DATA } from "./data/achievements";
+import CursorController from "./components/Layout/CursorController";
 
 const shopItems = [
   { id: "backgrounds", label: "Fondos", ariaLabel: "Galería de Fondos" },
@@ -340,6 +341,7 @@ function App() {
             />
 
             {/* --- COMPONENTS --- */}
+            <CursorController />
             <ShopContainer />
             <TrailSystem />
             <AnimatePresence>

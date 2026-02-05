@@ -320,6 +320,7 @@ export default function GameOverlay() {
           key={entity.id}
           src={entity.img}
           alt="coin"
+          className="coin-entity"
           onMouseDown={(e) => {
             e.stopPropagation();
             handleCoinClick(entity);
