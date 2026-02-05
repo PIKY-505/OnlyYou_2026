@@ -5,11 +5,12 @@ import {
   FiFileText,
   FiTrash2,
   FiX,
-  FiAward,
 } from "react-icons/fi";
+import { FaTrophy, FaLock } from "react-icons/fa";
 import { useGameStore } from "../../store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { ACHIEVEMENTS_DATA } from "../../data/achievements";
+import { SHOP_DATA } from "../Shop/ShopContainer";
 import "../../styles/SettingsMenu.scss";
 
 const SettingsMenu = () => {
@@ -17,7 +18,7 @@ const SettingsMenu = () => {
   const [showDoc, setShowDoc] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const menuRef = useRef(null);
-  const { gameVolume, setGameVolume, resetProgress, achievements } =
+  const { gameVolume, setGameVolume, resetProgress, achievements, ownedItems } =
     useGameStore();
 
   // Cerrar al hacer click fuera
@@ -84,7 +85,7 @@ const SettingsMenu = () => {
                   setShowAchievements(true);
                   setIsOpen(false);
                 }}>
-                <FiAward /> Logros
+                <FaTrophy /> Logros
               </button>
 
               {/* Documentación */}
@@ -169,7 +170,10 @@ const SettingsMenu = () => {
                 onClick={() => setShowAchievements(false)}>
                 <FiX size={24} />
               </button>
-              <h2>🏆 Tus Logros</h2>
+              <h2>
+                <FaTrophy style={{ marginRight: "10px", color: "#ffd700" }} />{" "}
+                Tus Logros
+              </h2>
               <div className="doc-content">
                 <div
                   style={{
@@ -179,6 +183,30 @@ const SettingsMenu = () => {
                   }}>
                   {Object.entries(ACHIEVEMENTS_DATA).map(([key, data]) => {
                     const isUnlocked = achievements.includes(key);
+
+                    // Lógica para mostrar contador en el logro de Coleccionista
+                    let description = data.desc;
+                    if (key === "collector") {
+                      const totalItems = Object.values(SHOP_DATA).reduce(
+                        (acc, category) => acc + category.length,
+                        0,
+                      );
+                      const currentOwned = ownedItems ? ownedItems.length : 0;
+                      description = `${data.desc} (${currentOwned}/${totalItems})`;
+                    }
+
+                    // Lógica para mostrar contador en el logro de Prestigio
+                    if (key === "prestige") {
+                      const allKeys = Object.keys(ACHIEVEMENTS_DATA);
+                      const requiredKeys = allKeys.filter(
+                        (k) => k !== "prestige",
+                      );
+                      const unlockedCount = achievements.filter((k) =>
+                        requiredKeys.includes(k),
+                      ).length;
+                      description = `${data.desc} (${unlockedCount}/${requiredKeys.length})`;
+                    }
+
                     return (
                       <div
                         key={key}
@@ -197,7 +225,11 @@ const SettingsMenu = () => {
                           gap: "15px",
                         }}>
                         <div style={{ fontSize: "2rem" }}>
-                          {isUnlocked ? data.icon : "🔒"}
+                          {isUnlocked ? (
+                            data.icon
+                          ) : (
+                            <FaLock className="locked-icon" />
+                          )}
                         </div>
                         <div>
                           <h3
@@ -213,7 +245,7 @@ const SettingsMenu = () => {
                               fontSize: "0.9rem",
                               color: "rgba(255,255,255,0.7)",
                             }}>
-                            {data.desc}
+                            {description}
                           </p>
                         </div>
                       </div>

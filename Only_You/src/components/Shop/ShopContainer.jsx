@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useGameStore } from "../../store/useStore";
 import {
   FiX,
@@ -21,7 +21,7 @@ import pompom from "../../assets/trails/pompom.png";
 import skeletonRun from "../../assets/trails/skeleton-run.gif";
 
 // --- SHOP DATA ---
-const SHOP_DATA = {
+export const SHOP_DATA = {
   backgrounds: [
     {
       id: "gradient",
@@ -202,16 +202,82 @@ const ShopContainer = () => {
     ownedItems,
     activeCoinSkin,
     setCoinSkin,
+    achievements,
+    unlockAchievement,
   } = useGameStore();
 
   // --- STATE ---
   const [displayShop, setDisplayShop] = useState(activeShop);
+  const [shopParticles, setShopParticles] = useState([]);
+  const requestRef = useRef();
 
   useEffect(() => {
     if (activeShop) {
       setDisplayShop(activeShop);
     }
   }, [activeShop]);
+
+  // Detectar logro Coleccionista automáticamente
+  useEffect(() => {
+    if (ownedItems && !achievements.includes("collector")) {
+      const totalItems = Object.values(SHOP_DATA).reduce(
+        (acc, category) => acc + category.length,
+        0,
+      );
+      if (ownedItems.length >= totalItems) {
+        unlockAchievement("collector");
+      }
+    }
+  }, [ownedItems, achievements, unlockAchievement]);
+
+  const isCollector = achievements && achievements.includes("collector");
+
+  // --- PARTICLE SYSTEM FOR GOLDEN SHOP ---
+  const updateParticles = useCallback(() => {
+    if (!isCollector) return;
+
+    setShopParticles((prev) =>
+      prev
+        .map((p) => ({
+          ...p,
+          x: p.x + p.vx,
+          y: p.y + p.vy,
+          life: p.life - 0.02,
+          size: p.size * 0.95,
+        }))
+        .filter((p) => p.life > 0),
+    );
+
+    requestRef.current = requestAnimationFrame(updateParticles);
+  }, [isCollector]);
+
+  useEffect(() => {
+    if (isCollector && activeShop) {
+      requestRef.current = requestAnimationFrame(updateParticles);
+    }
+    return () => cancelAnimationFrame(requestRef.current);
+  }, [isCollector, activeShop, updateParticles]);
+
+  const handleShopMouseMove = (e) => {
+    if (!isCollector) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Añadir partículas (limitado ligeramente para rendimiento)
+    if (Math.random() > 0.5) return;
+
+    const newParticle = {
+      id: Math.random(),
+      x,
+      y,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: (Math.random() - 0.5) * 1.5 + 0.5, // Caen un poco
+      life: 1,
+      size: Math.random() * 3 + 2,
+    };
+    setShopParticles((prev) => [...prev, newParticle]);
+  };
 
   const currentItems = SHOP_DATA[displayShop] || [];
 
@@ -253,15 +319,41 @@ const ShopContainer = () => {
           />
 
           <motion.div
-            className="shop-window"
-            initial={{ scale: 0.9, y: 20, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
+            className={`shop-window ${isCollector ? "gold-theme" : ""}`}
+            onMouseMove={handleShopMouseMove}
+            // Transición unificada (Spring) para entrada/salida, sea dorado o no
+            initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
             exit={{
               scale: 0.95,
               y: 10,
               opacity: 0,
               transition: { duration: 0.2 },
-            }}>
+            }}
+            transition={{ type: "spring", stiffness: 120, damping: 12 }}>
+            {/* --- CAPA DE FONDO DORADO (Transición suave) --- */}
+            <motion.div
+              className="gold-bg-layer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isCollector ? 1 : 0 }}
+              transition={{ duration: 0.8 }}
+            />
+
+            {/* --- PARTICLES LAYER --- */}
+            {shopParticles.map((p) => (
+              <div
+                key={p.id}
+                className="gold-particle"
+                style={{
+                  left: p.x,
+                  top: p.y,
+                  width: p.size,
+                  height: p.size,
+                  opacity: p.life,
+                }}
+              />
+            ))}
+
             {/* --- HEADER --- */}
             <div className="shop-header-row">
               <div className="shop-tabs">
@@ -282,16 +374,7 @@ const ShopContainer = () => {
                 ))}
               </div>
 
-              <div
-                className="coin-display"
-                style={{
-                  color: "#ffd700",
-                  fontWeight: "bold",
-                  fontSize: "1.2rem",
-                  marginRight: "20px",
-                }}>
-                {coins} 🪙
-              </div>
+              <div className="coin-display">{coins} 🪙</div>
 
               <button onClick={closeShop} className="close-btn">
                 <FiX />

@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useGameStore } from "../../store/useStore";
+import { ACHIEVEMENTS_DATA } from "../../data/achievements";
+import { SHOP_DATA } from "../Shop/ShopContainer";
 
 // Imágenes
 import daseImg from "../../assets/coin/coin_img/dase.png";
@@ -20,8 +22,15 @@ const SKINS = {
 };
 
 export default function GameOverlay() {
-  const { addCoins, activeCoinSkin, gameVolume, unlockAchievement, coins } =
-    useGameStore();
+  const {
+    addCoins,
+    activeCoinSkin,
+    gameVolume,
+    unlockAchievement,
+    coins,
+    achievements,
+    ownedItems,
+  } = useGameStore();
   const [entities, setEntities] = useState([]);
   const [particles, setParticles] = useState([]);
   const [combo, setCombo] = useState(1);
@@ -150,16 +159,47 @@ export default function GameOverlay() {
     addCoins(earned);
 
     // --- CHEQUEO DE LOGROS ---
-    unlockAchievement("first_coin"); // Primer logro siempre
-    if (nextCombo >= 5) unlockAchievement("combo_5");
-    if (nextCombo >= 10) unlockAchievement("velocista");
+    unlockAchievement("baby_steps"); // Antes first_coin
 
-    if (entity.type === "shiny") unlockAchievement("shiny_hunter");
+    if (nextCombo >= 5) unlockAchievement("on_fire"); // Antes combo_5
+    if (nextCombo >= 10) unlockAchievement("god_mode"); // Antes velocista
+
+    if (entity.type === "shiny") unlockAchievement("shiny_lover"); // Antes shiny_hunter
+
+    // Nuevo logro: Francotirador (si la moneda iba muy rápido)
+    const speed = Math.sqrt(entity.vx * entity.vx + entity.vy * entity.vy);
+    if (speed > 15) unlockAchievement("sniper");
 
     const currentTotal = coins + earned; // Calculamos el total actual
-    if (currentTotal >= 100) unlockAchievement("rico");
-    if (currentTotal >= 500) unlockAchievement("half_k");
-    if (currentTotal >= 1000) unlockAchievement("millonario");
+    if (currentTotal >= 500) unlockAchievement("piggy_bank"); // rico
+    if (currentTotal >= 1000) unlockAchievement("stonks"); // half_k
+    if (currentTotal >= 5000) unlockAchievement("crypto_king"); // millonario
+
+    // --- LOGICA NUEVOS LOGROS (Coleccionista y Prestigio) ---
+
+    // 1. Coleccionista: Si tienes TODOS los items de la tienda
+    const totalShopItems = Object.values(SHOP_DATA).reduce(
+      (acc, category) => acc + category.length,
+      0,
+    );
+    if (ownedItems && ownedItems.length >= totalShopItems) {
+      unlockAchievement("collector");
+    }
+
+    // 2. Prestigio: Si tienes todos los logros MENOS el de prestigio
+    if (achievements) {
+      const allAchievementKeys = Object.keys(ACHIEVEMENTS_DATA);
+      const totalAchievements = allAchievementKeys.length;
+      // Filtramos 'prestige' de la lista de requeridos
+      const requiredAchievements = allAchievementKeys.filter(
+        (k) => k !== "prestige",
+      );
+      const hasAllRequired = requiredAchievements.every((key) =>
+        achievements.includes(key),
+      );
+
+      if (hasAllRequired) unlockAchievement("prestige");
+    }
 
     if (entity.type === "shiny" && audioRef.current) {
       const soundClone = audioRef.current.cloneNode();

@@ -1,42 +1,74 @@
+import React from "react";
+import {
+  FiAward,
+  FiZap,
+  FiTarget,
+  FiTrendingUp,
+  FiDollarSign,
+  FiCpu,
+  FiSun,
+  FiCrosshair,
+  FiShoppingBag,
+} from "react-icons/fi";
+import { FaGem, FaTrophy } from "react-icons/fa";
+
+// Usamos React.createElement para evitar sintaxis JSX en archivo .js
+const icon = (component) => React.createElement(component);
+
 export const ACHIEVEMENTS_DATA = {
-  first_coin: {
-    title: "Primeros Pasos",
-    desc: "Recolecta tu primera moneda.",
-    icon: "🪙",
+  baby_steps: {
+    title: "El Primer Paso",
+    desc: "Recoge tu primera moneda, pobre.",
+    icon: icon(FiAward),
   },
-  combo_5: {
-    title: "En Racha",
+  on_fire: {
+    title: "Dedos de Fuego",
     desc: "Alcanza un combo x5.",
-    icon: "🔥",
+    icon: icon(FiZap),
   },
-  velocista: {
-    title: "Velocista",
-    desc: "Alcanza un combo x10.",
-    icon: "⚡",
+  god_mode: {
+    title: "Modo Dios",
+    desc: "Mantén un combo x10.",
+    icon: icon(FiTarget),
   },
-  shiny_hunter: {
-    title: "Cazador de Brillantes",
+  shiny_lover: {
+    title: "Shiny Spotter",
     desc: "Atrapa una moneda especial.",
-    icon: "✨",
+    icon: icon(FiSun),
   },
-  rico: {
-    title: "Rico",
-    desc: "Acumula 100 monedas.",
-    icon: "💰",
+  sniper: {
+    title: "Francotirador",
+    desc: "Caza una moneda a máxima velocidad (>15).",
+    icon: icon(FiCrosshair),
   },
-  half_k: {
-    title: "Medio K",
-    desc: "Acumula 500 monedas.",
-    icon: "💵",
+  piggy_bank: {
+    title: "Algo es algo",
+    desc: "Acumula 500 monedas. Para un kebab da.",
+    icon: icon(FiDollarSign),
   },
-  millonario: {
-    title: "Millonario",
-    desc: "Acumula 1.000 monedas.",
-    icon: "💎",
+  stonks: {
+    title: "Lobo de Wall Street",
+    desc: "Consigue 1000 monedas.",
+    icon: icon(FiTrendingUp),
   },
-  hacker: {
-    title: "Hacker",
+  crypto_king: {
+    title: "Cripto Magnate",
+    desc: "Llega a 5000 monedas.",
+    icon: icon(FaGem),
+  },
+  collector: {
+    title: "Coleccionista",
+    desc: "Compra todos los objetos de la tienda.",
+    icon: icon(FiShoppingBag),
+  },
+  matrix_master: {
+    title: "El Elegido",
     desc: "Descubre el código secreto de administrador.",
-    icon: "💻",
+    icon: icon(FiCpu),
+  },
+  prestige: {
+    title: "Prestigio",
+    desc: "Consigue todos los logros.",
+    icon: icon(FaTrophy),
   },
 };

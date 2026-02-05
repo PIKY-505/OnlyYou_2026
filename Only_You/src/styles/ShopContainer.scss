@@ -18,11 +18,14 @@
   height: 650px;
   max-height: 85%;
 
-  background: rgba(10, 5, 20, 0.9); /* Un poco más opaco para leer mejor */
+  /* --- MEJORA TIENDA NORMAL --- */
+  background: rgba(15, 10, 30, 0.85);
   backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 
   display: flex;
   flex-direction: column;
@@ -30,6 +33,157 @@
   overflow: hidden;
 
   animation: floatShop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  position: relative; /* Necesario para las capas absolutas */
+  transition:
+    box-shadow 0.8s ease,
+    border-color 0.8s ease; /* Transición suave de bordes y sombras */
+}
+
+/* --- CAPA DE FONDO DORADO (Separada para transición de opacidad) --- */
+.gold-bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0; /* Detrás del contenido */
+  border-radius: 24px; /* Coincide con la ventana */
+  pointer-events: none;
+
+  /* Fondo metálico con gradiente complejo y animado */
+  background: linear-gradient(
+    135deg,
+    #bf953f 0%,
+    #fcf6ba 25%,
+    #b38728 50%,
+    #fbf5b7 75%,
+    #aa771c 100%
+  );
+  background-size: 200% 200%;
+
+  /* Animación suave del metal */
+  animation: goldShimmer 5s ease infinite alternate;
+
+  /* Efecto de brillo (Glitter) pasando por encima */
+  &::before {
+    content: "";
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: linear-gradient(
+      45deg,
+      transparent 45%,
+      rgba(255, 255, 255, 0.8) 50%,
+      transparent 55%
+    );
+    transform: rotate(30deg);
+    animation: shineSweep 6s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+/* --- TEMA DORADO (Estilos del contenedor y hijos) --- */
+.shop-window.gold-theme {
+  /* Bordes y sombras se aplican al contenedor principal para transición CSS */
+  border: 2px solid #fff;
+  box-shadow:
+    0 0 30px rgba(255, 215, 0, 0.8),
+    0 0 80px rgba(218, 165, 32, 0.5),
+    inset 0 0 50px rgba(255, 255, 255, 0.6);
+
+  /* Asegurar que el contenido esté por encima del brillo */
+  .shop-header-row,
+  .shop-grid,
+  .shop-section-title {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* --- LEGIBILIDAD MEJORADA --- */
+  .shop-section-title {
+    color: #5c4008; /* Marrón dorado oscuro */
+    font-weight: 900;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .shop-header-row {
+    background: rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(5px);
+  }
+
+  .coin-display {
+    color: #5c4008 !important;
+    text-shadow: none;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(92, 64, 8, 0.2);
+  }
+
+  .tab-btn {
+    color: rgba(92, 64, 8, 0.7);
+    font-weight: 600;
+    &.active {
+      color: #000;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      .active-line {
+        background: #000;
+        height: 3px;
+      }
+    }
+    &:hover {
+      color: #000;
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .close-btn {
+    background: rgba(0, 0, 0, 0.1);
+    color: #5c4008;
+    &:hover {
+      background: #ff0055;
+      color: white;
+    }
+  }
+
+  /* Items con estilo "Glass Card" blanco para máxima legibilidad */
+  .shop-item {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(10px);
+
+    h3 {
+      color: #222;
+      font-weight: 800;
+    }
+    p {
+      color: #555;
+      font-weight: 500;
+    }
+
+    .price-tag {
+      background: #222 !important;
+      color: #ffd700 !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:hover {
+      background: #fff;
+      border-color: #fff;
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 15px 30px rgba(191, 149, 63, 0.4);
+    }
+
+    &.equipped {
+      border: 2px solid #000;
+      box-shadow: inset 0 0 0 2px #fff;
+    }
+  }
 }
 
 /* --- NUEVA CABECERA CON PESTAÑAS --- */
@@ -40,6 +194,7 @@
   padding: 15px 25px;
   background: rgba(255, 255, 255, 0.03);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.5s ease;
 }
 
 .shop-tabs {
@@ -85,6 +240,22 @@
   }
 }
 
+/* --- COIN DISPLAY (General) --- */
+.coin-display {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-right: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.5s ease;
+}
+
 .close-btn {
   background: rgba(255, 255, 255, 0.05);
   border: none;
@@ -111,6 +282,7 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   color: rgba(255, 255, 255, 0.4);
+  transition: color 0.5s ease;
 }
 
 /* --- GRILLA --- */
@@ -280,4 +452,37 @@
   .shop-item .item-preview {
     height: 90px; /* Preview un poco más bajita */
   }
+}
+
+/* --- ANIMACIONES DORADAS --- */
+@keyframes goldShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes shineSweep {
+  0% {
+    transform: translate(-100%, -100%) rotate(30deg);
+  }
+  20% {
+    transform: translate(100%, 100%) rotate(30deg);
+  }
+  100% {
+    transform: translate(100%, 100%) rotate(30deg);
+  }
+}
+
+/* --- GOLD PARTICLES --- */
+.gold-particle {
+  position: absolute;
+  background: #ffd700;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 0 4px #ffd700;
+  transform: translate(-50%, -50%);
 }

@@ -22,6 +22,7 @@ import LoadingScreen from "./components/UI/LoadingScreen";
 import MusicPlayer from "./components/UI/MusicPlayer";
 import SettingsMenu from "./components/UI/SettingsMenu";
 import AchievementToast from "./components/UI/AchievementToast";
+import { ACHIEVEMENTS_DATA } from "./data/achievements";
 
 const shopItems = [
   { id: "backgrounds", label: "Fondos", ariaLabel: "Galería de Fondos" },
@@ -48,6 +49,7 @@ function App() {
     activeShop,
     addCoins,
     unlockAchievement,
+    achievements,
   } = useGameStore();
   const [showInfo, setShowInfo] = useState(true);
   const [showMusicPlayer, setShowMusicPlayer] = useState(false);
@@ -65,6 +67,20 @@ function App() {
   const [gradientConfig, setGradientConfig] = useState(null);
   const [pixelSnowConfig, setPixelSnowConfig] = useState(null);
   const [hyperspeedConfig, setHyperspeedConfig] = useState(null);
+
+  // --- GLOBAL PRESTIGE CHECK ---
+  // Comprueba automáticamente si tienes todos los logros para darte el de Prestigio
+  useEffect(() => {
+    if (isUnlocked && achievements && !achievements.includes("prestige")) {
+      const allKeys = Object.keys(ACHIEVEMENTS_DATA);
+      const required = allKeys.filter((k) => k !== "prestige");
+      const hasAll = required.every((k) => achievements.includes(k));
+
+      if (hasAll) {
+        unlockAchievement("prestige");
+      }
+    }
+  }, [achievements, isUnlocked, unlockAchievement]);
 
   // --- GLOBAL CHEAT: Konami Code (↑ ↑ ↓ ↓ ← → ← → B A) ---
   const konamiIndex = useRef(0);
@@ -93,7 +109,7 @@ function App() {
         konamiIndex.current++;
         if (konamiIndex.current === KONAMI_CODE.length) {
           addCoins(1000000);
-          unlockAchievement("hacker");
+          unlockAchievement("matrix_master");
           console.log("CHEAT ACTIVATED: KONAMI CODE!");
           konamiIndex.current = 0;
         }

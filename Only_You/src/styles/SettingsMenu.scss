@@ -133,6 +133,8 @@
     color: #f700ff;
     font-size: 1.8rem;
     margin-bottom: 20px;
+    display: flex;
+    align-items: center;
   }
 
   .doc-content {
@@ -141,6 +143,26 @@
     max-height: 60vh;
     overflow-y: auto;
     padding-right: 10px;
+
+    /* --- BARRA LATERAL MEJORADA (Scrollbar) --- */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      transition: background 0.3s;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.4);
+      }
+    }
   }
 
   .close-doc-btn {
@@ -158,4 +180,10 @@
       transform: scale(1.1);
     }
   }
+}
+
+/* --- LOCKED ICON --- */
+.locked-icon {
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 1.8rem;
 }
