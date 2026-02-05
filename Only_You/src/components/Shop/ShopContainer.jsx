@@ -20,7 +20,9 @@ import rollingCat from "../../assets/trails/rolling-cat.gif";
 import duck from "../../assets/trails/duck.png";
 import pompom from "../../assets/trails/pompom.png";
 import skeletonRun from "../../assets/trails/skeleton-run.gif";
-import daseImg from "../../assets/coin/coin_img/dase.png";
+import daseImg from "../../assets/coin/dase/dase.png";
+import angelImg from "../../assets/coin/angel/angel.png";
+import rachelImg from "../../assets/coin/rachel/rachel.png";
 
 // --- BACKGROUND GIFS ---
 import bgGalaxy from "../../assets/img/bkg/galaxy.gif";
@@ -203,6 +205,24 @@ export const SHOP_DATA = {
       previewColor: "#ffd700",
       icon: <img src={daseImg} alt="Dase" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
     },
+    {
+      id: "angel",
+      name: "Angel",
+      description: "Bendecida por los dioses.",
+      price: 0,
+      type: "skin",
+      previewColor: "#e0ffff",
+      icon: <img src={angelImg} alt="Angel" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
+    },
+    {
+      id: "rachel",
+      name: "Rachel",
+      description: "Estilo inconfundible.",
+      price: 0,
+      type: "skin",
+      previewColor: "#ffc0cb",
+      icon: <img src={rachelImg} alt="Rachel" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
+    },
   ],
 };
 
@@ -247,11 +267,11 @@ const ShopContainer = () => {
   // Detectar logro Coleccionista automáticamente
   useEffect(() => {
     if (ownedItems && !achievements.includes("collector")) {
-      const totalItems = Object.values(SHOP_DATA).reduce(
-        (acc, category) => acc + category.length,
-        0,
-      );
-      if (ownedItems.length >= totalItems) {
+      // Filtramos las skins para que no cuenten
+      const allNonSkinItems = Object.values(SHOP_DATA).flat().filter((item) => item.type !== "skin");
+      const hasAllNonSkins = allNonSkinItems.every((item) => ownedItems.includes(item.id));
+
+      if (hasAllNonSkins) {
         unlockAchievement("collector");
       }
     }
@@ -308,8 +328,11 @@ const ShopContainer = () => {
 
   const currentItems = SHOP_DATA[displayShop] || [];
 
+  // Helper: Consideramos un item "en propiedad" si está en la lista de comprados O si su precio es 0 (gratis/default)
+  const isOwned = (item) => ownedItems.includes(item.id) || item.price === 0;
+
   const handleItemClick = (item) => {
-    if (ownedItems.includes(item.id)) {
+    if (isOwned(item)) {
       // Equipar
       if (activeShop === "backgrounds") setBackground(item.id);
       if (activeShop === "cursors") setCursor(item.id);
@@ -475,7 +498,7 @@ const ShopContainer = () => {
                       <div className="item-info">
                         <h3>{item.name}</h3>
                         <p>{item.description}</p>
-                        {ownedItems.includes(item.id) ? (
+                        {isOwned(item) ? (
                           <span
                             className="price-tag"
                             style={{

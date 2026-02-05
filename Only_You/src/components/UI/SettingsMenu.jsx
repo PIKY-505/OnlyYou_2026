@@ -187,11 +187,9 @@ const SettingsMenu = () => {
                     // Lógica para mostrar contador en el logro de Coleccionista
                     let description = data.desc;
                     if (key === "collector") {
-                      const totalItems = Object.values(SHOP_DATA).reduce(
-                        (acc, category) => acc + category.length,
-                        0,
-                      );
-                      const currentOwned = ownedItems ? ownedItems.length : 0;
+                      const allNonSkinItems = Object.values(SHOP_DATA).flat().filter((item) => item.type !== "skin");
+                      const totalItems = allNonSkinItems.length;
+                      const currentOwned = ownedItems ? allNonSkinItems.filter((item) => ownedItems.includes(item.id)).length : 0;
                       description = `${data.desc} (${currentOwned}/${totalItems})`;
                     }
 

@@ -3,23 +3,42 @@ import { useGameStore } from "../../store/useStore";
 import { ACHIEVEMENTS_DATA } from "../../data/achievements";
 import { SHOP_DATA } from "../Shop/ShopContainer";
 
-// Imágenes
-import daseImg from "../../assets/coin/coin_img/dase.png";
-import daseShinyImg from "../../assets/coin/coin_img/daseshiny.png";
-
-// Sonidos (Asegúrate de tener este archivo o comenta la línea si no lo tienes aún)
-import daseSoundMp3 from "../../assets/coin/coin_sounds/dase.mp3";
-
 const COIN_SIZE = 80; // Tamaño en px
 
-// Configuración de Skins
-const SKINS = {
-  dase: {
-    normal: daseImg,
-    shiny: daseShinyImg,
-    sound: daseSoundMp3,
-  },
-};
+// --- CARGA DINÁMICA DE SKINS ---
+// Busca carpetas en /assets/coin/[nombre_skin]/
+const coinAssets = import.meta.glob("../../assets/coin/*/*.{png,jpg,jpeg,gif,mp3,wav}", {
+  eager: true,
+});
+
+const SKINS = {};
+
+Object.keys(coinAssets).forEach((path) => {
+  // path ejemplo: "../../assets/coin/dase/dase.png"
+  const parts = path.split("/");
+  const skinId = parts[parts.length - 2]; // Nombre de la carpeta (ej: "dase", "angel")
+  const fileName = parts[parts.length - 1].toLowerCase();
+
+  if (!SKINS[skinId]) {
+    SKINS[skinId] = { normal: null, shiny: null, sound: null };
+  }
+
+  const asset = coinAssets[path].default;
+
+  if (fileName.includes("shiny")) {
+    SKINS[skinId].shiny = asset;
+  } else if (fileName.endsWith("mp3") || fileName.endsWith("wav")) {
+    SKINS[skinId].sound = asset;
+  } else {
+    // Si no es shiny ni sonido, asumimos que es la moneda normal
+    SKINS[skinId].normal = asset;
+  }
+});
+
+// Fallback: Si no hay shiny, usa la normal
+Object.values(SKINS).forEach((skin) => {
+  if (!skin.shiny && skin.normal) skin.shiny = skin.normal;
+});
 
 export default function GameOverlay() {
   const {
@@ -49,11 +68,15 @@ export default function GameOverlay() {
   }, []);
 
   // Obtener recursos actuales basados en la skin
-  const currentSkin = SKINS[activeCoinSkin] || SKINS["dase"];
+  const currentSkin = SKINS[activeCoinSkin] || SKINS["dase"] || {
+    normal: "",
+    shiny: "",
+    sound: null,
+  };
 
   // Inicializar audio
   useEffect(() => {
-    if (currentSkin.sound) {
+    if (currentSkin && currentSkin.sound) {
       audioRef.current = new Audio(currentSkin.sound);
       audioRef.current.volume = gameVolume;
     }
@@ -179,12 +202,11 @@ export default function GameOverlay() {
 
     // --- LOGICA NUEVOS LOGROS (Coleccionista y Prestigio) ---
 
-    // 1. Coleccionista: Si tienes TODOS los items de la tienda
-    const totalShopItems = Object.values(SHOP_DATA).reduce(
-      (acc, category) => acc + category.length,
-      0,
-    );
-    if (ownedItems && ownedItems.length >= totalShopItems) {
+    // 1. Coleccionista: Si tienes TODOS los items de la tienda (EXCEPTO SKINS)
+    const allNonSkinItems = Object.values(SHOP_DATA).flat().filter((item) => item.type !== "skin");
+    const hasAllNonSkins = allNonSkinItems.every((item) => ownedItems.includes(item.id));
+
+    if (hasAllNonSkins) {
       unlockAchievement("collector");
     }
 
