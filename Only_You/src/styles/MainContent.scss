@@ -8,7 +8,14 @@
   align-items: center;
   flex-direction: column; /* Apilar elementos verticalmente */
   gap: 40px; /* Espacio entre la tarjeta de texto y la galería */
-  padding: 100px 20px 150px; /* Padding superior e inferior generoso */
+  
+  /* Padding inteligente para iOS:
+     - Top: 100px base + lo que ocupe el notch
+     - Bottom: 150px base + lo que ocupe la barra de inicio
+     - Lados: 20px base + márgenes seguros
+  */
+  padding: max(100px, env(safe-area-inset-top) + 40px) max(20px, env(safe-area-inset-right)) max(150px, env(safe-area-inset-bottom) + 40px) max(20px, env(safe-area-inset-left));
+  
   box-sizing: border-box;
 
   /* Ocultar barra de scroll para estética limpia */

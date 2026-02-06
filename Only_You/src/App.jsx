@@ -66,6 +66,26 @@ function App() {
   const [pixelSnowConfig, setPixelSnowConfig] = useState(null);
   const [hyperspeedConfig, setHyperspeedConfig] = useState(null);
 
+  // --- IOS & MOBILE VIEWPORT FIX ---
+  useEffect(() => {
+    const setMetaTag = (name, content) => {
+      let element = document.querySelector(`meta[name="${name}"]`);
+      if (!element) {
+        element = document.createElement("meta");
+        element.name = name;
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
+
+    // 1. viewport-fit=cover: Permite dibujar bajo el notch y la barra de inicio
+    setMetaTag("viewport", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
+    // 2. apple-mobile-web-app-capable: Habilita modo pantalla completa si se añade a inicio
+    setMetaTag("apple-mobile-web-app-capable", "yes");
+    // 3. Status bar transparente: El contenido se ve bajo la barra de estado (hora/batería)
+    setMetaTag("apple-mobile-web-app-status-bar-style", "black-translucent");
+  }, []);
+
   // --- SETTINGS STATE ---
   const [goldShopEnabled, setGoldShopEnabled] = useState(true);
   const [previousCursor, setPreviousCursor] = useState("default");
