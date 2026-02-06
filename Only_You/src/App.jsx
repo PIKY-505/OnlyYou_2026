@@ -32,11 +32,6 @@ const shopItems = [
   { id: "skins", label: "Monedas", ariaLabel: "Personalizar Monedas" },
 ];
 
-const socialItems = [
-  { label: "GitHub", link: "https://github.com" },
-  { label: "Instagram", link: "https://instagram.com" },
-];
-
 function App() {
   // --- STORE & STATE ---
   const {
@@ -353,7 +348,6 @@ function App() {
                 }
               }}
               items={shopItems}
-              socialItems={socialItems}
               isFixed={true}
               position="right"
               onItemClick={handleMenuClick}

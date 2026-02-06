@@ -23,6 +23,7 @@ import skeletonRun from "../../assets/trails/skeleton-run.gif";
 import daseImg from "../../assets/coin/dase/dase.png";
 import angelImg from "../../assets/coin/angel/angel.png";
 import rachelImg from "../../assets/coin/rachel/rachel.png";
+import natashaImg from "../../assets/coin/natasha/natasha.png";
 
 // --- BACKGROUND GIFS ---
 import bgGalaxy from "../../assets/img/bkg/galaxy.gif";
@@ -204,26 +205,35 @@ export const SHOP_DATA = {
       description: "La moneda original.",
       price: 0,
       type: "skin",
-      previewColor: "#ffd700",
-      icon: <img src={daseImg} alt="Dase" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
+      previewColor: "#f6ffa3",
+      icon: <img src={daseImg} alt="Dase" style={{ width: "100px", height: "60px", objectFit: "contain", borderRadius: "20%" }} />,
     },
     {
       id: "angel",
       name: "Angel",
-      description: "Bendecida por los dioses.",
+      description: "Monke.",
       price: 0,
       type: "skin",
       previewColor: "#e0ffff",
-      icon: <img src={angelImg} alt="Angel" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
+      icon: <img src={angelImg} alt="Angel" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
     },
     {
       id: "rachel",
       name: "Rachel",
-      description: "Estilo inconfundible.",
+      description: "La criminologa.",
       price: 0,
       type: "skin",
       previewColor: "#ffc0cb",
-      icon: <img src={rachelImg} alt="Rachel" style={{ width: "60px", height: "60px", objectFit: "contain" }} />,
+      icon: <img src={rachelImg} alt="Rachel" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
+    },
+        {
+      id: "natalia",
+      name: "Natalia",
+      description: "Es Natalia...",
+      price: 0,
+      type: "skin",
+      previewColor: "#ffcccb",
+      icon: <img src={natashaImg} alt="Natalia" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
     },
   ],
 };
