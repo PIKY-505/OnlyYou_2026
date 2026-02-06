@@ -26,7 +26,7 @@ export const CURSOR_CONFIG = {
   // ID del item en la tienda : Configuración
   cursor_neon: {
     name: "Neon Pulse",
-    price: 500,
+    price: 100,
     desc: "Estilo Cyberpunk. Cambia de color.",
     icon: <FiNavigation />,
     type: "replace", // Oculta el nativo
@@ -34,7 +34,7 @@ export const CURSOR_CONFIG = {
   },
   cursor_gold: {
     name: "Gold Sparkle",
-    price: 1000,
+    price: 200,
     desc: "Cursor de oro puro con rastro brillante.",
     icon: <FiZap />,
     type: "replace", // AHORA REEMPLAZA AL ORIGINAL
@@ -43,7 +43,7 @@ export const CURSOR_CONFIG = {
   },
   cursor_ring: {
     name: "Anillo",
-    price: 1500,
+    price: 250,
     desc: "Un anillo animado.",
     icon: <FiDisc />,
     type: "replace",
@@ -52,32 +52,32 @@ export const CURSOR_CONFIG = {
   },
   cursor_blackhole: {
     name: "Agujero Negro",
-    price: 2000,
+    price: 300,
     desc: "Singularidad que distorsiona la luz.",
     icon: <FiAperture />,
     type: "replace",
     className: "cursor-blackhole",
   },
-  cursor_crosshair: {
-    name: "Crosshair",
-    price: 3000,
-    desc: "Líneas de precisión con distorsión.",
-    icon: <FiCrosshair />,
-    type: "custom",
-    component: Crosshair,
-  },
-  cursor_splash: {
+   cursor_splash: {
     name: "Splash Fluid",
-    price: 4000,
+    price: 600,
     desc: "Tinta fluida reactiva.",
     icon: <FiDroplet />,
     type: "custom",
     component: SplashCursor,
     hideNative: false,
   },
+  cursor_crosshair: {
+    name: "Crosshair",
+    price: 1000,
+    desc: "Líneas de precisión con distorsión.",
+    icon: <FiCrosshair />,
+    type: "custom",
+    component: Crosshair,
+  },
   cursor_target: {
     name: "Target HUD",
-    price: 5000,
+    price: 3000,
     desc: "Sistema de fijación táctico.",
     icon: <FiMaximize />,
     type: "custom", // Nuevo tipo para componentes completos

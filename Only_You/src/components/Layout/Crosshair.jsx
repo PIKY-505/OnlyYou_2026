@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
-const lerp = (a, b, n) => (1 - n) * a + n * b;
-
 const getMousePos = (e, container) => {
   if (container) {
     const bounds = container.getBoundingClientRect();
@@ -54,19 +52,11 @@ const Crosshair = ({
     const target = containerRef?.current || window;
     target.addEventListener("mousemove", handleMouseMove);
 
-    const renderedStyles = {
-      tx: { previous: 0, current: 0, amt: 0.15 },
-      ty: { previous: 0, current: 0, amt: 0.15 },
-    };
-
     gsap.set([lineHorizontalRef.current, lineVerticalRef.current], {
       opacity: 0,
     });
 
     const onMouseMove = () => {
-      renderedStyles.tx.previous = renderedStyles.tx.current = mouse.current.x;
-      renderedStyles.ty.previous = renderedStyles.ty.current = mouse.current.y;
-
       gsap.to([lineHorizontalRef.current, lineVerticalRef.current], {
         duration: 0.9,
         ease: "Power3.easeOut",
@@ -121,20 +111,9 @@ const Crosshair = ({
     const leave = () => tl.progress(1).kill();
 
     const render = () => {
-      renderedStyles.tx.current = mouse.current.x;
-      renderedStyles.ty.current = mouse.current.y;
-
-      for (const key in renderedStyles) {
-        renderedStyles[key].previous = lerp(
-          renderedStyles[key].previous,
-          renderedStyles[key].current,
-          renderedStyles[key].amt,
-        );
-      }
-
       if (lineHorizontalRef.current && lineVerticalRef.current) {
-        gsap.set(lineVerticalRef.current, { x: renderedStyles.tx.previous });
-        gsap.set(lineHorizontalRef.current, { y: renderedStyles.ty.previous });
+        gsap.set(lineVerticalRef.current, { x: mouse.current.x });
+        gsap.set(lineHorizontalRef.current, { y: mouse.current.y });
       }
 
       requestRef.current = requestAnimationFrame(render);

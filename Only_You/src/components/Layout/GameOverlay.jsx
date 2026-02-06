@@ -443,10 +443,12 @@ export default function GameOverlay() {
         return (
           <div
             key={entity.id}
-            className="coin-entity"
+            // 1. AÑADIMOS LA CLASE "shiny" SI ES NECESARIO
+            className={`coin-entity ${entity.type === "shiny" ? "is-shiny" : ""}`}
+            
             onPointerDown={(e) => {
               e.stopPropagation();
-              e.preventDefault(); // Evitar eventos fantasma en táctil
+              e.preventDefault();
               handleCoinClick(entity);
             }}
             style={{
@@ -460,22 +462,25 @@ export default function GameOverlay() {
               justifyContent: "center",
               alignItems: "center",
               zIndex: 20,
-              touchAction: "none", // Importante para respuesta rápida
+              touchAction: "none",
             }}
           >
+            {/* 2. CAPA DE BRILLO (Solo se renderiza si es shiny) */}
+            {entity.type === "shiny" && <div className="shiny-glint" />}
+
             <img
-              src={entity.img}
+              src={entity.img} // Aquí ya estás cargando la imagen shiny correcta
               alt="coin"
               style={{
                 width: COIN_SIZE,
                 height: COIN_SIZE,
                 objectFit: "contain",
-                // Optimización móvil: drop-shadow es muy costoso, usamos filtros más ligeros
-                filter:
-                  entity.type === "shiny"
-                    ? "brightness(1.3) sepia(0.2)"
-                    : "none",
                 pointerEvents: "none",
+                borderRadius: "15%",
+                // 3. QUITAMOS LOS FILTROS ANTIGUOS (Ya tienes tu imagen editada)
+                // filter: "none", 
+                // Opcional: Si quieres que resalte aún más, deja un poco de drop-shadow
+                filter: entity.type === "shiny" ? "drop-shadow(0 0 5px gold)" : "none"
               }}
               draggable={false}
             />

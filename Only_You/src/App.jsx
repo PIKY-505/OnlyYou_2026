@@ -56,6 +56,7 @@ function App() {
   const [wasInfoVisibleBeforeGame, setWasInfoVisibleBeforeGame] =
     useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showSecretContainer, setShowSecretContainer] = useState(false);
 
   const [floatingLinesConfig, setFloatingLinesConfig] = useState(null);
   const [lightPillarsConfig, setLightPillarsConfig] = useState(null);
@@ -160,6 +161,28 @@ function App() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isUnlocked, addCoins, unlockAchievement]);
+
+  // --- SECRET CODE: toadsiempreseraelfavorito ---
+  useEffect(() => {
+    const SECRET_PHRASE = "toadsiempreseraelfavorito";
+    let buffer = "";
+
+    const handleSecretKey = (e) => {
+      // Solo capturamos caracteres imprimibles de longitud 1
+      if (e.key.length === 1) {
+        buffer += e.key.toLowerCase();
+        if (buffer.length > SECRET_PHRASE.length) {
+          buffer = buffer.slice(-SECRET_PHRASE.length);
+        }
+        if (buffer === SECRET_PHRASE) {
+          setShowSecretContainer(true);
+          buffer = ""; // Reset
+        }
+      }
+    };
+    window.addEventListener("keydown", handleSecretKey);
+    return () => window.removeEventListener("keydown", handleSecretKey);
+  }, []);
 
   // --- HANDLERS ---
   const handleMenuClick = (itemId) => {
@@ -458,6 +481,93 @@ function App() {
               visible={showMusicPlayer}
               onClose={() => setShowMusicPlayer(false)}
             />
+
+            {/* --- SECRET CONTAINER --- */}
+            <AnimatePresence>
+              {showSecretContainer && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    position: "fixed",
+                    inset: 0,
+                    zIndex: 99999,
+                    background: "rgba(0,0,0,0.6)",
+                    backdropFilter: "blur(10px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  onClick={() => setShowSecretContainer(false)}>
+                  <motion.div
+                    initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                    animate={{ scale: 1, y: 0, opacity: 1 }}
+                    exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      background: "rgba(20, 20, 25, 0.9)",
+                      border: "1px solid rgba(255, 255, 255, 0.1)",
+                      borderRadius: "24px",
+                      padding: "40px",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      boxShadow:
+                        "0 20px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)",
+                      minWidth: "320px",
+                      maxWidth: "90%",
+                      position: "relative",
+                    }}>
+                    <div
+                      style={{
+                        fontSize: "0.8rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "3px",
+                        color: "rgba(255,255,255,0.4)",
+                        marginBottom: "10px",
+                      }}>
+                      Secret Container
+                    </div>
+                    <h1
+                      style={{
+                        fontSize: "5rem",
+                        color: "#fff",
+                        margin: "0 0 30px 0",
+                        fontWeight: "800",
+                        textShadow: "0 0 30px rgba(189, 113, 255, 0.5)",
+                        fontVariantNumeric: "tabular-nums",
+                        lineHeight: 1,
+                      }}>
+                      0
+                    </h1>
+                    <button
+                      onClick={() => setShowSecretContainer(false)}
+                      style={{
+                        padding: "12px 30px",
+                        background:
+                          "linear-gradient(135deg, #bd71ff 0%, #f700ff 100%)",
+                        border: "none",
+                        color: "white",
+                        borderRadius: "12px",
+                        cursor: "pointer",
+                        fontWeight: "600",
+                        fontSize: "1rem",
+                        boxShadow: "0 10px 20px rgba(247, 0, 255, 0.3)",
+                        transition: "transform 0.2s",
+                      }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.transform = "scale(1.05)")
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.transform = "scale(1)")
+                      }>
+                      Cerrar
+                    </button>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* --- DOCK --- */}
             <Dock

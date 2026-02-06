@@ -6,8 +6,13 @@ import {
   FiTrash2,
   FiX,
   FiHash,
+  FiStar,
+  FiMusic,
+  FiShoppingCart,
+  FiEdit,
+  FiLock,
 } from "react-icons/fi";
-import { FaTrophy, FaLock } from "react-icons/fa";
+import { FaTrophy, FaLock, FaGamepad } from "react-icons/fa";
 import { useGameStore } from "../../store/useStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { ACHIEVEMENTS_DATA } from "../../data/achievements";
@@ -190,29 +195,64 @@ const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige })
                 onClick={() => setShowDoc(false)}>
                 <FiX size={24} />
               </button>
-              <h2>Mecánicas del Juego</h2>
-              <div className="doc-content">
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
-                </p>
-                <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse
-                  cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                  occaecat cupidatat non proident, sunt in culpa qui officia
-                  deserunt mollit anim id est laborum.
-                </p>
-                <p>
-                  <strong>Monedas:</strong> Haz click en las monedas flotantes
-                  para recolectarlas. Las monedas especiales (brillantes) valen
-                  más puntos.
-                </p>
-                <p>
-                  <strong>Tienda:</strong> Usa tus monedas para desbloquear
-                  nuevos fondos, cursores y skins para las monedas.
-                </p>
+              <h2>Guía de Usuario</h2>
+              <div className="doc-content" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                
+                <div className="doc-section">
+                  <h3 style={{ borderBottom: "2px solid #f700ff", paddingBottom: "5px", marginBottom: "15px" }}>
+                    Barra de Navegación (Dock)
+                  </h3>
+                  <p style={{ fontSize: "0.9rem", opacity: 0.8, marginBottom: "15px" }}>
+                    Tu centro de control en la parte inferior de la pantalla. Pasa el ratón para ampliar los iconos.
+                  </p>
+                  <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: "12px" }}>
+                    <li style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ background: "rgba(255,255,255,0.1)", padding: "8px", borderRadius: "50%", display: "flex" }}><FiStar color="#ffd700"/></div>
+                      <div><strong>Texto:</strong> Muestra u oculta el contenido principal y la dedicatoria.</div>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ background: "rgba(255,255,255,0.1)", padding: "8px", borderRadius: "50%", display: "flex" }}><FiMusic color="#f700ff"/></div>
+                      <div><strong>Música:</strong> Abre el reproductor para controlar la playlist integrada.</div>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ background: "rgba(255,255,255,0.1)", padding: "8px", borderRadius: "50%", display: "flex" }}><FiShoppingCart color="#00ffff"/></div>
+                      <div><strong>Tienda:</strong> Accede al catálogo para personalizar fondos, cursores y más.</div>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ background: "rgba(255,255,255,0.1)", padding: "8px", borderRadius: "50%", display: "flex" }}><FaGamepad color="#ff99cc"/></div>
+                      <div><strong>Juego:</strong> Activa o desactiva el minijuego de recolección de monedas.</div>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ background: "rgba(255,255,255,0.1)", padding: "8px", borderRadius: "50%", display: "flex" }}><FiEdit color="#bd71ff"/></div>
+                      <div><strong>Fondo:</strong> Abre el panel de personalización avanzada para el fondo actual.</div>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{ background: "rgba(255,255,255,0.1)", padding: "8px", borderRadius: "50%", display: "flex" }}><FiLock color="#ffffff"/></div>
+                      <div><strong>Bloquear:</strong> Vuelve a la pantalla de bloqueo inicial.</div>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="doc-section">
+                  <h3 style={{ borderBottom: "2px solid #00ffff", paddingBottom: "5px", marginBottom: "10px" }}>Juego y Tienda</h3>
+                  <p style={{ marginBottom: "10px" }}>
+                    <strong>El Juego:</strong> El juego que consiste en recolectar monedas y se va haciendo más dificil. Haz clic en ellas para recolectarlas. Las monedas brillantes otorgan bonificaciones. ¡Encadena recolecciones rápidas para aumentar tu <strong>Combo</strong> y multiplicar tus ganancias!
+                  </p>
+                  <p>
+                    <strong>La Tienda:</strong> Utiliza tus monedas para desbloquear elementos cosméticos. Puedes cambiar el fondo, el estilo del cursor, añadir una mascota que te siga o cambiar el aspecto de las monedas.
+                  </p>
+                </div>
+
+                <div className="doc-section">
+                  <h3 style={{ borderBottom: "2px solid #ffd700", paddingBottom: "5px", marginBottom: "10px" }}>Logros y Secretos</h3>
+                  <p>
+                    El sistema cuenta con numerosos logros ocultos. Juega, explora la interfaz y experimenta para desbloquearlos.
+                  </p>
+                  <p style={{ fontStyle: "italic", color: "#ffd700", marginTop: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <FaTrophy /> Pista: Algunos logros especiales desbloquean características únicas en este menú de ajustes...
+                  </p>
+                </div>
+
               </div>
             </motion.div>
           </div>

@@ -24,6 +24,9 @@ import daseImg from "../../assets/coin/dase/dase.png";
 import angelImg from "../../assets/coin/angel/angel.png";
 import rachelImg from "../../assets/coin/rachel/rachel.png";
 import natashaImg from "../../assets/coin/natasha/natasha.png";
+import pikyImg from "../../assets/coin/piky/piky.png";
+import cumImg from "../../assets/coin/cum/cum.png";
+// Importa aquí la imagen que usarás como icono en la tienda
 
 // --- BACKGROUND GIFS ---
 import bgGalaxy from "../../assets/img/bkg/galaxy.gif";
@@ -40,7 +43,7 @@ export const SHOP_DATA = {
     {
       id: "gradient",
       name: "Original Gradient",
-      description: "El clásico atemporal.",
+      description: "El clásico gradiente.",
       price: 0,
       type: "background",
       previewColor: "linear-gradient(45deg, #8629b1, #f700ff)",
@@ -66,7 +69,7 @@ export const SHOP_DATA = {
     {
       id: "pixelsnow",
       name: "Pixel Snow",
-      description: "Nevada suave y distante.",
+      description: "Nevada retro pixelada.",
       price: 150,
       type: "background",
       previewColor: "#ffffff",
@@ -84,7 +87,7 @@ export const SHOP_DATA = {
     {
       id: "galaxy",
       name: "Galaxy",
-      description: "Un viaje a las estrellas.",
+      description: "Un viaje por las estrellas.",
       price: 300,
       type: "background",
       previewColor: "#000", // Placeholder negro
@@ -102,7 +105,7 @@ export const SHOP_DATA = {
     {
       id: "ballpit",
       name: "Ball Pit",
-      description: "Física interactiva y relajante.",
+      description: "Un parque de bolas!!",
       price: 800,
       type: "background",
       previewColor: "#29b1ff",
@@ -202,7 +205,7 @@ export const SHOP_DATA = {
     {
       id: "dase",
       name: "Dase Original",
-      description: "La moneda original.",
+      description: "Esta piba.",
       price: 0,
       type: "skin",
       previewColor: "#f6ffa3",
@@ -227,14 +230,42 @@ export const SHOP_DATA = {
       icon: <img src={rachelImg} alt="Rachel" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
     },
         {
-      id: "natalia",
+      id: "natasha",
       name: "Natalia",
       description: "Es Natalia...",
       price: 0,
       type: "skin",
       previewColor: "#ffcccb",
-      icon: <img src={natashaImg} alt="Natalia" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
+      icon: <img src={natashaImg} alt="Natasha" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
     },
+    {
+      id: "piky",
+      name: "Piky",
+      description: "La moneda de Piky.",
+      price: 0,
+      type: "skin",
+      previewColor: "#ff99cc",
+      icon: <img src={pikyImg} alt="Piky" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
+    },
+    {
+      id: "cum",
+      name: "Cum",
+      description: "La moneda de Cum.",
+      price: 0,
+      type: "skin",
+      previewColor: "#ffffff",
+      icon: <img src={cumImg} alt="Cum" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
+    },
+    // --- AÑADE AQUÍ TU NUEVA MONEDA ---
+    // {
+    //   id: "nombre_carpeta", // IMPORTANTE: Debe coincidir con el nombre de la carpeta en src/assets/coin/
+    //   name: "Nombre Visible",
+    //   description: "Descripción para la tienda.",
+    //   price: 1000, // Precio (0 para gratis)
+    //   type: "skin",
+    //   previewColor: "#ffffff", // Color de fondo en la tarjeta de la tienda
+    //   icon: <img src={tuImagenImportada} alt="Icono" style={{ width: "60px", height: "60px", objectFit: "contain", borderRadius: "10%" }} />,
+    // },
   ],
 };
 
