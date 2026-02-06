@@ -101,23 +101,16 @@ export default function CursorController() {
   const cursorRef = useRef(null);
   const [isClicking, setIsClicking] = useState(false);
   const [particles, setParticles] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detección de móvil para desactivar cursor personalizado
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  const [isVisible, setIsVisible] = useState(false); // Nuevo estado para visibilidad (móvil)
   const requestRef = useRef();
 
   // 1. Lógica de seguimiento del ratón (Optimizada con Refs)
   useEffect(() => {
     const handleMove = (e) => {
       const { clientX, clientY } = e;
+
+      // En PC siempre es visible al mover. En móvil se gestiona por touchstart/end
+      if (e.type === 'mousemove') setIsVisible(true);
 
       // Mover el cursor principal (si existe)
       if (cursorRef.current) {
@@ -134,17 +127,44 @@ export default function CursorController() {
       }
     };
 
+    // Soporte Táctil (El cursor sigue al dedo)
+    const handleTouchMove = (e) => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        handleMove({ clientX: touch.clientX, clientY: touch.clientY, type: 'touchmove' });
+      }
+    };
+
+    const handleTouchStart = (e) => {
+      setIsVisible(true);
+      setIsClicking(true);
+      handleTouchMove(e); // Mover inmediatamente al punto de toque
+    };
+
+    const handleTouchEnd = () => {
+      setIsClicking(false);
+      setIsVisible(false); // Ocultar cursor al levantar el dedo
+    };
+
     const handleDown = () => setIsClicking(true);
     const handleUp = () => setIsClicking(false);
 
     window.addEventListener("mousemove", handleMove);
     window.addEventListener("mousedown", handleDown);
     window.addEventListener("mouseup", handleUp);
+    
+    // Listeners Táctiles
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mousedown", handleDown);
       window.removeEventListener("mouseup", handleUp);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [activeCursor]);
 
@@ -184,9 +204,6 @@ export default function CursorController() {
     };
   }, [activeCursor]);
 
-  // En móvil no renderizamos nada para mejorar rendimiento y UX
-  if (isMobile) return null;
-
   // Si no hay cursor activo o es el default, no renderizamos nada (o solo partículas si quedan)
   const config = CURSOR_CONFIG[activeCursor];
 
@@ -202,7 +219,7 @@ export default function CursorController() {
       ))}
 
       {/* Renderizado de Cursor Principal (Reemplazo) */}
-      {config && config.type === "replace" && (
+      {config && config.type === "replace" && isVisible && (
         <div ref={cursorRef} className="cursor-follower">
           <div
             className={`${config.className} ${isClicking ? "clicking" : ""}`}
@@ -212,7 +229,7 @@ export default function CursorController() {
       )}
 
       {/* Renderizado de Cursor Custom (Componente React completo) */}
-      {config && config.type === "custom" && (
+      {config && config.type === "custom" && isVisible && (
         <config.component targetSelector="button, .shop-item, input, a, .coin-entity, .dock-item, .dock-icon" />
       )}
     </div>,

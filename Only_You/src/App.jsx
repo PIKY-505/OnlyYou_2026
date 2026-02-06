@@ -260,9 +260,10 @@ function App() {
   return (
     <main
       style={{
-        position: "relative",
-        width: "100vw",
-        height: "100dvh", // Ajuste móvil: Ocupar pantalla real ignorando barras navegador
+        position: "fixed", // CAMBIO: Fixed + inset 0 evita rebotes y huecos en iOS
+        inset: 0,
+        width: "100%",
+        height: "100dvh",
         overflow: "hidden",
       }}>
       {/* --- LOADING SCREEN --- */}
