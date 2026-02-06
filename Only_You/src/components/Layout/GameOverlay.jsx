@@ -183,6 +183,16 @@ export default function GameOverlay() {
     const earned = entity.value * nextCombo;
     addCoins(earned);
 
+    // --- HAPTIC FEEDBACK (Móvil) ---
+    if (navigator.vibrate) {
+      // Vibración diferente para shiny vs normal
+      if (entity.type === "shiny") {
+        navigator.vibrate([50, 30, 50]); // Doble pulso para monedas especiales
+      } else {
+        navigator.vibrate(40); // Pulso corto para normales
+      }
+    }
+
     // --- CHEQUEO DE LOGROS ---
     unlockAchievement("baby_steps"); // Antes first_coin
 
@@ -308,9 +318,28 @@ export default function GameOverlay() {
         zIndex: 30, // Bajamos a 30 para que la Tienda (z-40) se vea encima
         pointerEvents: "auto",
         overflow: "hidden",
+        touchAction: "none", // IMPORTANTE: Evita scroll/zoom al jugar en móvil
       }}>
+      {/* Estilos responsivos para el HUD */}
+      <style>{`
+        @media (max-width: 768px) {
+          .game-hud-coins {
+            top: 80px !important;
+            left: 20px !important;
+            font-size: 1rem !important;
+            padding: 6px 12px !important;
+          }
+          .game-hud-combo {
+            top: 20px !important;
+            right: 20px !important;
+            width: 100px !important;
+            height: 100px !important;
+          }
+        }
+      `}</style>
       {/* --- CONTADOR DE MONEDAS --- */}
       <div
+        className="game-hud-coins"
         style={{
           position: "absolute",
           top: "110px",
@@ -336,6 +365,7 @@ export default function GameOverlay() {
 
       {/* --- COMBO UI --- */}
       <div
+        className="game-hud-combo"
         style={{
           position: "absolute",
           top: "40px",
@@ -414,8 +444,9 @@ export default function GameOverlay() {
           <div
             key={entity.id}
             className="coin-entity"
-            onMouseDown={(e) => {
+            onPointerDown={(e) => {
               e.stopPropagation();
+              e.preventDefault(); // Evitar eventos fantasma en táctil
               handleCoinClick(entity);
             }}
             style={{
@@ -429,6 +460,7 @@ export default function GameOverlay() {
               justifyContent: "center",
               alignItems: "center",
               zIndex: 20,
+              touchAction: "none", // Importante para respuesta rápida
             }}
           >
             <img
@@ -438,10 +470,11 @@ export default function GameOverlay() {
                 width: COIN_SIZE,
                 height: COIN_SIZE,
                 objectFit: "contain",
+                // Optimización móvil: drop-shadow es muy costoso, usamos filtros más ligeros
                 filter:
                   entity.type === "shiny"
-                    ? "drop-shadow(0 0 15px gold) brightness(1.2)"
-                    : "drop-shadow(0 0 5px rgba(255,255,255,0.3))",
+                    ? "brightness(1.3) sepia(0.2)"
+                    : "none",
                 pointerEvents: "none",
               }}
               draggable={false}

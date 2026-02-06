@@ -487,6 +487,23 @@ const BackgroundCustomizer = ({
 
   return (
     <div className="bg-customizer-panel" style={{ pointerEvents: "auto" }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .bg-customizer-panel {
+            width: 100% !important;
+            max-width: 100% !important;
+            height: 60vh !important;
+            top: auto !important;
+            bottom: 0 !important;
+            border-radius: 20px 20px 0 0 !important;
+            border-left: none !important;
+            border-top: 1px solid rgba(255,255,255,0.2) !important;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5) !important;
+            animation: slideUp 0.3s ease-out forwards;
+          }
+          @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        }
+      `}</style>
       <div className="bg-customizer-header">
         <h3>Personalizar Fondo</h3>
         <div style={{ display: "flex", gap: "8px" }}>

@@ -101,6 +101,17 @@ export default function CursorController() {
   const cursorRef = useRef(null);
   const [isClicking, setIsClicking] = useState(false);
   const [particles, setParticles] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detección de móvil para desactivar cursor personalizado
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
   const requestRef = useRef();
 
   // 1. Lógica de seguimiento del ratón (Optimizada con Refs)
@@ -172,6 +183,9 @@ export default function CursorController() {
       }
     };
   }, [activeCursor]);
+
+  // En móvil no renderizamos nada para mejorar rendimiento y UX
+  if (isMobile) return null;
 
   // Si no hay cursor activo o es el default, no renderizamos nada (o solo partículas si quedan)
   const config = CURSOR_CONFIG[activeCursor];

@@ -5,6 +5,7 @@ import {
   FiFileText,
   FiTrash2,
   FiX,
+  FiHash,
 } from "react-icons/fi";
 import { FaTrophy, FaLock } from "react-icons/fa";
 import { useGameStore } from "../../store/useStore";
@@ -18,8 +19,9 @@ const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige })
   const [showDoc, setShowDoc] = useState(false);
   const [showAchievements, setShowAchievements] = useState(false);
   const menuRef = useRef(null);
-  const { gameVolume, setGameVolume, resetProgress, achievements, ownedItems, activeCursor } =
+  const { gameVolume, setGameVolume, resetProgress, achievements, ownedItems, activeCursor, addCoins, unlockAchievement } =
     useGameStore();
+  const [isMobile, setIsMobile] = useState(false);
 
   const isPrestigeUnlocked = achievements.includes("prestige");
   const isCollectorUnlocked = achievements.includes("collector");
@@ -36,6 +38,13 @@ const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige })
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const handleReset = () => {
     if (
       window.confirm(
@@ -44,6 +53,21 @@ const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige })
     ) {
       resetProgress();
       setIsOpen(false);
+    }
+  };
+
+  const handleAdminCode = () => {
+    const code = window.prompt("Introduce código de administrador:");
+    if (!code) return;
+
+    // Códigos válidos: KONAMI, ADMIN, MATRIX
+    if (["KONAMI", "ADMIN", "MATRIX"].includes(code.toUpperCase())) {
+      addCoins(1000000);
+      unlockAchievement("matrix_master");
+      alert("¡Acceso concedido! Recursos añadidos.");
+      setIsOpen(false);
+    } else {
+      alert("Código inválido.");
     }
   };
 
@@ -120,6 +144,15 @@ const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige })
                 }}>
                 <FiFileText /> Documentación
               </button>
+
+              {/* Código Admin (Móvil) */}
+              {isMobile && (
+                <button
+                  className="setting-action-btn"
+                  onClick={handleAdminCode}>
+                  <FiHash /> Código Admin
+                </button>
+              )}
 
               {/* Resetear Progreso */}
               <button

@@ -183,7 +183,7 @@ class x {
     } else if (this.minPixelRatio && e < this.minPixelRatio) {
       e = this.minPixelRatio;
     }
-    this.renderer.setPixelRatio(e);
+    this.renderer.setPixelRatio(Math.min(e, 2));
     this.size.pixelRatio = e;
   }
   get postprocessing() {
@@ -349,7 +349,7 @@ function L() {
 
 function TouchStart(e) {
   if (e.touches.length > 0) {
-    e.preventDefault();
+    // e.preventDefault(); // Permitir scroll en móviles
     A.x = e.touches[0].clientX;
     A.y = e.touches[0].clientY;
 
@@ -370,7 +370,7 @@ function TouchStart(e) {
 
 function TouchMove(e) {
   if (e.touches.length > 0) {
-    e.preventDefault();
+    // e.preventDefault(); // Permitir scroll en móviles
     A.x = e.touches[0].clientX;
     A.y = e.touches[0].clientY;
 
@@ -747,7 +747,7 @@ function createBallpit(e, t = {}) {
   const r = new a();
   let c = false;
 
-  e.style.touchAction = "none";
+  e.style.touchAction = "pan-y"; // Permitir scroll vertical
   e.style.userSelect = "none";
   e.style.webkitUserSelect = "none";
 

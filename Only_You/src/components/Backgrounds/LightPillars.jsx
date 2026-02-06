@@ -258,7 +258,8 @@ const LightPillars = ({
     };
 
     if (interactive) {
-      container.addEventListener("mousemove", handleMouseMove, {
+      // Usamos window y pointermove para mejor soporte móvil y capas
+      window.addEventListener("pointermove", handleMouseMove, {
         passive: true,
       });
     }
@@ -318,7 +319,7 @@ const LightPillars = ({
     return () => {
       window.removeEventListener("resize", handleResize);
       if (interactive) {
-        container.removeEventListener("mousemove", handleMouseMove);
+        window.removeEventListener("pointermove", handleMouseMove);
       }
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);

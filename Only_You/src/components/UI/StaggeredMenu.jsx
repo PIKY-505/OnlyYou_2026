@@ -47,6 +47,8 @@ const StaggeredMenu = ({
   const toggleBtnRef = useRef(null);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef(null);
+  const touchStartX = useRef(null);
+  const touchStartY = useRef(null);
 
   // --- ANIMATION SETUP ---
   useLayoutEffect(() => {
@@ -424,6 +426,30 @@ const StaggeredMenu = ({
     onMenuClose,
   ]);
 
+  // --- SWIPE HANDLERS ---
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const touchEndY = e.changedTouches[0].clientY;
+    const diffX = touchStartX.current - touchEndX;
+    const diffY = touchStartY.current - touchEndY;
+
+    // Si el movimiento es horizontal y mayor a 50px
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+      if (position === "left" && diffX > 0) closeMenu(); // Swipe Izquierda cierra menú izquierdo
+      if (position === "right" && diffX < 0) closeMenu(); // Swipe Derecha cierra menú derecho
+    }
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+  };
+
   return (
     <div
       className={
@@ -514,7 +540,9 @@ const StaggeredMenu = ({
         id="staggered-menu-panel"
         ref={panelRef}
         className="staggered-menu-panel"
-        aria-hidden={!open}>
+        aria-hidden={!open}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}>
         <div className="sm-panel-inner">
           <ul
             className="sm-panel-list"
