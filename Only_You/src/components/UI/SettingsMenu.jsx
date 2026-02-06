@@ -73,6 +73,16 @@ const SettingsMenu = ({ goldShopEnabled, setGoldShopEnabled, onTogglePrestige })
 
   return (
     <>
+      {/* Ajustes para móvil: Evitar recortes por bordes curvos/notch */}
+      <style>{`
+        @media (max-width: 768px) {
+          .settings-container {
+            top: max(20px, env(safe-area-inset-top) + 15px) !important;
+            left: max(20px, env(safe-area-inset-left) + 15px) !important;
+          }
+        }
+      `}</style>
+
       <div className="settings-container" ref={menuRef}>
         <button
           className={`settings-btn ${isOpen ? "active" : ""}`}

@@ -262,7 +262,7 @@ function App() {
       style={{
         position: "relative",
         width: "100vw",
-        height: "100vh",
+        height: "100dvh", // Ajuste móvil: Ocupar pantalla real ignorando barras navegador
         overflow: "hidden",
       }}>
       {/* --- LOADING SCREEN --- */}

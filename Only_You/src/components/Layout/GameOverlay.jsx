@@ -324,7 +324,7 @@ export default function GameOverlay() {
       <style>{`
         @media (max-width: 768px) {
           .game-hud-coins {
-            top: 80px !important;
+            top: calc(80px + env(safe-area-inset-top)) !important;
             left: 20px !important;
             font-size: 1rem !important;
             padding: 6px 12px !important;
